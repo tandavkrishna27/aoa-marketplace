@@ -1,5 +1,6 @@
 import semver from "semver";
-import { CatalogItem, CatalogItemSchema } from "../types/catalog.js";
+import type { CatalogItem } from "../types/catalog.js";
+import { CatalogItemSchema } from "../types/catalog.js";
 
 const ALLOWED_LICENSES = new Set([
   "MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause",
@@ -41,12 +42,14 @@ export function runAutomatedChecks(item: CatalogItem, rawManifest?: Record<strin
   }
 
   // 4. License field on allowed list (from rawManifest if provided)
-  if (rawManifest && typeof rawManifest.license === "string") {
-    if (!ALLOWED_LICENSES.has(rawManifest.license)) {
-      failures.push(`license "${rawManifest.license}" not on allowed list`);
+  if (rawManifest !== undefined) {
+    if (typeof rawManifest.license === "string") {
+      if (!ALLOWED_LICENSES.has(rawManifest.license)) {
+        failures.push(`license "${rawManifest.license}" not on allowed list`);
+      }
+    } else {
+      warnings.push("No license field in manifest");
     }
-  } else if (rawManifest && rawManifest.license === undefined) {
-    warnings.push("No license field in manifest");
   }
 
   // 5. Source URL present and looks valid
