@@ -40,5 +40,5 @@ See `catalog/src/sources/aoa-curated/adapter.ts` for the pattern. Each adapter e
 ## See also
 
 - AoA repo: `https://github.com/MeteoriteLabs/aoa`
-- Public CDN mirror: `https://github.com/MeteoriteLabs/aoa-marketplace-cdn`
-- Community list: `https://github.com/MeteoriteLabs/aoa-community`
+- Public CDN mirror: `https://github.com/MeteoriteLabs/aoa-marketplace-cdn` (auto-populated by CI from this repo)
+- Community list: `https://github.com/MeteoriteLabs/aoa-community` (rebranded awesome-aoa)
