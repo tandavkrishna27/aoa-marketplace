@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0.0",
+  "trustedSources": [
+    {
+      "adapter": "aoa-curated",
+      "tier": "verified",
+      "reason": "Hand-curated by AoA team"
+    },
+    {
+      "adapter": "anthropic-skills",
+      "tier": "verified",
+      "reason": "Trusted upstream — anthropic/skills public repo"
+    }
+  ]
+}
