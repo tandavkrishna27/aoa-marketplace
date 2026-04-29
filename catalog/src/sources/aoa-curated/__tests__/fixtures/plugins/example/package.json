@@ -1,0 +1,10 @@
+{
+  "name": "@armyofagents/aoa-plugin-example",
+  "version": "1.0.0",
+  "description": "Example plugin for testing",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/MeteoriteLabs/aoa-marketplace",
+    "directory": "plugins/aoa-plugin-example"
+  }
+}

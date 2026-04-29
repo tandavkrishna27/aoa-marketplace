@@ -1,0 +1,16 @@
+{
+  "id": "aoa.plugin-example",
+  "displayName": "Example Plugin",
+  "description": "Test fixture for the aoa-curated adapter",
+  "version": "1.0.0",
+  "license": "MIT",
+  "capabilities": ["example.do_thing"],
+  "capabilityDescriptions": {
+    "example.do_thing": "Does an example thing for testing"
+  },
+  "marketplace": {
+    "category": "engineering",
+    "tags": ["official"],
+    "featured": false
+  }
+}

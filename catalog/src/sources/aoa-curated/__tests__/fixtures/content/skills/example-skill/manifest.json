@@ -1,0 +1,10 @@
+{
+  "name": "Example Skill",
+  "description": "Test fixture for the aoa-curated content adapter",
+  "version": "1.0.0",
+  "category": "engineering",
+  "tags": ["official"],
+  "contentInline": true,
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace/tree/main/content/skills/example-skill",
+  "license": "MIT"
+}

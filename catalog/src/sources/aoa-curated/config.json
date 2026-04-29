@@ -1,0 +1,7 @@
+{
+  "id": "aoa-curated",
+  "displayName": "AoA Curated",
+  "description": "Hand-curated content by the AoA team",
+  "defaultTrustTier": "verified",
+  "enabled": true
+}
