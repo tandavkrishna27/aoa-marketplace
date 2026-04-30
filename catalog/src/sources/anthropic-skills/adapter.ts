@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { z } from "zod";
 import { CategorySchema, TagSchema } from "../../types/catalog.js";
-import type { SourceAdapter, SourceAdapterContext } from "../../types/source-adapter.js";
+import type { SourceAdapter, SourceAdapterContext, NormalizedItem } from "../../types/source-adapter.js";
 import type { CatalogItem, Category } from "../../types/catalog.js";
 
 const SKILLS_REPO_URL = "https://github.com/anthropics/skills.git";
@@ -35,9 +35,9 @@ export const anthropicSkillsAdapter: SourceAdapter = {
     return { cloneDir, cloneTimestamp: new Date().toISOString() };
   },
 
-  async normalize(raw: unknown, ctx: SourceAdapterContext): Promise<CatalogItem[]> {
+  async normalize(raw: unknown, ctx: SourceAdapterContext): Promise<NormalizedItem[]> {
     const { cloneDir, cloneTimestamp } = raw as FetchedRepo;
-    const items: CatalogItem[] = [];
+    const items: NormalizedItem[] = [];
 
     // Anthropic's skills repo structure: each top-level folder is a skill.
     // Inside each: a SKILL.md file with the markdown content + frontmatter.
@@ -84,7 +84,9 @@ export const anthropicSkillsAdapter: SourceAdapter = {
           tags: z.array(TagSchema).parse(["official"]),
           content: { inline: content },
         };
-        items.push(item);
+        // Anthropic Skills frontmatter has no license field — omit rawManifest so the
+        // license check is skipped for these trusted-source items.
+        items.push({ item });
       } catch (err) {
         ctx.logger.error(`Failed to process skill "${entry}": ${err instanceof Error ? err.message : String(err)}`);
         continue;

@@ -6,7 +6,7 @@ import { anthropicSkillsAdapter } from "./sources/anthropic-skills/adapter.js";
 import { runAutomatedChecks } from "./validators/automated-checks.js";
 import { loadTrustedSources, resolveTrustTier } from "./validators/trust-resolver.js";
 import type { CatalogFile, CatalogItem, TrustTier } from "./types/catalog.js";
-import type { SourceAdapter, SourceAdapterContext } from "./types/source-adapter.js";
+import type { SourceAdapter, SourceAdapterContext, NormalizedItem } from "./types/source-adapter.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // aggregate.ts is at catalog/src/aggregate.ts → go up two levels for monorepo root
@@ -38,10 +38,10 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
 
     try {
       const raw = await adapter.fetch(ctx);
-      const items = await adapter.normalize(raw, ctx);
-      console.log(`[${adapter.id}] yielded ${items.length} items`);
+      const normalizedItems: NormalizedItem[] = await adapter.normalize(raw, ctx);
+      console.log(`[${adapter.id}] yielded ${normalizedItems.length} items`);
 
-      for (const item of items) {
+      for (const { item, rawManifest } of normalizedItems) {
         // Resolve trust tier (source-based unless explicitly reviewed)
         // Clone to avoid mutating adapter-produced object
         const resolvedItem: CatalogItem = {
@@ -49,8 +49,8 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
           trust: { ...item.trust, tier: resolveTrustTier(item, trustedSources) },
         };
 
-        // Run automated checks
-        const result = runAutomatedChecks(resolvedItem);
+        // Run automated checks — pass rawManifest so license validation fires
+        const result = runAutomatedChecks(resolvedItem, rawManifest);
         if (!result.passed) {
           errors.push(`${resolvedItem.id}: ${result.failures.join(", ")}`);
           console.error(`[${adapter.id}] REJECT ${resolvedItem.id}: ${result.failures.join(", ")}`);

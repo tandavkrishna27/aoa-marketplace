@@ -15,13 +15,16 @@ describe("anthropicSkillsAdapter", () => {
       logger: { info: console.log, warn: console.warn, error: console.error },
     };
     const raw = await anthropicSkillsAdapter.fetch(ctx);
-    const items = await anthropicSkillsAdapter.normalize(raw, ctx);
-    expect(items.length).toBeGreaterThan(0);
-    expect(items[0].source.adapter).toBe("anthropic-skills");
-    expect(items[0].type).toBe("skill");
-    expect(items[0].trust.tier).toBe("verified");
-    expect(items[0].id).toMatch(/^skill:anthropic\//);
-    expect(items[0].source.url).toMatch(/^https:\/\/github\.com\/anthropics\/skills\/tree\/main\//);
-    expect(items[0].content?.inline).toBeDefined();
+    const normalizedItems = await anthropicSkillsAdapter.normalize(raw, ctx);
+    expect(normalizedItems.length).toBeGreaterThan(0);
+    const first = normalizedItems[0].item;
+    expect(first.source.adapter).toBe("anthropic-skills");
+    expect(first.type).toBe("skill");
+    expect(first.trust.tier).toBe("verified");
+    expect(first.id).toMatch(/^skill:anthropic\//);
+    expect(first.source.url).toMatch(/^https:\/\/github\.com\/anthropics\/skills\/tree\/main\//);
+    expect(first.content?.inline).toBeDefined();
+    // anthropic-skills omits rawManifest (no license in frontmatter)
+    expect(normalizedItems[0].rawManifest).toBeUndefined();
   }, { timeout: 60_000 });
 });

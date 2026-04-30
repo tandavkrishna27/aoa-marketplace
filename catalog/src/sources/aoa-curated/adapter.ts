@@ -1,7 +1,7 @@
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
-import type { SourceAdapter, SourceAdapterContext } from "../../types/source-adapter.js";
+import type { SourceAdapter, SourceAdapterContext, NormalizedItem } from "../../types/source-adapter.js";
 import type { CatalogItem, ItemType } from "../../types/catalog.js";
 import { CategorySchema, TagSchema } from "../../types/catalog.js";
 
@@ -69,9 +69,9 @@ export const aoaCuratedAdapter: SourceAdapter = {
     return { repoRoot: ctx.workDir };
   },
 
-  async normalize(raw: unknown, ctx: SourceAdapterContext): Promise<CatalogItem[]> {
+  async normalize(raw: unknown, ctx: SourceAdapterContext): Promise<NormalizedItem[]> {
     const { repoRoot } = raw as { repoRoot: string };
-    const items: CatalogItem[] = [];
+    const items: NormalizedItem[] = [];
 
     // Scan plugins/ — each subdirectory is a pnpm workspace package
     const pluginsRoot = join(repoRoot, "plugins");
@@ -119,7 +119,7 @@ export const aoaCuratedAdapter: SourceAdapter = {
             tags: z.array(TagSchema).parse(manifest.marketplace?.tags ?? []),
             featured: manifest.marketplace?.featured,
           };
-          items.push(item);
+          items.push({ item, rawManifest: manifest as unknown as Record<string, unknown> });
         } catch (err) {
           ctx.logger.error(`Failed to parse JSON for plugin "${slug}": ${err instanceof Error ? err.message : String(err)}`);
           continue;
@@ -186,7 +186,7 @@ export const aoaCuratedAdapter: SourceAdapter = {
             content,
             featured: raw.featured,
           };
-          items.push(item);
+          items.push({ item, rawManifest: raw as unknown as Record<string, unknown> });
         } catch (err) {
           ctx.logger.error(`Failed to parse manifest for content/${type}/${slug}: ${err instanceof Error ? err.message : String(err)}`);
           continue;

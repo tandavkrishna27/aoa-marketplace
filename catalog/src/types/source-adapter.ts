@@ -9,6 +9,14 @@ export interface SourceAdapterContext {
   };
 }
 
+/** A parsed CatalogItem paired with the raw manifest object it came from.
+ *  rawManifest is optional — adapters that don't have a manifest file (e.g. anthropic-skills)
+ *  may omit it; the license check will be skipped for those items. */
+export interface NormalizedItem {
+  item: CatalogItem;
+  rawManifest?: Record<string, unknown>;
+}
+
 export interface SourceAdapter {
   /** Stable adapter identifier (e.g., "aoa-curated", "anthropic-skills") */
   readonly id: string;
@@ -22,6 +30,6 @@ export interface SourceAdapter {
   /** Fetch raw source data (git clone, HTTP fetch, file scan, etc.) */
   fetch(ctx: SourceAdapterContext): Promise<unknown>;
 
-  /** Convert raw data to canonical CatalogItem entries */
-  normalize(raw: unknown, ctx: SourceAdapterContext): Promise<CatalogItem[]>;
+  /** Convert raw data to canonical NormalizedItem entries (item + optional rawManifest) */
+  normalize(raw: unknown, ctx: SourceAdapterContext): Promise<NormalizedItem[]>;
 }
