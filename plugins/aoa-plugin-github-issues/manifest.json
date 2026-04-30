@@ -1,0 +1,43 @@
+{
+  "id": "aoa.plugin-github-issues",
+  "displayName": "GitHub Issues",
+  "description": "Bidirectional GitHub Issues sync — create, update, and resolve GitHub issues from AoA tasks",
+  "version": "1.0.0",
+  "license": "MIT",
+  "categories": ["integrations"],
+  "capabilities": [
+    "issues.read",
+    "issues.update",
+    "issue.comments.read",
+    "issue.comments.create",
+    "plugin.state.read",
+    "plugin.state.write",
+    "events.subscribe",
+    "http.outbound",
+    "secrets.read-ref",
+    "webhooks.receive",
+    "agent.tools.register",
+    "instance.settings.register",
+    "ui.detailTab.register"
+  ],
+  "capabilityDescriptions": {
+    "issues.read": "Read AoA issues to detect status changes for sync",
+    "issues.update": "Update AoA issue status when a linked GitHub issue changes",
+    "issue.comments.read": "Read AoA issue comments for bridging to GitHub",
+    "issue.comments.create": "Post bridged GitHub comments to AoA issues",
+    "plugin.state.read": "Read stored issue link mappings",
+    "plugin.state.write": "Store and update issue link mappings",
+    "events.subscribe": "Listen for issue.updated and issue.comment_added events",
+    "http.outbound": "Send HTTPS requests to api.github.com",
+    "secrets.read-ref": "Resolve your GitHub personal access token from the secrets store",
+    "webhooks.receive": "Receive issue and comment events from GitHub webhooks",
+    "agent.tools.register": "Expose search, link, and unlink tools to AoA agents",
+    "instance.settings.register": "Register the GitHub Issues configuration page",
+    "ui.detailTab.register": "Show the GitHub Issues detail tab on AoA issue pages"
+  },
+  "marketplace": {
+    "category": "integrations",
+    "tags": ["official"],
+    "featured": true
+  }
+}
