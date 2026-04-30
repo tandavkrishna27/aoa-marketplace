@@ -20,11 +20,14 @@ export const anthropicSkillsAdapter: SourceAdapter = {
   defaultTrustTier: "verified",
 
   async fetch(ctx: SourceAdapterContext): Promise<FetchedRepo> {
+    // TODO M.1.E: extend SourceAdapter interface with cleanup(raw) lifecycle method;
+    // currently the cloneDir is leaked. tmpdir() will eventually be cleaned by the OS.
     const cloneDir = mkdtempSync(join(tmpdir(), "anthropic-skills-"));
     ctx.logger.info(`Cloning ${SKILLS_REPO_URL} → ${cloneDir}`);
     const result = spawnSync("git", ["clone", "--depth=1", SKILLS_REPO_URL, cloneDir], {
       stdio: "pipe",
       encoding: "utf-8",
+      timeout: 60_000,
     });
     if (result.status !== 0) {
       throw new Error(`git clone failed: ${result.stderr}`);
@@ -99,7 +102,7 @@ interface FrontmatterFields {
 }
 
 function parseFrontmatter(content: string, fallbackName: string): FrontmatterFields {
-  const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!fmMatch) {
     return { name: fallbackName, description: fallbackName, version: "1.0.0" };
   }
@@ -117,11 +120,11 @@ function parseFrontmatter(content: string, fallbackName: string): FrontmatterFie
 
 function inferCategory(name: string, description: string): Category {
   const text = `${name} ${description}`.toLowerCase();
-  if (/(code|engineer|debug|test|review|git|deploy)/.test(text)) return "engineering";
-  if (/(market|content|seo|social|campaign)/.test(text)) return "marketing";
-  if (/(support|ticket|customer|help)/.test(text)) return "support";
-  if (/(sales|lead|deal|crm)/.test(text)) return "sales";
-  if (/(design|ux|ui|figma)/.test(text)) return "design";
-  if (/(data|analytics|sql|metric)/.test(text)) return "data";
+  if (/\b(code|engineer|debug|test|review|git|deploy)\b/.test(text)) return "engineering";
+  if (/\b(market|seo|social|campaign)\b/.test(text)) return "marketing";
+  if (/\b(support|ticket|customer|help)\b/.test(text)) return "support";
+  if (/\b(sales|lead|deal|crm)\b/.test(text)) return "sales";
+  if (/\b(design|ux|ui|figma)\b/.test(text)) return "design";
+  if (/\b(data|analytics|sql|metric)\b/.test(text)) return "data";
   return "productivity"; // default
 }
