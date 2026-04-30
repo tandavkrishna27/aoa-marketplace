@@ -1,7 +1,15 @@
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { z } from "zod";
 import type { SourceAdapter, SourceAdapterContext } from "../../types/source-adapter.js";
 import type { CatalogItem, ItemType } from "../../types/catalog.js";
+import { CategorySchema, TagSchema } from "../../types/catalog.js";
+
+function fileAddedAt(filePath: string): string {
+  // Use the file's mtime as a deterministic "added at" timestamp.
+  // For first-class provenance, M.1.5+ could replace with the git first-commit timestamp.
+  return statSync(filePath).mtime.toISOString();
+}
 
 interface PluginManifest {
   id: string;
@@ -79,36 +87,43 @@ export const aoaCuratedAdapter: SourceAdapter = {
           continue;
         }
 
-        const pkg = JSON.parse(readFileSync(pkgJsonPath, "utf-8")) as PluginPackageJson;
-        const manifest = JSON.parse(readFileSync(manifestPath, "utf-8")) as PluginManifest;
+        let pkg: PluginPackageJson;
+        let manifest: PluginManifest;
+        try {
+          pkg = JSON.parse(readFileSync(pkgJsonPath, "utf-8")) as PluginPackageJson;
+          manifest = JSON.parse(readFileSync(manifestPath, "utf-8")) as PluginManifest;
 
-        const capabilities = (manifest.capabilities ?? []).map((capId) => ({
-          id: capId,
-          description: manifest.capabilityDescriptions?.[capId] ?? capId,
-        }));
+          const capabilities = (manifest.capabilities ?? []).map((capId) => ({
+            id: capId,
+            description: manifest.capabilityDescriptions?.[capId] ?? capId,
+          }));
 
-        const item: CatalogItem = {
-          id: `plugin:aoa-curated/${slug}`,
-          type: "plugin",
-          name: manifest.displayName,
-          description: manifest.description,
-          version: manifest.version,
-          source: {
-            adapter: "aoa-curated",
-            url: pkg.repository?.url
-              ? `${pkg.repository.url}${pkg.repository.directory ? `/tree/main/${pkg.repository.directory}` : ""}`
-              : `https://npmjs.com/package/${pkg.name}`,
-            locator: `plugins/${slug}`,
-          },
-          trust: { tier: "verified", source: "aoa-curated" },
-          status: "active",
-          addedAt: new Date().toISOString(),
-          capabilities,
-          category: (manifest.marketplace?.category ?? "integrations") as never,
-          tags: (manifest.marketplace?.tags ?? []) as never,
-          featured: manifest.marketplace?.featured,
-        };
-        items.push(item);
+          const item: CatalogItem = {
+            id: `plugin:aoa-curated/${slug}`,
+            type: "plugin",
+            name: manifest.displayName,
+            description: manifest.description,
+            version: manifest.version,
+            source: {
+              adapter: "aoa-curated",
+              url: pkg.repository?.url
+                ? `${pkg.repository.url}${pkg.repository.directory ? `/tree/main/${pkg.repository.directory}` : ""}`
+                : `https://npmjs.com/package/${pkg.name}`,
+              locator: `plugins/${slug}`,
+            },
+            trust: { tier: "verified", source: "aoa-curated" },
+            status: "active",
+            addedAt: fileAddedAt(manifestPath),
+            capabilities,
+            category: CategorySchema.parse(manifest.marketplace?.category ?? "integrations"),
+            tags: z.array(TagSchema).parse(manifest.marketplace?.tags ?? []),
+            featured: manifest.marketplace?.featured,
+          };
+          items.push(item);
+        } catch (err) {
+          ctx.logger.error(`Failed to parse JSON for plugin "${slug}": ${err instanceof Error ? err.message : String(err)}`);
+          continue;
+        }
       }
     } else {
       ctx.logger.info("No plugins/ directory found");
@@ -136,39 +151,46 @@ export const aoaCuratedAdapter: SourceAdapter = {
           continue;
         }
 
-        const rawManifest = JSON.parse(readFileSync(manifestPath, "utf-8")) as ContentManifest;
-        const id = rawManifest.id ?? `${type}:aoa-curated/${slug}`;
+        let raw: ContentManifest;
+        try {
+          raw = JSON.parse(readFileSync(manifestPath, "utf-8")) as ContentManifest;
 
-        let content: { inline?: string; url?: string } | undefined;
-        if (rawManifest.contentInline) {
-          const readmePath = join(itemDir, "README.md");
-          if (existsSync(readmePath)) {
-            content = { inline: readFileSync(readmePath, "utf-8") };
+          const id = raw.id ?? `${type}:aoa-curated/${slug}`;
+
+          let content: { inline?: string; url?: string } | undefined;
+          if (raw.contentInline) {
+            const readmePath = join(itemDir, "README.md");
+            if (existsSync(readmePath)) {
+              content = { inline: readFileSync(readmePath, "utf-8") };
+            }
           }
-        }
 
-        const item: CatalogItem = {
-          id,
-          type,
-          name: rawManifest.name,
-          description: rawManifest.description,
-          version: rawManifest.version,
-          source: {
-            adapter: "aoa-curated",
-            url: rawManifest.sourceUrl,
-            locator: `content/${typeDirName}/${slug}`,
-          },
-          trust: { tier: "verified", source: "aoa-curated" },
-          status: "active",
-          addedAt: new Date().toISOString(),
-          category: rawManifest.category as never,
-          tags: (rawManifest.tags ?? []) as never,
-          capabilities: rawManifest.capabilities,
-          requires: rawManifest.requires,
-          content,
-          featured: rawManifest.featured,
-        };
-        items.push(item);
+          const item: CatalogItem = {
+            id,
+            type,
+            name: raw.name,
+            description: raw.description,
+            version: raw.version,
+            source: {
+              adapter: "aoa-curated",
+              url: raw.sourceUrl,
+              locator: `content/${typeDirName}/${slug}`,
+            },
+            trust: { tier: "verified", source: "aoa-curated" },
+            status: "active",
+            addedAt: fileAddedAt(manifestPath),
+            category: CategorySchema.parse(raw.category),
+            tags: z.array(TagSchema).parse(raw.tags ?? []),
+            capabilities: raw.capabilities,
+            requires: raw.requires,
+            content,
+            featured: raw.featured,
+          };
+          items.push(item);
+        } catch (err) {
+          ctx.logger.error(`Failed to parse manifest for content/${type}/${slug}: ${err instanceof Error ? err.message : String(err)}`);
+          continue;
+        }
       }
     }
 
