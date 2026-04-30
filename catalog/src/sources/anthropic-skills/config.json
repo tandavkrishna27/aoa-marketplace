@@ -1,0 +1,8 @@
+{
+  "id": "anthropic-skills",
+  "displayName": "Anthropic Skills",
+  "description": "Skills published by Anthropic in the public skills repo",
+  "defaultTrustTier": "verified",
+  "enabled": true,
+  "sourceUrl": "https://github.com/anthropics/skills"
+}

@@ -1,0 +1,127 @@
+import { mkdtempSync, readdirSync, readFileSync, statSync, existsSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { spawnSync } from "node:child_process";
+import { z } from "zod";
+import { CategorySchema, TagSchema } from "../../types/catalog.js";
+import type { SourceAdapter, SourceAdapterContext } from "../../types/source-adapter.js";
+import type { CatalogItem, Category } from "../../types/catalog.js";
+
+const SKILLS_REPO_URL = "https://github.com/anthropics/skills.git";
+
+interface FetchedRepo {
+  cloneDir: string;
+  cloneTimestamp: string; // ISO; used as deterministic addedAt fallback
+}
+
+export const anthropicSkillsAdapter: SourceAdapter = {
+  id: "anthropic-skills",
+  displayName: "Anthropic Skills",
+  defaultTrustTier: "verified",
+
+  async fetch(ctx: SourceAdapterContext): Promise<FetchedRepo> {
+    const cloneDir = mkdtempSync(join(tmpdir(), "anthropic-skills-"));
+    ctx.logger.info(`Cloning ${SKILLS_REPO_URL} → ${cloneDir}`);
+    const result = spawnSync("git", ["clone", "--depth=1", SKILLS_REPO_URL, cloneDir], {
+      stdio: "pipe",
+      encoding: "utf-8",
+    });
+    if (result.status !== 0) {
+      throw new Error(`git clone failed: ${result.stderr}`);
+    }
+    return { cloneDir, cloneTimestamp: new Date().toISOString() };
+  },
+
+  async normalize(raw: unknown, ctx: SourceAdapterContext): Promise<CatalogItem[]> {
+    const { cloneDir, cloneTimestamp } = raw as FetchedRepo;
+    const items: CatalogItem[] = [];
+
+    // Anthropic's skills repo structure: each top-level folder is a skill.
+    // Inside each: a SKILL.md file with the markdown content + frontmatter.
+    for (const entry of readdirSync(cloneDir)) {
+      const entryPath = join(cloneDir, entry);
+      if (!statSync(entryPath).isDirectory()) continue;
+      if (entry.startsWith(".")) continue; // skip .git, etc.
+
+      const skillFile = join(entryPath, "SKILL.md");
+      if (!existsSync(skillFile)) {
+        ctx.logger.warn(`No SKILL.md in ${entryPath}`);
+        continue;
+      }
+
+      // Wrap per-item parsing in try/catch so one bad skill doesn't crash the whole run
+      try {
+        const content = readFileSync(skillFile, "utf-8");
+        const { name, description, version } = parseFrontmatter(content, entry);
+
+        // Use file's mtime as the deterministic addedAt — falls back to cloneTimestamp if mtime unavailable.
+        // mtime is the file's last-modified time in the local clone; fresh on every clone but consistent within a run.
+        let addedAt: string;
+        try {
+          addedAt = statSync(skillFile).mtime.toISOString();
+        } catch {
+          addedAt = cloneTimestamp;
+        }
+
+        const item: CatalogItem = {
+          id: `skill:anthropic/${entry}`,
+          type: "skill",
+          name,
+          description,
+          version,
+          source: {
+            adapter: "anthropic-skills",
+            url: `https://github.com/anthropics/skills/tree/main/${entry}`,
+            locator: entry,
+          },
+          trust: { tier: "verified", source: "anthropic-skills" },
+          status: "active",
+          addedAt,
+          category: CategorySchema.parse(inferCategory(name, description)),
+          tags: z.array(TagSchema).parse(["official"]),
+          content: { inline: content },
+        };
+        items.push(item);
+      } catch (err) {
+        ctx.logger.error(`Failed to process skill "${entry}": ${err instanceof Error ? err.message : String(err)}`);
+        continue;
+      }
+    }
+
+    return items;
+  },
+};
+
+interface FrontmatterFields {
+  name: string;
+  description: string;
+  version: string;
+}
+
+function parseFrontmatter(content: string, fallbackName: string): FrontmatterFields {
+  const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  if (!fmMatch) {
+    return { name: fallbackName, description: fallbackName, version: "1.0.0" };
+  }
+  const fm = fmMatch[1];
+  const get = (key: string): string | undefined => {
+    const m = fm.match(new RegExp(`^${key}:\\s*(.+)$`, "m"));
+    return m ? m[1].trim().replace(/^["']|["']$/g, "") : undefined;
+  };
+  return {
+    name: get("name") ?? fallbackName,
+    description: get("description") ?? fallbackName,
+    version: get("version") ?? "1.0.0",
+  };
+}
+
+function inferCategory(name: string, description: string): Category {
+  const text = `${name} ${description}`.toLowerCase();
+  if (/(code|engineer|debug|test|review|git|deploy)/.test(text)) return "engineering";
+  if (/(market|content|seo|social|campaign)/.test(text)) return "marketing";
+  if (/(support|ticket|customer|help)/.test(text)) return "support";
+  if (/(sales|lead|deal|crm)/.test(text)) return "sales";
+  if (/(design|ux|ui|figma)/.test(text)) return "design";
+  if (/(data|analytics|sql|metric)/.test(text)) return "data";
+  return "productivity"; // default
+}
