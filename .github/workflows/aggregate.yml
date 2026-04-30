@@ -1,0 +1,50 @@
+name: Aggregate Catalog
+
+on:
+  schedule:
+    - cron: "0 3 * * *"  # daily 03:00 UTC
+  workflow_dispatch:      # manual trigger
+  push:
+    branches: [main]
+    paths:
+      - "catalog/**"
+      - "plugins/**"
+      - "content/**"
+      - "trusted-sources.json"
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+
+      - run: pnpm test
+
+      - name: Aggregate catalog
+        run: pnpm aggregate
+        env:
+          RUN_NETWORK_TESTS: "1"
+
+      - name: Upload catalog artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog
+          path: dist/catalog.json
+          retention-days: 30
+
+      # CDN publish step is added in M.1.G after the public CDN mirror repo is set up.
