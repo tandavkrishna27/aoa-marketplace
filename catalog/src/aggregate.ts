@@ -5,7 +5,7 @@ import { aoaCuratedAdapter } from "./sources/aoa-curated/adapter.js";
 import { anthropicSkillsAdapter } from "./sources/anthropic-skills/adapter.js";
 import { runAutomatedChecks } from "./validators/automated-checks.js";
 import { loadTrustedSources, resolveTrustTier } from "./validators/trust-resolver.js";
-import type { CatalogFile, CatalogItem } from "./types/catalog.js";
+import type { CatalogFile, CatalogItem, TrustTier } from "./types/catalog.js";
 import type { SourceAdapter, SourceAdapterContext } from "./types/source-adapter.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -43,20 +43,24 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
 
       for (const item of items) {
         // Resolve trust tier (source-based unless explicitly reviewed)
-        item.trust.tier = resolveTrustTier(item, trustedSources);
+        // Clone to avoid mutating adapter-produced object
+        const resolvedItem: CatalogItem = {
+          ...item,
+          trust: { ...item.trust, tier: resolveTrustTier(item, trustedSources) },
+        };
 
         // Run automated checks
-        const result = runAutomatedChecks(item);
+        const result = runAutomatedChecks(resolvedItem);
         if (!result.passed) {
-          errors.push(`${item.id}: ${result.failures.join(", ")}`);
-          console.error(`[${adapter.id}] REJECT ${item.id}: ${result.failures.join(", ")}`);
+          errors.push(`${resolvedItem.id}: ${result.failures.join(", ")}`);
+          console.error(`[${adapter.id}] REJECT ${resolvedItem.id}: ${result.failures.join(", ")}`);
           continue;
         }
         for (const w of result.warnings) {
-          warnings.push(`${item.id}: ${w}`);
+          warnings.push(`${resolvedItem.id}: ${w}`);
         }
 
-        allItems.push(item);
+        allItems.push(resolvedItem);
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -65,7 +69,8 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
     }
   }
 
-  // Dedupe by canonical ID — prefer higher trust tier
+  // Dedupe by canonical ID — prefer higher trust tier on ties.
+  // Strict `>` means first-encountered item wins on equal trust (deterministic since ADAPTERS order is fixed).
   const byId = new Map<string, CatalogItem>();
   for (const item of allItems) {
     const existing = byId.get(item.id);
@@ -73,7 +78,9 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
       byId.set(item.id, item);
     }
   }
-  const deduped = Array.from(byId.values()).sort((a, b) => a.id.localeCompare(b.id));
+  const deduped = Array.from(byId.values()).sort((a, b) =>
+    a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
+  );
 
   const catalog: CatalogFile = {
     schemaVersion: "1.0.0",
@@ -104,19 +111,23 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
   return catalog;
 }
 
-function trustWeight(tier: string): number {
+function trustWeight(tier: TrustTier): number {
   return tier === "verified" ? 3 : tier === "community" ? 2 : 1;
 }
 
-// CLI entrypoint — use pathToFileURL for reliable cross-platform comparison
-const isMain =
-  process.argv[1] !== undefined &&
-  import.meta.url === pathToFileURL(process.argv[1]).href;
-
+// CLI entrypoint
+const isMain = import.meta.url === pathToFileURL(process.argv[1]).href;
 if (isMain) {
   const validateOnly = process.argv.includes("--validate-only");
-  aggregate({ validateOnly }).catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });
+  aggregate({ validateOnly })
+    .then((catalog) => {
+      if (!validateOnly && catalog.itemCount === 0) {
+        console.error("ERROR: catalog is empty — refusing to overwrite dist/catalog.json");
+        process.exit(1);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
 }
