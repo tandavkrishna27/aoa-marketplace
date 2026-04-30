@@ -88,6 +88,21 @@ importers:
         specifier: ^3.0.0
         version: 3.2.4(@types/node@25.6.0)
 
+  plugins/aoa-plugin-telegram:
+    devDependencies:
+      '@armyofagents/plugin-sdk':
+        specifier: link:../../../AoA-2.5/packages/plugins/sdk
+        version: link:../../../AoA-2.5/packages/plugins/sdk
+      '@types/node':
+        specifier: ^25.5.2
+        version: 25.6.0
+      typescript:
+        specifier: ^5.7.0
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.4(@types/node@25.6.0)
+
 packages:
 
   '@babel/runtime@7.29.2':

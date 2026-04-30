@@ -1,0 +1,49 @@
+import type { PluginContext } from "@armyofagents/plugin-sdk";
+
+function isLoopbackUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
+export async function fetchAoaApi(
+  ctx: PluginContext,
+  url: string,
+  init?: RequestInit,
+): Promise<Response> {
+  const response = isLoopbackUrl(url)
+    ? await fetch(url, init)
+    : await ctx.http.fetch(url, init);
+
+  if (!response.ok) {
+    let body = "";
+    try {
+      body = await response.text();
+    } catch {
+      body = "";
+    }
+    const detail = body ? `: ${body.slice(0, 300)}` : "";
+    throw new Error(`AoA API request failed with ${response.status}${detail}`);
+  }
+
+  return response;
+}
+
+// Legacy alias
+export const fetchAoAApi = fetchAoaApi;
+
+export function buildAoaAuthHeaders(
+  boardApiToken?: string,
+): Record<string, string> {
+  return boardApiToken
+    ? {
+        Authorization: `Bearer ${boardApiToken}`,
+      }
+    : {};
+}
+
+// Legacy alias
+export const buildAoAAuthHeaders = buildAoaAuthHeaders;
