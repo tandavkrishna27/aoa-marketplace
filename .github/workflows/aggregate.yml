@@ -65,10 +65,10 @@ jobs:
           cd /tmp/cdn
           git config user.email "ci@armyofagents.org"
           git config user.name "AoA Marketplace CI"
-          if git diff --quiet; then
+          git add catalog.json
+          if git diff --cached --quiet; then
             echo "No catalog changes; skipping publish"
           else
-            git add catalog.json
             git commit -m "chore: publish catalog @ $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git push origin main
             echo "Published catalog.json to CDN"
