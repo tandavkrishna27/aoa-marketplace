@@ -7,6 +7,7 @@ export interface SourceAdapterContext {
     warn(msg: string): void;
     error(msg: string): void;
   };
+  readonly commitSha: string;   // M.2.0: git HEAD SHA captured at aggregation time, used to pin resourceUrl
 }
 
 /** A parsed CatalogItem paired with the raw manifest object it came from.

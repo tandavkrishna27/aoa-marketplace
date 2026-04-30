@@ -58,6 +58,16 @@ const TYPE_DIR_MAP: Record<Exclude<ItemType, "plugin">, string> = {
   team: "teams",
 };
 
+// Canonical fetchable file inside each content/{type}/{slug} directory.
+// Used to build a commit-pinned resourceUrl for snapshot items.
+const RESOURCE_FILE_BY_TYPE: Record<Exclude<ItemType, "plugin">, string> = {
+  skill: "SKILL.md",
+  agent: "agent.json",
+  team: "team.json",
+};
+
+const REPO_RAW_BASE = "https://raw.githubusercontent.com/MeteoriteLabs/aoa-marketplace";
+
 export const aoaCuratedAdapter: SourceAdapter = {
   id: "aoa-curated",
   displayName: "AoA Curated",
@@ -106,10 +116,17 @@ export const aoaCuratedAdapter: SourceAdapter = {
             version: manifest.version,
             source: {
               adapter: "aoa-curated",
+              // Commit-pin the GitHub URL so two installs of the same catalogItemId@version
+              // resolve to identical bytes (content-addressed).
               url: pkg.repository?.url
-                ? `${pkg.repository.url}${pkg.repository.directory ? `/tree/main/${pkg.repository.directory}` : ""}`
+                ? `${pkg.repository.url}${pkg.repository.directory ? `/tree/${ctx.commitSha}/${pkg.repository.directory}` : ""}`
                 : `https://npmjs.com/package/${pkg.name}`,
               locator: `plugins/${slug}`,
+              commitSha: ctx.commitSha,
+            },
+            npm: {
+              packageName: pkg.name,
+              version: manifest.version,
             },
             trust: { tier: "verified", source: "aoa-curated" },
             status: "active",
@@ -165,6 +182,11 @@ export const aoaCuratedAdapter: SourceAdapter = {
             }
           }
 
+          // Commit-pinned URL to the canonical fetchable file for this snapshot type.
+          // The AoA marketplace installer fetches this URL to materialize the resource locally.
+          const resourceFile = RESOURCE_FILE_BY_TYPE[type];
+          const resourceUrl = `${REPO_RAW_BASE}/${ctx.commitSha}/content/${typeDirName}/${slug}/${resourceFile}`;
+
           const item: CatalogItem = {
             id,
             type,
@@ -175,7 +197,9 @@ export const aoaCuratedAdapter: SourceAdapter = {
               adapter: "aoa-curated",
               url: raw.sourceUrl,
               locator: `content/${typeDirName}/${slug}`,
+              commitSha: ctx.commitSha,
             },
+            resourceUrl,
             trust: { tier: "verified", source: "aoa-curated" },
             status: "active",
             addedAt: fileAddedAt(manifestPath),

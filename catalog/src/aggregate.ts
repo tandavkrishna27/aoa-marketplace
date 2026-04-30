@@ -1,6 +1,7 @@
 import { writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { execSync } from "node:child_process";
 import { aoaCuratedAdapter } from "./sources/aoa-curated/adapter.js";
 import { anthropicSkillsAdapter } from "./sources/anthropic-skills/adapter.js";
 import { runAutomatedChecks } from "./validators/automated-checks.js";
@@ -14,6 +15,20 @@ const REPO_ROOT = join(__dirname, "..", "..");
 
 const ADAPTERS: SourceAdapter[] = [aoaCuratedAdapter, anthropicSkillsAdapter];
 
+function getRepoCommitSha(): string {
+  try {
+    return execSync("git rev-parse HEAD", { cwd: REPO_ROOT, encoding: "utf-8" }).trim();
+  } catch (err) {
+    // Fail loudly — silently emitting "unknown" SHA produces broken raw.githubusercontent.com URLs
+    // (404 on every snapshot install). CI uses actions/checkout@v4 which always populates HEAD.
+    // Local dev: aggregator must run from inside the aoa-marketplace git checkout.
+    throw new Error(
+      `Cannot determine git commit SHA — aggregator must run inside a git repo. ` +
+        `Original error: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+}
+
 interface AggregateOptions {
   validateOnly: boolean;
   outputPath?: string;
@@ -25,6 +40,7 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
   const warnings: string[] = [];
 
   const trustedSources = loadTrustedSources(REPO_ROOT);
+  const commitSha = getRepoCommitSha();
 
   for (const adapter of ADAPTERS) {
     const ctx: SourceAdapterContext = {
@@ -34,6 +50,7 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
         warn: (m) => console.warn(`[${adapter.id}] WARN: ${m}`),
         error: (m) => console.error(`[${adapter.id}] ERROR: ${m}`),
       },
+      commitSha,
     };
 
     try {

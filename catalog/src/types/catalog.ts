@@ -20,8 +20,14 @@ export type ItemType = z.infer<typeof ItemTypeSchema>;
 
 export const SourceRefSchema = z.object({
   adapter: z.string(),
-  url: z.string().url(),
+  url: z.string().url(),            // informational; may be branch-relative for legacy items
   locator: z.string(),
+  commitSha: z.string().optional(), // git commit SHA at aggregation time, used to pin resourceUrl
+});
+
+export const NpmRefSchema = z.object({
+  packageName: z.string().min(1),
+  version: z.string().min(1),
 });
 
 export const TrustRefSchema = z.object({
@@ -67,6 +73,9 @@ export const CatalogItemSchema = z.object({
   category: CategorySchema,
   tags: z.array(TagSchema),
   featured: z.boolean().optional(),
+  // M.2.0: install-related fields
+  npm: NpmRefSchema.optional(),         // present on plugin items: { packageName, version } for pluginLoader.installPlugin()
+  resourceUrl: z.string().url().optional(), // present on snapshot items (skill/agent/team): commit-pinned raw.githubusercontent URL
 });
 export type CatalogItem = z.infer<typeof CatalogItemSchema>;
 

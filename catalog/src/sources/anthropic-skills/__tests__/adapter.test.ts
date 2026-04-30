@@ -13,6 +13,7 @@ describe("anthropicSkillsAdapter", () => {
     const ctx = {
       workDir: "/tmp/test-workdir",
       logger: { info: console.log, warn: console.warn, error: console.error },
+      commitSha: "abc1234567890fedcba9876543210fedcba98765",
     };
     const raw = await anthropicSkillsAdapter.fetch(ctx);
     const normalizedItems = await anthropicSkillsAdapter.normalize(raw, ctx);

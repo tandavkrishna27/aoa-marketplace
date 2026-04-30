@@ -9,6 +9,7 @@ const fixtureRoot = join(__dirname, "fixtures");
 const ctx = {
   workDir: fixtureRoot,
   logger: { info: () => {}, warn: () => {}, error: () => {} },
+  commitSha: "abc1234567890fedcba9876543210fedcba98765",
 };
 
 describe("aoaCuratedAdapter", () => {
@@ -50,5 +51,41 @@ describe("aoaCuratedAdapter", () => {
     const raw = await aoaCuratedAdapter.fetch(emptyCtx);
     const items = await aoaCuratedAdapter.normalize(raw, emptyCtx);
     expect(items).toEqual([]);
+  });
+});
+
+describe("aoaCuratedAdapter — M.2.0 catalog field additions", () => {
+  it("emits npm field on plugin items", async () => {
+    const fetched = await aoaCuratedAdapter.fetch(ctx);
+    const items = await aoaCuratedAdapter.normalize(fetched, ctx);
+    const plugin = items.find((i) => i.item.type === "plugin");
+    expect(plugin).toBeDefined();
+    expect(plugin!.item.npm).toBeDefined();
+    // Fixture plugin name is "@armyofagents/aoa-plugin-example"; assertion is generic enough
+    // to cover both real plugins (aoa-plugin-*) and the scoped fixture name.
+    expect(plugin!.item.npm!.packageName).toMatch(/aoa-plugin-/);
+    expect(plugin!.item.npm!.version).toMatch(/^\d+\.\d+\.\d+/);
+  });
+
+  it("emits commit-pinned source.url on plugin items", async () => {
+    const fetched = await aoaCuratedAdapter.fetch(ctx);
+    const items = await aoaCuratedAdapter.normalize(fetched, ctx);
+    const plugin = items.find((i) => i.item.type === "plugin");
+    expect(plugin!.item.source.commitSha).toBe(ctx.commitSha);
+    if (plugin!.item.source.url.includes("github.com")) {
+      expect(plugin!.item.source.url).toContain(`/tree/${ctx.commitSha}/`);
+    }
+  });
+
+  it("emits resourceUrl on snapshot items (skill/agent/team)", async () => {
+    const fetched = await aoaCuratedAdapter.fetch(ctx);
+    const items = await aoaCuratedAdapter.normalize(fetched, ctx);
+    const snapshots = items.filter((i) => i.item.type !== "plugin");
+    expect(snapshots.length).toBeGreaterThan(0);
+    for (const s of snapshots) {
+      expect(s.item.resourceUrl).toBeDefined();
+      expect(s.item.resourceUrl!).toContain(ctx.commitSha);
+      expect(s.item.resourceUrl!).toMatch(/raw\.githubusercontent\.com/);
+    }
   });
 });
