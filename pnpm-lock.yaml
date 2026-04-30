@@ -43,6 +43,21 @@ importers:
         specifier: ^1.5.0
         version: 1.6.1(@types/node@20.19.39)
 
+  plugins/aoa-plugin-discord:
+    devDependencies:
+      '@armyofagents/plugin-sdk':
+        specifier: link:../../../AoA-2.5/packages/plugins/sdk
+        version: link:../../../AoA-2.5/packages/plugins/sdk
+      '@types/node':
+        specifier: ^25.5.2
+        version: 25.6.0
+      typescript:
+        specifier: ^5.7.0
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.4(@types/node@25.6.0)
+
   plugins/aoa-plugin-github-issues:
     devDependencies:
       '@armyofagents/plugin-sdk':
