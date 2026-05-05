@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { SourceAdapter, SourceAdapterContext, NormalizedItem } from "../../types/source-adapter.js";
 import type { CatalogItem, ItemType } from "../../types/catalog.js";
 import { CategorySchema, TagSchema } from "../../types/catalog.js";
+import { checkManifestDrift } from "../../validators/manifest-drift.js";
 
 function fileAddedAt(filePath: string): string {
   // Use the file's mtime as a deterministic "added at" timestamp.
@@ -103,6 +104,20 @@ export const aoaCuratedAdapter: SourceAdapter = {
         try {
           pkg = JSON.parse(readFileSync(pkgJsonPath, "utf-8")) as PluginPackageJson;
           manifest = JSON.parse(readFileSync(manifestPath, "utf-8")) as PluginManifest;
+
+          // Manifest drift check — requires plugin to have been built (dist/manifest.js)
+          const drift = await checkManifestDrift(pkgDir, manifest.capabilities ?? [], manifest.id);
+          if (!drift.skipped && drift.inSrcOnly.length > 0) {
+            ctx.logger.error(
+              `Plugin ${slug}: capabilities in src/manifest.ts missing from manifest.json: ${drift.inSrcOnly.join(", ")}. Run pnpm build and update manifest.json.`,
+            );
+            continue;
+          }
+          if (!drift.skipped && drift.inJsonOnly.length > 0) {
+            ctx.logger.warn(
+              `Plugin ${slug}: stale capabilities in manifest.json (not in src): ${drift.inJsonOnly.join(", ")}`,
+            );
+          }
 
           const capabilities = (manifest.capabilities ?? []).map((capId) => ({
             id: capId,
