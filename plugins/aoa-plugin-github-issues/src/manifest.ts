@@ -35,6 +35,7 @@ const manifest: AoAPluginManifestV1 = {
     "agent.tools.register",
     "instance.settings.register",
     "ui.detailTab.register",
+    "jobs.schedule",
   ],
   entrypoints: {
     worker: "./dist/worker.js",

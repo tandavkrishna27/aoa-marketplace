@@ -18,7 +18,8 @@
     "webhooks.receive",
     "agent.tools.register",
     "instance.settings.register",
-    "ui.detailTab.register"
+    "ui.detailTab.register",
+    "jobs.schedule"
   ],
   "capabilityDescriptions": {
     "issues.read": "Read AoA issues to detect status changes for sync",
