@@ -1,5 +1,5 @@
 export const PLUGIN_ID = "aoa-plugin-slack";
-export const PLUGIN_VERSION = "2.0.6";
+export const PLUGIN_VERSION = "1.0.0";
 
 export const WEBHOOK_KEYS = {
   slackEvents: "slack-events",
