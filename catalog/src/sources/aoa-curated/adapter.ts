@@ -128,6 +128,9 @@ export const aoaCuratedAdapter: SourceAdapter = {
             description: manifest.capabilityDescriptions?.[capId] ?? capId,
           }));
 
+          // Normalize scope prefix the same way npm pack does: strip @ and replace / with -
+          const tarballFilename = pkg.name.replace(/^@/, "").replace(/\//g, "-");
+
           const item: CatalogItem = {
             id: `plugin:aoa-curated/${slug}`,
             type: "plugin",
@@ -147,7 +150,7 @@ export const aoaCuratedAdapter: SourceAdapter = {
             npm: {
               packageName: pkg.name,
               version: manifest.version,
-              tarballUrl: `${REPO_RELEASES_BASE}/v${manifest.version}/${pkg.name}-${manifest.version}.tgz`,
+              tarballUrl: `${REPO_RELEASES_BASE}/v${manifest.version}/${tarballFilename}-${manifest.version}.tgz`,
             },
             trust: { tier: "verified", source: "aoa-curated" },
             status: "active",
