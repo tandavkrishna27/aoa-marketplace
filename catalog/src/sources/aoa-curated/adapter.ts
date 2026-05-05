@@ -67,6 +67,7 @@ const RESOURCE_FILE_BY_TYPE: Record<Exclude<ItemType, "plugin">, string> = {
 };
 
 const REPO_RAW_BASE = "https://raw.githubusercontent.com/MeteoriteLabs/aoa-marketplace";
+const REPO_RELEASES_BASE = "https://github.com/MeteoriteLabs/aoa-marketplace/releases/download";
 
 export const aoaCuratedAdapter: SourceAdapter = {
   id: "aoa-curated",
@@ -127,6 +128,7 @@ export const aoaCuratedAdapter: SourceAdapter = {
             npm: {
               packageName: pkg.name,
               version: manifest.version,
+              tarballUrl: `${REPO_RELEASES_BASE}/v${manifest.version}/${pkg.name}-${manifest.version}.tgz`,
             },
             trust: { tier: "verified", source: "aoa-curated" },
             status: "active",

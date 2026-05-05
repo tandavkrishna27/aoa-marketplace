@@ -88,4 +88,20 @@ describe("aoaCuratedAdapter — M.2.0 catalog field additions", () => {
       expect(s.item.resourceUrl!).toMatch(/raw\.githubusercontent\.com/);
     }
   });
+
+  it("emits tarballUrl on plugin items with correct pattern", async () => {
+    const fetched = await aoaCuratedAdapter.fetch(ctx);
+    const items = await aoaCuratedAdapter.normalize(fetched, ctx);
+    const plugin = items.find((i) => i.item.type === "plugin");
+    expect(plugin).toBeDefined();
+    // tarballUrl must be set and reference MeteoriteLabs releases
+    expect(plugin!.item.npm!.tarballUrl).toBeDefined();
+    expect(plugin!.item.npm!.tarballUrl).toContain(
+      "https://github.com/MeteoriteLabs/aoa-marketplace/releases/download/v",
+    );
+    // URL must include the plugin version
+    expect(plugin!.item.npm!.tarballUrl).toContain(plugin!.item.version);
+    // URL must end in .tgz
+    expect(plugin!.item.npm!.tarballUrl).toMatch(/\.tgz$/);
+  });
 });

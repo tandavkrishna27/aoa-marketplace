@@ -28,6 +28,7 @@ export const SourceRefSchema = z.object({
 export const NpmRefSchema = z.object({
   packageName: z.string().min(1),
   version: z.string().min(1),
+  tarballUrl: z.string().url().optional(),
 });
 
 export const TrustRefSchema = z.object({
