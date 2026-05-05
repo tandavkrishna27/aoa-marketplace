@@ -105,18 +105,22 @@ export const aoaCuratedAdapter: SourceAdapter = {
           pkg = JSON.parse(readFileSync(pkgJsonPath, "utf-8")) as PluginPackageJson;
           manifest = JSON.parse(readFileSync(manifestPath, "utf-8")) as PluginManifest;
 
-          // Manifest drift check — requires plugin to have been built (dist/manifest.js)
-          const drift = await checkManifestDrift(pkgDir, manifest.capabilities ?? [], manifest.id);
-          if (!drift.skipped && drift.inSrcOnly.length > 0) {
-            ctx.logger.error(
-              `Plugin ${slug}: capabilities in src/manifest.ts missing from manifest.json: ${drift.inSrcOnly.join(", ")}. Run pnpm build and update manifest.json.`,
-            );
-            continue;
-          }
-          if (!drift.skipped && drift.inJsonOnly.length > 0) {
-            ctx.logger.warn(
-              `Plugin ${slug}: stale capabilities in manifest.json (not in src): ${drift.inJsonOnly.join(", ")}`,
-            );
+          // Wrap only the drift check — file-system errors here are separate from JSON parse failures
+          try {
+            const drift = await checkManifestDrift(pkgDir, manifest.capabilities ?? [], manifest.id);
+            if (!drift.skipped && drift.inSrcOnly.length > 0) {
+              ctx.logger.error(
+                `Plugin ${slug}: capabilities in src/manifest.ts missing from manifest.json: ${drift.inSrcOnly.join(", ")}. Run pnpm build and update manifest.json.`,
+              );
+              continue;
+            }
+            if (!drift.skipped && drift.inJsonOnly.length > 0) {
+              ctx.logger.warn(
+                `Plugin ${slug}: stale capabilities in manifest.json (not in src): ${drift.inJsonOnly.join(", ")}`,
+              );
+            }
+          } catch (driftErr) {
+            ctx.logger.warn(`Plugin ${slug}: drift check failed (${(driftErr as Error).message}) — skipping drift validation`);
           }
 
           const capabilities = (manifest.capabilities ?? []).map((capId) => ({

@@ -23,12 +23,17 @@ function parseCapabilitiesFromDistJs(filePath: string): string[] {
   const src = readFileSync(filePath, "utf-8");
 
   // Match the capabilities array literal: `capabilities: [` ... `]`
-  // We use a simple bracket-depth scan to handle multi-line arrays.
-  const startIdx = src.indexOf("capabilities:");
-  if (startIdx === -1) return [];
-
-  const bracketOpen = src.indexOf("[", startIdx);
-  if (bracketOpen === -1) return [];
+  // We use a regex that requires `[` after the colon so JSDoc hits (which have
+  // prose after the colon) are skipped.  We take the LAST match so that any
+  // leading JSDoc occurrence is ignored in favour of the real declaration.
+  const capRegex = /capabilities\s*:\s*\[/g;
+  let match: RegExpExecArray | null;
+  let lastMatch: RegExpExecArray | null = null;
+  while ((match = capRegex.exec(src)) !== null) {
+    lastMatch = match;
+  }
+  if (!lastMatch) return [];
+  const bracketOpen = lastMatch.index + lastMatch[0].length - 1; // position of '['
 
   let depth = 0;
   let end = -1;
@@ -49,9 +54,9 @@ function parseCapabilitiesFromDistJs(filePath: string): string[] {
   // Extract all quoted strings from the array literal.
   const caps: string[] = [];
   const stringRe = /["']([^"']+)["']/g;
-  let match: RegExpExecArray | null;
-  while ((match = stringRe.exec(arrayText)) !== null) {
-    caps.push(match[1]);
+  let strMatch: RegExpExecArray | null;
+  while ((strMatch = stringRe.exec(arrayText)) !== null) {
+    caps.push(strMatch[1]);
   }
   return caps;
 }

@@ -28,10 +28,12 @@ describe("checkManifestDrift", () => {
     );
     // After M1 fix, src/manifest.ts has 20 caps.
     // Only "http.outbound" is in our fake json, so inSrcOnly must be non-empty.
-    if (!result.skipped) {
-      expect(result.inSrcOnly.length).toBeGreaterThan(0);
-      expect(result.inSrcOnly).not.toContain("http.outbound");
+    if (result.skipped) {
+      console.log("SKIP: dist/manifest.js not found — build aoa-plugin-slack first");
+      return;
     }
+    expect(result.inSrcOnly.length).toBeGreaterThan(0);
+    expect(result.inSrcOnly).not.toContain("http.outbound");
   });
 
   it("detects no drift when manifest.json matches src", async () => {
@@ -45,8 +47,10 @@ describe("checkManifestDrift", () => {
       raw.capabilities,
       "aoa.plugin-slack",
     );
-    if (!result.skipped) {
-      expect(result.inSrcOnly).toHaveLength(0);
+    if (result.skipped) {
+      console.log("SKIP: dist/manifest.js not found — build aoa-plugin-slack first");
+      return;
     }
+    expect(result.inSrcOnly).toHaveLength(0);
   });
 });
