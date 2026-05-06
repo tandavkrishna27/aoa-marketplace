@@ -51,5 +51,6 @@ jobs:
       - name: Create GitHub Release and upload tarballs
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
           files: release-assets/*.tgz
           generate_release_notes: true
