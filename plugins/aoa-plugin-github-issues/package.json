@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "files": ["dist", "manifest.json", "README.md"],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --noEmitOnError false",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
