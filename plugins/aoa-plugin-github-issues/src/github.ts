@@ -40,6 +40,7 @@ function headers(token: string): Record<string, string> {
     Authorization: `Bearer ${token}`,
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "aoa-plugin-github-issues/0.1.1",
   };
 }
 
@@ -54,7 +55,8 @@ export async function searchIssues(
     headers: headers(token),
   });
   if (!res.ok) {
-    throw new Error(`GitHub search failed: ${res.status} ${res.statusText}`);
+    const detail = await res.text().catch(() => "");
+    throw new Error(`GitHub search failed: ${res.status} ${res.statusText}${detail ? ` — ${detail.slice(0, 200)}` : ""}`);
   }
   return res.json() as Promise<GitHubSearchResult>;
 }

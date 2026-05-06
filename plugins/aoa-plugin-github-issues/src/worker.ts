@@ -25,57 +25,86 @@ const plugin = definePlugin({
     // ---------------------------------------------------------------
     // Agent tool: search GitHub issues
     // ---------------------------------------------------------------
-    ctx.tools.register(TOOL_NAMES.search, async (input) => {
-      const token = await resolveToken();
-      const config = await ctx.config.get();
-      const repo =
-        (input.parameters.repo as string) ||
-        (config.defaultRepo as string) ||
-        "";
-      if (!repo) {
+    ctx.tools.register(
+      TOOL_NAMES.search,
+      {
+        displayName: "Search GitHub Issues",
+        description:
+          "Search GitHub issues in a configured repository. Returns matching issues with status, labels, and assignees.",
+        parametersSchema: {
+          type: "object",
+          properties: {
+            query: { type: "string", description: "Search query (GitHub issue search syntax)" },
+            repo: { type: "string", description: "Repository in owner/repo format. Omit to use the configured default." },
+          },
+          required: ["query"],
+        },
+      },
+      async (params) => {
+        const p = params as { query?: string; repo?: string };
+        const token = await resolveToken();
+        const config = await ctx.config.get();
+        const repo = p.repo || (config.defaultRepo as string) || "";
+        if (!repo) {
+          return {
+            error:
+              "No repository specified. Pass repo parameter or configure a default repository.",
+          };
+        }
+        const query = p.query ?? "";
+        const results = await github.searchIssues(
+          ctx.http.fetch.bind(ctx.http),
+          token,
+          repo,
+          query,
+        );
         return {
-          error:
-            "No repository specified. Pass repo parameter or configure a default repository.",
+          total_count: results.total_count,
+          issues: results.items.map((issue) => ({
+            number: issue.number,
+            title: issue.title,
+            state: issue.state,
+            url: issue.html_url,
+            labels: issue.labels.map((l) => l.name),
+            assignees: issue.assignees.map((a) => a.login),
+            updated_at: issue.updated_at,
+          })),
         };
-      }
-      const query = input.parameters.query as string;
-      const results = await github.searchIssues(
-        ctx.http.fetch.bind(ctx.http),
-        token,
-        repo,
-        query,
-      );
-      return {
-        total_count: results.total_count,
-        issues: results.items.map((issue) => ({
-          number: issue.number,
-          title: issue.title,
-          state: issue.state,
-          url: issue.html_url,
-          labels: issue.labels.map((l) => l.name),
-          assignees: issue.assignees.map((a) => a.login),
-          updated_at: issue.updated_at,
-        })),
-      };
-    });
+      },
+    );
 
     // ---------------------------------------------------------------
     // Agent tool: link a GitHub issue to the current AoA issue
     // ---------------------------------------------------------------
-    ctx.tools.register(TOOL_NAMES.link, async (input) => {
+    ctx.tools.register(
+      TOOL_NAMES.link,
+      {
+        displayName: "Link GitHub Issue",
+        description: "Link a GitHub issue to the current AoA issue for bidirectional sync.",
+        parametersSchema: {
+          type: "object",
+          properties: {
+            ghIssueUrl: { type: "string", description: "GitHub issue URL or owner/repo#number" },
+            issueId: { type: "string", description: "AoA issue UUID to link to" },
+          },
+          required: ["ghIssueUrl"],
+        },
+      },
+      async (params, runCtx) => {
+      const p = params as { ghIssueUrl?: string; issueId?: string };
       const token = await resolveToken();
       const config = await ctx.config.get();
       const defaultRepo = config.defaultRepo as string | undefined;
       const ref = github.parseGitHubIssueRef(
-        input.parameters.ghIssueUrl as string,
+        p.ghIssueUrl as string,
         defaultRepo,
       );
       if (!ref) {
         return { error: "Could not parse GitHub issue reference." };
       }
 
-      const issueId = input.context?.issueId;
-      const companyId = input.context?.companyId;
+      const issueId = p.issueId;
+      const companyId = runCtx.companyId;
       if (!issueId || !companyId) {
         return {
           error: "This tool must be called in the context of an AoA issue.",
@@ -128,8 +157,22 @@ const plugin = definePlugin({
     // ---------------------------------------------------------------
     // Agent tool: unlink
     // ---------------------------------------------------------------
-    ctx.tools.register(TOOL_NAMES.unlink, async (input) => {
-      const issueId = input.context?.issueId;
+    ctx.tools.register(
+      TOOL_NAMES.unlink,
+      {
+        displayName: "Unlink GitHub Issue",
+        description: "Remove the sync link between a GitHub issue and the current AoA issue.",
+        parametersSchema: {
+          type: "object",
+          properties: {
+            issueId: { type: "string", description: "AoA issue UUID to unlink" },
+          },
+          required: ["issueId"],
+        },
+      },
+      async (params) => {
+      const p = params as { issueId?: string };
+      const issueId = p.issueId;
       if (!issueId) {
         return {
           error: "This tool must be called in the context of an AoA issue.",
