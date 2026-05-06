@@ -40,7 +40,14 @@ jobs:
           for plugin in plugins/*/; do
             name=$(basename "$plugin")
             echo "Building $name..."
-            (cd "$plugin" && pnpm build)
+            # tsc exits non-zero when SDK types are missing (link: dep outside repo),
+            # but --noEmitOnError false still writes the dist JS. Warn and continue.
+            (cd "$plugin" && pnpm build) \
+              || echo "::warning::$name build had type errors (SDK peer dep not on npm — expected in CI)"
+            if [ ! -d "$plugin/dist" ]; then
+              echo "::error::$name dist/ missing after build — aborting"
+              exit 1
+            fi
             # npm pack outputs <name>-<version>.tgz to the specified destination
             npm pack "$plugin" --pack-destination release-assets/
           done
