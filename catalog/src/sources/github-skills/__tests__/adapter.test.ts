@@ -124,6 +124,48 @@ describe("githubSkillsAdapter.fetch clones sources", () => {
   });
 });
 
+describe("githubSkillsAdapter.normalize ignore pattern escaping", () => {
+  it("ignore patterns escape regex specials (e.g. dot in .factory)", async () => {
+    const tmp = mkdtempSync(join(tmpdir(), "ghs-esc-"));
+    try {
+      const fixture = makeFixtureRepo(tmp, "fake-repo.git", {
+        "LICENSE": "MIT License\n",
+        "skills/.factory/SKILL.md": `---\nname: should-be-ignored\ndescription: x\n---`,
+        "skills/afactory/SKILL.md": `---\nname: should-NOT-be-ignored\ndescription: x\n---`,
+      });
+      writeFileSync(
+        join(tmp, "trusted-sources.json"),
+        JSON.stringify({
+          schemaVersion: "1.0.0",
+          trustedSources: [
+            {
+              adapter: "github-skills",
+              tier: "verified",
+              reason: "fixture",
+              config: {
+                repo: "local/fake",
+                ref: "main",
+                skillsPath: "skills",
+                ignore: ["**/.factory/**"],
+              },
+            },
+          ],
+        }),
+      );
+      process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO = `local/fake=file://${fixture}`;
+      const ctx = { workDir: tmp, logger: silentLogger(), commitSha: "deadbeef" };
+      const raw = await githubSkillsAdapter.fetch(ctx);
+      const items = await githubSkillsAdapter.normalize(raw, ctx);
+      const slugs = items.map((i) => i.item.id.split("/").pop());
+      expect(slugs).toContain("afactory");
+      expect(slugs).not.toContain(".factory");
+    } finally {
+      delete process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO;
+      rmSync(tmp, { recursive: true });
+    }
+  });
+});
+
 describe("githubSkillsAdapter.normalize", () => {
   it("emits one NormalizedItem per SKILL.md found", async () => {
     const tmp = mkdtempSync(join(tmpdir(), "ghs-norm-"));

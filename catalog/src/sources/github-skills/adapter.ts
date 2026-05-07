@@ -60,10 +60,12 @@ function walkSkillFiles(dir: string, ignore: string[], rootDir: string): string[
 
 function matchesAny(rel: string, patterns: string[]): boolean {
   for (const p of patterns) {
+    // Escape regex specials, but leave * and / untouched so the glob substitutions below work.
+    const escaped = p.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
     // Minimal glob: supports ** (any path segments, including zero) and * (within one segment).
     // "**/.factory/**" should match ".factory", ".factory/skip", ".factory/skip/SKILL.md"
     // because the leading "**/" means "zero or more path segments/"
-    const reStr = p
+    const reStr = escaped
       .replace(/\*\*/g, "<<dstar>>")
       .replace(/\*/g, "[^/]*")
       // "<<dstar>>/" at start means "zero or more leading segments and slash"
@@ -192,7 +194,7 @@ export const githubSkillsAdapter: SourceAdapter = {
             resourceUrl: `https://raw.githubusercontent.com/${src.config.repo}/${sha}/${relPath}`,
             trust: { tier: src.tier, source: "github-skills" },
             status: "active",
-            addedAt: statSync(skillFile).mtime.toISOString(),
+            addedAt: new Date().toISOString(),
             category: catParsed.success ? catParsed.data : "productivity",
             tags: z.array(TagSchema).parse(rawTags),
             runtimeRequires: runtimeRequires.length > 0 ? runtimeRequires : undefined,
