@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CatalogItemSchema } from "../types/catalog.js";
+import { CatalogItemSchema, TagSchema } from "../types/catalog.js";
 
 describe("CatalogItemSchema runtimeRequires field", () => {
   const baseItem = {
@@ -29,5 +29,16 @@ describe("CatalogItemSchema runtimeRequires field", () => {
   it("rejects non-string entries in runtimeRequires", () => {
     const item = { ...baseItem, runtimeRequires: [123] };
     expect(() => CatalogItemSchema.parse(item)).toThrow();
+  });
+});
+
+describe("TagSchema requires-cli-tooling", () => {
+  it("accepts requires-cli-tooling as a valid tag", () => {
+    expect(() => TagSchema.parse("requires-cli-tooling")).not.toThrow();
+  });
+
+  it("still accepts existing tags", () => {
+    expect(() => TagSchema.parse("featured")).not.toThrow();
+    expect(() => TagSchema.parse("official")).not.toThrow();
   });
 });

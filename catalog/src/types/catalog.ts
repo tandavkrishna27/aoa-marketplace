@@ -9,6 +9,7 @@ export type Category = z.infer<typeof CategorySchema>;
 export const TagSchema = z.enum([
   "new", "featured", "enterprise", "solo-friendly",
   "requires-api-key", "official", "partner",
+  "requires-cli-tooling",  // NEW: auto-applied when runtimeRequires is non-empty
 ]);
 export type Tag = z.infer<typeof TagSchema>;
 
