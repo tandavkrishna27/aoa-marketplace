@@ -10,6 +10,29 @@
       "adapter": "anthropic-skills",
       "tier": "verified",
       "reason": "Trusted upstream — anthropic/skills public repo"
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "gstack — battle-tested by AoA team",
+      "config": {
+        "repo": "garrytan/gstack",
+        "ref": "main",
+        "skillsPath": "",
+        "ignore": ["**/.factory/**", "**/.agents/**", "**/node_modules/**", "**/dist/**"],
+        "defaultCategory": "engineering"
+      }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "superpowers — Jesse Vincent (obra), MIT-licensed core skills library",
+      "config": {
+        "repo": "obra/superpowers",
+        "ref": "main",
+        "skillsPath": "skills",
+        "defaultCategory": "engineering"
+      }
     }
   ]
 }
