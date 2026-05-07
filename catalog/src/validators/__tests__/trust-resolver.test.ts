@@ -57,10 +57,13 @@ describe("resolveTrustTier", () => {
 });
 
 describe("loadTrustedSources", () => {
-  it("reads trusted-sources.json from monorepo root and returns the 2 entries", () => {
+  it("reads trusted-sources.json from monorepo root and returns all entries", () => {
     const sources = loadTrustedSources(REPO_ROOT);
-    expect(sources).toHaveLength(2);
+    expect(sources).toHaveLength(4);
     expect(sources.find((s) => s.adapter === "aoa-curated")?.tier).toBe("verified");
     expect(sources.find((s) => s.adapter === "anthropic-skills")?.tier).toBe("verified");
+    const githubSkillsSources = sources.filter((s) => s.adapter === "github-skills");
+    expect(githubSkillsSources).toHaveLength(2);
+    expect(githubSkillsSources.every((s) => s.tier === "verified")).toBe(true);
   });
 });
