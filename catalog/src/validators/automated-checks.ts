@@ -67,6 +67,14 @@ export function runAutomatedChecks(item: CatalogItem, rawManifest?: Record<strin
     }
   }
 
+  // 7. Inline content size cap (64 KB)
+  const MAX_INLINE_SIZE = 64 * 1024;
+  if (item.content?.inline !== undefined && item.content.inline.length > MAX_INLINE_SIZE) {
+    failures.push(
+      `inline content size ${item.content.inline.length} bytes exceeds ${MAX_INLINE_SIZE}-byte cap`,
+    );
+  }
+
   return {
     itemId: item.id,
     passed: failures.length === 0,
