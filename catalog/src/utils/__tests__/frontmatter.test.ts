@@ -48,3 +48,43 @@ name: only-name
     expect(result.description).toBe("fallback-desc");
   });
 });
+
+describe("parseFrontmatter optional fields", () => {
+  it("parses category as a string field", () => {
+    const md = `---
+name: x
+description: y
+category: engineering
+---`;
+    expect(parseFrontmatter(md, "fb").category).toBe("engineering");
+  });
+
+  it("parses tags as a YAML inline list", () => {
+    const md = `---
+name: x
+description: y
+tags: [featured, new]
+---`;
+    expect(parseFrontmatter(md, "fb").tags).toEqual(["featured", "new"]);
+  });
+
+  it("parses runtimeRequires as a YAML inline list", () => {
+    const md = `---
+name: x
+description: y
+runtimeRequires: [gstack-bin, gbrain]
+---`;
+    expect(parseFrontmatter(md, "fb").runtimeRequires).toEqual(["gstack-bin", "gbrain"]);
+  });
+
+  it("returns undefined for missing optional fields", () => {
+    const md = `---
+name: x
+description: y
+---`;
+    const result = parseFrontmatter(md, "fb");
+    expect(result.category).toBeUndefined();
+    expect(result.tags).toBeUndefined();
+    expect(result.runtimeRequires).toBeUndefined();
+  });
+});
