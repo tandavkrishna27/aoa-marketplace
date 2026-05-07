@@ -1,9 +1,13 @@
-import { readFileSync, existsSync, mkdtempSync } from "node:fs";
+import { readFileSync, existsSync, mkdtempSync, readdirSync, statSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { z } from "zod";
 import type { SourceAdapter, SourceAdapterContext, NormalizedItem } from "../../types/source-adapter.js";
+import type { CatalogItem } from "../../types/catalog.js";
+import { CategorySchema, TagSchema } from "../../types/catalog.js";
+import { parseFrontmatter } from "../../utils/frontmatter.js";
+import { loadSkillOverrides, mergeRuntimeRequires } from "./overrides.js";
 import { GithubSkillsSourceConfigSchema, type GithubSkillsSourceConfig } from "./source-config.js";
 
 const TrustedSourcesFileSchema = z.object({
@@ -37,6 +41,60 @@ function resolveCloneUrl(repo: string): string {
     }
   }
   return `https://github.com/${repo}.git`;
+}
+
+function walkSkillFiles(dir: string, ignore: string[], rootDir: string): string[] {
+  const out: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    const rel = full.slice(rootDir.length + 1).replace(/\\/g, "/");
+    if (matchesAny(rel, ignore)) continue;
+    if (statSync(full).isDirectory()) {
+      out.push(...walkSkillFiles(full, ignore, rootDir));
+    } else if (entry === "SKILL.md") {
+      out.push(full);
+    }
+  }
+  return out;
+}
+
+function matchesAny(rel: string, patterns: string[]): boolean {
+  for (const p of patterns) {
+    // Minimal glob: supports ** (any path segments, including zero) and * (within one segment).
+    // "**/.factory/**" should match ".factory", ".factory/skip", ".factory/skip/SKILL.md"
+    // because the leading "**/" means "zero or more path segments/"
+    const reStr = p
+      .replace(/\*\*/g, "<<dstar>>")
+      .replace(/\*/g, "[^/]*")
+      // "<<dstar>>/" at start means "zero or more leading segments and slash"
+      .replace(/^<<dstar>>\//g, "(?:.+/)?")
+      // "/<dstar>>" at end means "slash and zero or more trailing segments"
+      .replace(/\/<<dstar>>$/g, "(?:/.+)?")
+      // remaining <<dstar>> (mid-pattern) matches anything
+      .replace(/<<dstar>>/g, ".*");
+    const re = new RegExp("^" + reStr + "$");
+    if (re.test(rel)) return true;
+  }
+  return false;
+}
+
+function detectLicense(cloneDir: string): string | undefined {
+  const candidates = ["LICENSE", "LICENSE.md", "LICENSE.txt", "license"];
+  for (const name of candidates) {
+    const path = join(cloneDir, name);
+    if (existsSync(path)) {
+      const head = readFileSync(path, "utf-8").slice(0, 200);
+      // Crude SPDX-ish detection. Source manifests can carry an explicit `license`
+      // field (preferred) — this is the fallback for upstream repos that only ship
+      // a LICENSE file. Update if more permissive ones come up.
+      if (/MIT License/i.test(head)) return "MIT";
+      if (/Apache License.*Version 2\.0/is.test(head)) return "Apache-2.0";
+      if (/BSD 3-Clause/i.test(head)) return "BSD-3-Clause";
+      if (/BSD 2-Clause/i.test(head)) return "BSD-2-Clause";
+      if (/ISC License/i.test(head)) return "ISC";
+    }
+  }
+  return undefined;
 }
 
 export const githubSkillsAdapter: SourceAdapter = {
@@ -83,7 +141,73 @@ export const githubSkillsAdapter: SourceAdapter = {
     return { sources: cloned };
   },
 
-  async normalize(_raw: unknown, _ctx: SourceAdapterContext): Promise<NormalizedItem[]> {
-    throw new Error("not implemented yet");
+  async normalize(raw: unknown, ctx: SourceAdapterContext): Promise<NormalizedItem[]> {
+    const { sources } = raw as FetchResult;
+    const overrides = loadSkillOverrides(join(ctx.workDir, "content"));
+    const items: NormalizedItem[] = [];
+
+    for (const src of sources) {
+      const license = detectLicense(src.cloneDir);
+      const skillsRoot = join(src.cloneDir, src.config.skillsPath);
+      if (!existsSync(skillsRoot)) {
+        ctx.logger.warn(`skillsPath ${src.config.skillsPath} not found in ${src.config.repo}`);
+        continue;
+      }
+      const skillFiles = walkSkillFiles(skillsRoot, src.config.ignore, skillsRoot);
+      ctx.logger.info(`${src.config.repo}: found ${skillFiles.length} SKILL.md files`);
+
+      for (const skillFile of skillFiles) {
+        const slug = skillFile.slice(skillsRoot.length + 1).split(/[\\/]/)[0];
+        const relPath = skillFile.slice(src.cloneDir.length + 1).replace(/\\/g, "/");
+        const id = `skill:github-skills/${src.config.repo}/${slug}`;
+
+        try {
+          const content = readFileSync(skillFile, "utf-8");
+          const fm = parseFrontmatter(content, slug);
+          const sha = src.sourceCommitSha;
+          const runtimeRequires = mergeRuntimeRequires(fm.runtimeRequires, id, overrides);
+
+          // Category: frontmatter > source default > fallback "productivity"
+          const candidate = fm.category ?? src.config.defaultCategory ?? "productivity";
+          const catParsed = CategorySchema.safeParse(candidate);
+
+          // Tags: from frontmatter (validated) plus auto-applied requires-cli-tooling
+          const rawTags = (fm.tags ?? []).filter((t) => TagSchema.safeParse(t).success);
+          if (runtimeRequires.length > 0 && !rawTags.includes("requires-cli-tooling")) {
+            rawTags.push("requires-cli-tooling");
+          }
+
+          const item: CatalogItem = {
+            id,
+            type: "skill",
+            name: fm.name,
+            description: fm.description,
+            version: fm.version,
+            source: {
+              adapter: "github-skills",
+              url: `https://github.com/${src.config.repo}/tree/${sha}/${relPath.replace(/\/SKILL\.md$/, "")}`,
+              locator: `${src.config.repo}/${relPath.replace(/\/SKILL\.md$/, "")}`,
+              commitSha: ctx.commitSha,
+            },
+            resourceUrl: `https://raw.githubusercontent.com/${src.config.repo}/${sha}/${relPath}`,
+            trust: { tier: src.tier, source: "github-skills" },
+            status: "active",
+            addedAt: statSync(skillFile).mtime.toISOString(),
+            category: catParsed.success ? catParsed.data : "productivity",
+            tags: z.array(TagSchema).parse(rawTags),
+            runtimeRequires: runtimeRequires.length > 0 ? runtimeRequires : undefined,
+          };
+
+          items.push({
+            item,
+            rawManifest: license !== undefined ? { license } : undefined,
+          });
+        } catch (err) {
+          ctx.logger.error(`Failed to parse ${skillFile}: ${err instanceof Error ? err.message : err}`);
+        }
+      }
+    }
+
+    return items;
   },
 };

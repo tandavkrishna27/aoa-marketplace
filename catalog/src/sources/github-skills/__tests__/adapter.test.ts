@@ -123,3 +123,70 @@ describe("githubSkillsAdapter.fetch clones sources", () => {
     }
   });
 });
+
+describe("githubSkillsAdapter.normalize", () => {
+  it("emits one NormalizedItem per SKILL.md found", async () => {
+    const tmp = mkdtempSync(join(tmpdir(), "ghs-norm-"));
+    try {
+      const fixture = makeFixtureRepo(tmp, "fake-repo.git", {
+        "LICENSE": "MIT License\nCopyright (c) 2026 Test\n",
+        "skills/foo/SKILL.md": `---
+name: foo
+description: foo skill description
+version: 1.2.3
+category: engineering
+---
+
+Body.`,
+        "skills/bar/SKILL.md": `---
+name: bar
+description: bar skill
+---
+
+Body.`,
+        "skills/.factory/skip/SKILL.md": "should be ignored",
+      });
+      writeFileSync(
+        join(tmp, "trusted-sources.json"),
+        JSON.stringify({
+          schemaVersion: "1.0.0",
+          trustedSources: [
+            {
+              adapter: "github-skills",
+              tier: "verified",
+              reason: "fixture",
+              config: {
+                repo: "local/fake",
+                ref: "main",
+                skillsPath: "skills",
+                ignore: ["**/.factory/**"],
+                defaultCategory: "productivity",
+              },
+            },
+          ],
+        }),
+      );
+      process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO = `local/fake=file://${fixture}`;
+      const ctx = { workDir: tmp, logger: silentLogger(), commitSha: "deadbeef" };
+      const raw = await githubSkillsAdapter.fetch(ctx);
+      const items = await githubSkillsAdapter.normalize(raw, ctx);
+      expect(items).toHaveLength(2); // foo + bar (.factory ignored)
+      const foo = items.find((i) => i.item.id.endsWith("/foo"));
+      expect(foo).toBeDefined();
+      expect(foo!.item.name).toBe("foo");
+      expect(foo!.item.description).toBe("foo skill description");
+      expect(foo!.item.version).toBe("1.2.3");
+      expect(foo!.item.category).toBe("engineering");
+      expect(foo!.item.source.adapter).toBe("github-skills");
+      expect(foo!.item.source.locator).toBe("local/fake/skills/foo");
+      expect(foo!.item.resourceUrl).toMatch(/raw\.githubusercontent\.com\/local\/fake/);
+      expect(foo!.item.runtimeRequires).toBeUndefined();
+      const bar = items.find((i) => i.item.id.endsWith("/bar"));
+      expect(bar!.item.category).toBe("productivity"); // fallback to defaultCategory
+      expect(foo!.rawManifest?.license).toBe("MIT");
+    } finally {
+      delete process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO;
+      rmSync(tmp, { recursive: true });
+    }
+  });
+});
