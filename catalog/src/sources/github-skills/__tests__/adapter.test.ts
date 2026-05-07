@@ -232,3 +232,80 @@ Body.`,
     }
   });
 });
+
+describe("githubSkillsAdapter auto-applies requires-cli-tooling", () => {
+  it("adds the tag when overrides supply runtimeRequires", async () => {
+    const tmp = mkdtempSync(join(tmpdir(), "ghs-tag-"));
+    try {
+      const fixture = makeFixtureRepo(tmp, "fake.git", {
+        "LICENSE": "MIT License\n",
+        "skills/qa/SKILL.md": `---\nname: qa\ndescription: qa skill\n---\n\nBody.`,
+      });
+      mkdirSync(join(tmp, "content"), { recursive: true });
+      writeFileSync(
+        join(tmp, "content", "skill-overrides.json"),
+        JSON.stringify({
+          "skill:github-skills/local/fake/qa": ["gstack-bin", "gstack-browse-daemon"],
+        }),
+      );
+      writeFileSync(
+        join(tmp, "trusted-sources.json"),
+        JSON.stringify({
+          schemaVersion: "1.0.0",
+          trustedSources: [
+            {
+              adapter: "github-skills",
+              tier: "verified",
+              reason: "fixture",
+              config: { repo: "local/fake", ref: "main", skillsPath: "skills" },
+            },
+          ],
+        }),
+      );
+      process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO = `local/fake=file://${fixture}`;
+      const ctx = { workDir: tmp, logger: silentLogger(), commitSha: "deadbeef" };
+      const raw = await githubSkillsAdapter.fetch(ctx);
+      const items = await githubSkillsAdapter.normalize(raw, ctx);
+      const qa = items[0];
+      expect(qa.item.runtimeRequires).toEqual(["gstack-bin", "gstack-browse-daemon"]);
+      expect(qa.item.tags).toContain("requires-cli-tooling");
+    } finally {
+      delete process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO;
+      rmSync(tmp, { recursive: true });
+    }
+  });
+
+  it("does not add the tag when neither frontmatter nor overrides have runtimeRequires", async () => {
+    const tmp = mkdtempSync(join(tmpdir(), "ghs-nopt-"));
+    try {
+      const fixture = makeFixtureRepo(tmp, "fake.git", {
+        "LICENSE": "MIT License\n",
+        "skills/clean/SKILL.md": `---\nname: clean\ndescription: clean skill\n---\n\nBody.`,
+      });
+      writeFileSync(
+        join(tmp, "trusted-sources.json"),
+        JSON.stringify({
+          schemaVersion: "1.0.0",
+          trustedSources: [
+            {
+              adapter: "github-skills",
+              tier: "verified",
+              reason: "fixture",
+              config: { repo: "local/fake", ref: "main", skillsPath: "skills" },
+            },
+          ],
+        }),
+      );
+      process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO = `local/fake=file://${fixture}`;
+      const ctx = { workDir: tmp, logger: silentLogger(), commitSha: "deadbeef" };
+      const raw = await githubSkillsAdapter.fetch(ctx);
+      const items = await githubSkillsAdapter.normalize(raw, ctx);
+      const clean = items[0];
+      expect(clean.item.runtimeRequires).toBeUndefined();
+      expect(clean.item.tags).not.toContain("requires-cli-tooling");
+    } finally {
+      delete process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO;
+      rmSync(tmp, { recursive: true });
+    }
+  });
+});
