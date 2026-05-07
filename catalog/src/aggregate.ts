@@ -4,6 +4,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { execSync } from "node:child_process";
 import { aoaCuratedAdapter } from "./sources/aoa-curated/adapter.js";
 import { anthropicSkillsAdapter } from "./sources/anthropic-skills/adapter.js";
+import { githubSkillsAdapter } from "./sources/github-skills/adapter.js";
 import { runAutomatedChecks } from "./validators/automated-checks.js";
 import { loadTrustedSources, resolveTrustTier } from "./validators/trust-resolver.js";
 import type { CatalogFile, CatalogItem, TrustTier } from "./types/catalog.js";
@@ -13,7 +14,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // aggregate.ts is at catalog/src/aggregate.ts → go up two levels for monorepo root
 const REPO_ROOT = join(__dirname, "..", "..");
 
-const ADAPTERS: SourceAdapter[] = [aoaCuratedAdapter, anthropicSkillsAdapter];
+const ADAPTERS: SourceAdapter[] = [aoaCuratedAdapter, anthropicSkillsAdapter, githubSkillsAdapter];
 
 function getRepoCommitSha(): string {
   try {
