@@ -1,0 +1,15 @@
+{
+  "skill:github-skills/garrytan/gstack/browse": ["gstack-bin", "gstack-browse-daemon"],
+  "skill:github-skills/garrytan/gstack/qa": ["gstack-bin", "gstack-browse-daemon"],
+  "skill:github-skills/garrytan/gstack/qa-only": ["gstack-bin", "gstack-browse-daemon"],
+  "skill:github-skills/garrytan/gstack/scrape": ["gstack-bin", "gstack-browse-daemon"],
+  "skill:github-skills/garrytan/gstack/skillify": ["gstack-bin", "gstack-browse-daemon"],
+  "skill:github-skills/garrytan/gstack/canary": ["gstack-browse-daemon"],
+  "skill:github-skills/garrytan/gstack/benchmark": ["gstack-browse-daemon"],
+  "skill:github-skills/garrytan/gstack/learn": ["gbrain"],
+  "skill:github-skills/garrytan/gstack/setup-gbrain": ["gbrain"],
+  "skill:github-skills/garrytan/gstack/sync-gbrain": ["gbrain"],
+  "skill:github-skills/garrytan/gstack/plan-tune": ["gbrain"],
+  "skill:github-skills/garrytan/gstack/connect-chrome": ["gstack-extension"],
+  "skill:github-skills/garrytan/gstack/pair-agent": ["gstack-extension"]
+}

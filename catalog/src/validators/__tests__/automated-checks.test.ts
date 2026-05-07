@@ -59,3 +59,39 @@ describe("runAutomatedChecks", () => {
     expect(result.passed).toBe(false);
   });
 });
+
+describe("automated-checks markdown size cap", () => {
+  const baseItem: CatalogItem = {
+    id: "skill:test/foo",
+    type: "skill",
+    name: "Test",
+    description: "x",
+    version: "1.0.0",
+    source: { adapter: "test", url: "https://example.com", locator: "x", commitSha: "abc" },
+    trust: { tier: "verified", source: "test" },
+    status: "active",
+    addedAt: "2026-05-07T00:00:00.000Z",
+    category: "engineering",
+    tags: [],
+  };
+
+  it("fails skills with inline content > 64 KB", () => {
+    const big = "x".repeat(65_537); // Exceeds 64 KB (65,536 bytes)
+    const item = { ...baseItem, content: { inline: big } };
+    const result = runAutomatedChecks(item);
+    expect(result.passed).toBe(false);
+    expect(result.failures.some((f) => /size/i.test(f))).toBe(true);
+  });
+
+  it("passes skills with inline content <= 64 KB", () => {
+    const small = "x".repeat(60_000);
+    const item = { ...baseItem, content: { inline: small } };
+    const result = runAutomatedChecks(item, { license: "MIT" });
+    expect(result.passed).toBe(true);
+  });
+
+  it("passes skills with no inline content (size cap N/A)", () => {
+    const result = runAutomatedChecks(baseItem, { license: "MIT" });
+    expect(result.passed).toBe(true);
+  });
+});

@@ -9,6 +9,7 @@ export type Category = z.infer<typeof CategorySchema>;
 export const TagSchema = z.enum([
   "new", "featured", "enterprise", "solo-friendly",
   "requires-api-key", "official", "partner",
+  "requires-cli-tooling",  // NEW: auto-applied when runtimeRequires is non-empty
 ]);
 export type Tag = z.infer<typeof TagSchema>;
 
@@ -77,6 +78,9 @@ export const CatalogItemSchema = z.object({
   // M.2.0: install-related fields
   npm: NpmRefSchema.optional(),         // present on plugin items: { packageName, version } for pluginLoader.installPlugin()
   resourceUrl: z.string().url().optional(), // present on snapshot items (skill/agent/team): commit-pinned raw.githubusercontent URL
+  // NEW: runtime primitives this skill needs at agent runtime — purely declarative,
+  // does not block install. Surfaced as a warning banner on AoA's install modal.
+  runtimeRequires: z.array(z.string()).optional(),
 });
 export type CatalogItem = z.infer<typeof CatalogItemSchema>;
 

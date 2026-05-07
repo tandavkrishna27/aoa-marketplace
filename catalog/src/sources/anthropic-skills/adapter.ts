@@ -6,6 +6,7 @@ import { z } from "zod";
 import { CategorySchema, TagSchema } from "../../types/catalog.js";
 import type { SourceAdapter, SourceAdapterContext, NormalizedItem } from "../../types/source-adapter.js";
 import type { CatalogItem, Category } from "../../types/catalog.js";
+import { parseFrontmatter } from "../../utils/frontmatter.js";
 
 const SKILLS_REPO_URL = "https://github.com/anthropics/skills.git";
 
@@ -96,29 +97,6 @@ export const anthropicSkillsAdapter: SourceAdapter = {
     return items;
   },
 };
-
-interface FrontmatterFields {
-  name: string;
-  description: string;
-  version: string;
-}
-
-function parseFrontmatter(content: string, fallbackName: string): FrontmatterFields {
-  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!fmMatch) {
-    return { name: fallbackName, description: fallbackName, version: "1.0.0" };
-  }
-  const fm = fmMatch[1];
-  const get = (key: string): string | undefined => {
-    const m = fm.match(new RegExp(`^${key}:\\s*(.+)$`, "m"));
-    return m ? m[1].trim().replace(/^["']|["']$/g, "") : undefined;
-  };
-  return {
-    name: get("name") ?? fallbackName,
-    description: get("description") ?? fallbackName,
-    version: get("version") ?? "1.0.0",
-  };
-}
 
 function inferCategory(name: string, description: string): Category {
   const text = `${name} ${description}`.toLowerCase();
