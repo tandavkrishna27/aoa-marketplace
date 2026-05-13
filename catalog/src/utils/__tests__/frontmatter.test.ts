@@ -87,4 +87,51 @@ description: y
     expect(result.tags).toBeUndefined();
     expect(result.runtimeRequires).toBeUndefined();
   });
+
+  it("parses standard skill frontmatter fields", () => {
+    const content = `---
+name: azure-ai
+description: Azure AI guidance
+version: 1.2.3
+license: MIT
+compatibility: Requires Azure CLI
+allowed-tools: shell web
+user-invocable: true
+disable-model-invocation: false
+metadata:
+  provider: Microsoft
+  product: Azure
+---
+
+# Azure AI
+`;
+
+    const parsed = parseFrontmatter(content, "fallback");
+
+    expect(parsed.name).toBe("azure-ai");
+    expect(parsed.description).toBe("Azure AI guidance");
+    expect(parsed.version).toBe("1.2.3");
+    expect(parsed.license).toBe("MIT");
+    expect(parsed.compatibility).toBe("Requires Azure CLI");
+    expect(parsed.allowedTools).toBe("shell web");
+    expect(parsed.userInvocable).toBe(true);
+    expect(parsed.disableModelInvocation).toBe(false);
+    expect(parsed.metadata).toEqual({ provider: "Microsoft", product: "Azure" });
+    expect(parsed.raw["allowed-tools"]).toBe("shell web");
+  });
+
+  it("preserves unknown scalar frontmatter fields in raw", () => {
+    const content = `---
+name: custom
+description: Custom skill
+x-provider-slug: provider-x
+---
+
+Body.
+`;
+
+    const parsed = parseFrontmatter(content, "fallback");
+
+    expect(parsed.raw["x-provider-slug"]).toBe("provider-x");
+  });
 });
