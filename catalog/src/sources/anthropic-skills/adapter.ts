@@ -39,11 +39,12 @@ export const anthropicSkillsAdapter: SourceAdapter = {
   async normalize(raw: unknown, ctx: SourceAdapterContext): Promise<NormalizedItem[]> {
     const { cloneDir, cloneTimestamp } = raw as FetchedRepo;
     const items: NormalizedItem[] = [];
+    const { root: skillsRoot, urlPrefix } = resolveSkillsRoot(cloneDir);
 
-    // Anthropic's skills repo structure: each top-level folder is a skill.
+    // Anthropic's skills repo structure: each folder under skills/ is a skill.
     // Inside each: a SKILL.md file with the markdown content + frontmatter.
-    for (const entry of readdirSync(cloneDir)) {
-      const entryPath = join(cloneDir, entry);
+    for (const entry of readdirSync(skillsRoot)) {
+      const entryPath = join(skillsRoot, entry);
       if (!statSync(entryPath).isDirectory()) continue;
       if (entry.startsWith(".")) continue; // skip .git, etc.
 
@@ -57,6 +58,7 @@ export const anthropicSkillsAdapter: SourceAdapter = {
       try {
         const content = readFileSync(skillFile, "utf-8");
         const { name, description, version } = parseFrontmatter(content, entry);
+        const sourcePath = urlPrefix ? `${urlPrefix}/${entry}` : entry;
 
         // Use file's mtime as the deterministic addedAt — falls back to cloneTimestamp if mtime unavailable.
         // mtime is the file's last-modified time in the local clone; fresh on every clone but consistent within a run.
@@ -75,8 +77,8 @@ export const anthropicSkillsAdapter: SourceAdapter = {
           version,
           source: {
             adapter: "anthropic-skills",
-            url: `https://github.com/anthropics/skills/tree/main/${entry}`,
-            locator: entry,
+            url: `https://github.com/anthropics/skills/tree/main/${sourcePath}`,
+            locator: sourcePath,
           },
           trust: { tier: "verified", source: "anthropic-skills" },
           status: "active",
@@ -97,6 +99,14 @@ export const anthropicSkillsAdapter: SourceAdapter = {
     return items;
   },
 };
+
+function resolveSkillsRoot(cloneDir: string): { root: string; urlPrefix: string } {
+  const currentLayout = join(cloneDir, "skills");
+  if (existsSync(currentLayout)) {
+    return { root: currentLayout, urlPrefix: "skills" };
+  }
+  return { root: cloneDir, urlPrefix: "" };
+}
 
 function inferCategory(name: string, description: string): Category {
   const text = `${name} ${description}`.toLowerCase();
