@@ -17,6 +17,21 @@ const baseItem: CatalogItem = {
   capabilities: [{ id: "test_cap", description: "Test capability description here" }],
 };
 
+const validSkillItem: CatalogItem = {
+  id: "skill:test/tooling",
+  type: "skill",
+  name: "Test Skill",
+  description: "A test skill for unit tests",
+  version: "1.0.0",
+  source: { adapter: "test", url: "https://example.com", locator: "skills/tooling", commitSha: "abc1234" },
+  trust: { tier: "verified", source: "test" },
+  status: "active",
+  addedAt: "2026-05-07T00:00:00.000Z",
+  category: "engineering",
+  tags: [],
+  resourceUrl: "https://raw.githubusercontent.com/owner/repo/abc1234/skills/tooling/SKILL.md",
+};
+
 describe("runAutomatedChecks", () => {
   it("passes a valid plugin", () => {
     const result = runAutomatedChecks(baseItem, { license: "MIT" });
@@ -57,6 +72,51 @@ describe("runAutomatedChecks", () => {
     const item = { ...baseItem, source: { ...baseItem.source, url: "not a url" } };
     const result = runAutomatedChecks(item);
     expect(result.passed).toBe(false);
+  });
+
+  it("fails skill items with resourceUrl and no bundle", () => {
+    const result = runAutomatedChecks(validSkillItem);
+
+    expect(result.passed).toBe(false);
+    expect(result.failures).toContain("skill item with resourceUrl must declare skill.bundle");
+  });
+
+  it("fails skill bundles with path traversal", () => {
+    const result = runAutomatedChecks({
+      ...validSkillItem,
+      skill: {
+        bundle: {
+          type: "github-directory",
+          repo: "owner/repo",
+          commitSha: "abc1234",
+          path: "../escape",
+          treeUrl: "https://github.com/owner/repo/tree/abc1234/../escape",
+        },
+        frontmatter: { raw: {} },
+      },
+    });
+
+    expect(result.passed).toBe(false);
+    expect(result.failures).toContain("skill.bundle.path must be a safe relative path");
+  });
+
+  it("warns for broad allowed-tools values", () => {
+    const result = runAutomatedChecks({
+      ...validSkillItem,
+      skill: {
+        bundle: {
+          type: "github-directory",
+          repo: "owner/repo",
+          commitSha: "abc1234",
+          path: "skills/tooling",
+          treeUrl: "https://github.com/owner/repo/tree/abc1234/skills/tooling",
+        },
+        frontmatter: { allowedTools: "shell *", raw: { "allowed-tools": "shell *" } },
+      },
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.warnings).toContain("Skill requests broad allowed-tools permissions");
   });
 });
 

@@ -75,6 +75,30 @@ export function runAutomatedChecks(item: CatalogItem, rawManifest?: Record<strin
     );
   }
 
+  if (item.type === "skill") {
+    if (item.resourceUrl && !item.skill?.bundle) {
+      failures.push("skill item with resourceUrl must declare skill.bundle");
+    }
+
+    const path = item.skill?.bundle.path;
+    if (path !== undefined) {
+      const normalized = path.replace(/\\/g, "/");
+      if (
+        normalized.startsWith("/") ||
+        normalized.includes("../") ||
+        normalized === ".." ||
+        normalized.includes("\0")
+      ) {
+        failures.push("skill.bundle.path must be a safe relative path");
+      }
+    }
+
+    const allowedTools = item.skill?.frontmatter.allowedTools;
+    if (allowedTools && /(^|\s)(\*|shell|bash|cmd|powershell)(\s|$)/i.test(allowedTools)) {
+      warnings.push("Skill requests broad allowed-tools permissions");
+    }
+  }
+
   return {
     itemId: item.id,
     passed: failures.length === 0,
