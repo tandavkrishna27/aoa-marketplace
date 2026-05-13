@@ -100,7 +100,7 @@ describe("runAutomatedChecks", () => {
     expect(result.failures).toContain("skill.bundle.path must be a safe relative path");
   });
 
-  it.each(["skills/..", "C:/escape", "C:\\escape"])(
+  it.each(["skills/..", "C:/escape", "C:\\escape", "C:escape"])(
     "fails skill bundles with unsafe path %s",
     (path) => {
       const result = runAutomatedChecks({

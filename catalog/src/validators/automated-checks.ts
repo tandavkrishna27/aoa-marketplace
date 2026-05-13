@@ -18,7 +18,7 @@ function isSafeRelativePath(path: string): boolean {
   const normalized = path.replace(/\\/g, "/");
   if (normalized.length === 0) return false;
   if (normalized.startsWith("/")) return false;
-  if (/^[A-Za-z]:\//.test(normalized)) return false;
+  if (/^[A-Za-z]:/.test(normalized)) return false;
   if (normalized.includes("\0")) return false;
   return normalized.split("/").every((segment) => segment !== "" && segment !== "." && segment !== "..");
 }
