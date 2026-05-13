@@ -13,6 +13,7 @@ const SKILLS_REPO_URL = "https://github.com/anthropics/skills.git";
 interface FetchedRepo {
   cloneDir: string;
   cloneTimestamp: string; // ISO; used as deterministic addedAt fallback
+  sourceCommitSha: string;
 }
 
 export const anthropicSkillsAdapter: SourceAdapter = {
@@ -33,11 +34,13 @@ export const anthropicSkillsAdapter: SourceAdapter = {
     if (result.status !== 0) {
       throw new Error(`git clone failed: ${result.stderr}`);
     }
-    return { cloneDir, cloneTimestamp: new Date().toISOString() };
+    const shaResult = spawnSync("git", ["rev-parse", "HEAD"], { cwd: cloneDir, encoding: "utf-8" });
+    const sourceCommitSha = shaResult.stdout.trim();
+    return { cloneDir, cloneTimestamp: new Date().toISOString(), sourceCommitSha };
   },
 
   async normalize(raw: unknown, ctx: SourceAdapterContext): Promise<NormalizedItem[]> {
-    const { cloneDir, cloneTimestamp } = raw as FetchedRepo;
+    const { cloneDir, cloneTimestamp, sourceCommitSha } = raw as FetchedRepo;
     const items: NormalizedItem[] = [];
     const { root: skillsRoot, urlPrefix } = resolveSkillsRoot(cloneDir);
 
@@ -57,8 +60,11 @@ export const anthropicSkillsAdapter: SourceAdapter = {
       // Wrap per-item parsing in try/catch so one bad skill doesn't crash the whole run
       try {
         const content = readFileSync(skillFile, "utf-8");
-        const { name, description, version } = parseFrontmatter(content, entry);
+        const fm = parseFrontmatter(content, entry);
+        const { name, description, version } = fm;
         const sourcePath = urlPrefix ? `${urlPrefix}/${entry}` : entry;
+        const treeUrl = `https://github.com/anthropics/skills/tree/${sourceCommitSha}/${sourcePath}`;
+        const resourceUrl = `https://raw.githubusercontent.com/anthropics/skills/${sourceCommitSha}/${sourcePath}/SKILL.md`;
 
         // Use file's mtime as the deterministic addedAt — falls back to cloneTimestamp if mtime unavailable.
         // mtime is the file's last-modified time in the local clone; fresh on every clone but consistent within a run.
@@ -77,8 +83,29 @@ export const anthropicSkillsAdapter: SourceAdapter = {
           version,
           source: {
             adapter: "anthropic-skills",
-            url: `https://github.com/anthropics/skills/tree/main/${sourcePath}`,
+            url: treeUrl,
             locator: sourcePath,
+          },
+          resourceUrl,
+          skill: {
+            bundle: {
+              type: "github-directory",
+              repo: "anthropics/skills",
+              commitSha: sourceCommitSha,
+              path: sourcePath,
+              treeUrl,
+            },
+            frontmatter: {
+              name,
+              description,
+              license: fm.license,
+              compatibility: fm.compatibility,
+              metadata: fm.metadata,
+              allowedTools: fm.allowedTools,
+              userInvocable: fm.userInvocable,
+              disableModelInvocation: fm.disableModelInvocation,
+              raw: fm.raw,
+            },
           },
           trust: { tier: "verified", source: "anthropic-skills" },
           status: "active",
