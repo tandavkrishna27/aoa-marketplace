@@ -14,6 +14,18 @@
     {
       "adapter": "github-skills",
       "tier": "verified",
+      "reason": "Microsoft Azure skills — official Microsoft Azure skills library",
+      "config": {
+        "repo": "microsoft/azure-skills",
+        "ref": "main",
+        "skillsPath": "skills",
+        "ignore": ["**/node_modules/**", "**/dist/**"],
+        "defaultCategory": "engineering"
+      }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
       "reason": "gstack — battle-tested by AoA team",
       "config": {
         "repo": "garrytan/gstack",
