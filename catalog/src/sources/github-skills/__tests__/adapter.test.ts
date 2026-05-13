@@ -167,6 +167,60 @@ describe("githubSkillsAdapter.normalize ignore pattern escaping", () => {
 });
 
 describe("githubSkillsAdapter.normalize", () => {
+  it("imports only skills under the configured skillsPath", async () => {
+    const tmp = mkdtempSync(join(tmpdir(), "ghs-skillspath-"));
+    try {
+      const fixture = makeFixtureRepo(tmp, "fake-repo.git", {
+        "LICENSE": "MIT License\nCopyright (c) 2026 Test\n",
+        "skills/azure-ai/SKILL.md": `---
+name: azure-ai
+description: Azure AI skill
+version: 1.0.0
+---
+
+Body.`,
+        ".github/plugins/azure-skills/skills/azure-ai/SKILL.md": `---
+name: duplicate-azure-ai
+description: Duplicate Azure AI skill
+version: 1.0.0
+---
+
+Body.`,
+      });
+      writeFileSync(
+        join(tmp, "trusted-sources.json"),
+        JSON.stringify({
+          schemaVersion: "1.0.0",
+          trustedSources: [
+            {
+              adapter: "github-skills",
+              tier: "verified",
+              reason: "fixture",
+              config: {
+                repo: "local/fake",
+                ref: "main",
+                skillsPath: "skills",
+                defaultCategory: "engineering",
+              },
+            },
+          ],
+        }),
+      );
+      process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO = `local/fake=file://${fixture}`;
+      const ctx = { workDir: tmp, logger: silentLogger(), commitSha: "deadbeef" };
+      const raw = await githubSkillsAdapter.fetch(ctx);
+      const items = await githubSkillsAdapter.normalize(raw, ctx);
+
+      expect(items).toHaveLength(1);
+      expect(items[0].item.id).toBe("skill:github-skills/local/fake/azure-ai");
+      expect(items[0].item.name).toBe("azure-ai");
+      expect(items[0].item.source.locator).toBe("local/fake/skills/azure-ai");
+    } finally {
+      delete process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO;
+      rmSync(tmp, { recursive: true });
+    }
+  });
+
   it("emits one NormalizedItem per SKILL.md found", async () => {
     const tmp = mkdtempSync(join(tmpdir(), "ghs-norm-"));
     try {
