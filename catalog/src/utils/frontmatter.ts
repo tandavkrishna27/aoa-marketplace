@@ -23,7 +23,7 @@ export function parseFrontmatter(content: string, fallbackName: string): Frontma
   }
   const fm = fmMatch[1];
   const raw: Record<string, unknown> = {};
-  const values = new Map<string, string>();
+  const values = new Map<string, string | string[]>();
   const lines = fm.split(/\r?\n/);
 
   for (let i = 0; i < lines.length; i += 1) {
@@ -52,6 +52,26 @@ export function parseFrontmatter(content: string, fallbackName: string): Frontma
       continue;
     }
 
+    if (value === "") {
+      const blockList: string[] = [];
+      for (let j = i + 1; j < lines.length; j += 1) {
+        const blockLine = lines[j];
+        if (!/^\s+/.test(blockLine)) break;
+
+        const listMatch = blockLine.trim().match(/^-\s*(.+)$/);
+        if (listMatch) {
+          blockList.push(stripQuotes(listMatch[1].trim()));
+          i = j;
+        }
+      }
+
+      if (blockList.length > 0) {
+        values.set(key, blockList);
+        raw[key] = blockList;
+      }
+      continue;
+    }
+
     if (value !== "") {
       const parsedValue = stripQuotes(value);
       values.set(key, parsedValue);
@@ -59,10 +79,15 @@ export function parseFrontmatter(content: string, fallbackName: string): Frontma
     }
   }
 
-  const get = (key: string): string | undefined => values.get(key);
+  const get = (key: string): string | undefined => {
+    const value = values.get(key);
+    if (Array.isArray(value)) return value.join(" ");
+    return value;
+  };
   const getList = (key: string): string[] | undefined => {
-    const raw = get(key);
+    const raw = values.get(key);
     if (!raw) return undefined;
+    if (Array.isArray(raw)) return raw;
     // Inline-list syntax: [a, b, c]
     const inline = raw.match(/^\[(.+)\]$/);
     if (inline) {

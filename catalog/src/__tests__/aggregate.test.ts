@@ -14,9 +14,10 @@ describe("aggregate", () => {
     const catalog = await aggregate({ validateOnly: true });
     const skillItems = catalog.items.filter((item) => item.type === "skill");
 
-    expect(skillItems.length).toBeGreaterThan(0);
-    expect(skillItems.every((item) => item.skill?.bundle !== undefined)).toBe(true);
-    expect(skillItems.every((item) => item.resourceUrl !== undefined)).toBe(true);
+    if (skillItems.length > 0) {
+      expect(skillItems.every((item) => item.skill?.bundle !== undefined)).toBe(true);
+      expect(skillItems.every((item) => item.resourceUrl !== undefined)).toBe(true);
+    }
 
     if (catalog.items.some((item) => item.source.adapter === "anthropic-skills")) {
       const anthropicFrontend = catalog.items.find(
@@ -139,11 +140,17 @@ This is a test skill.`,
 
         // Verify catalog contains github-skills items
         expect(catalog.itemCount).toBeGreaterThan(0);
+        const skillItems = catalog.items.filter((item) => item.type === "skill");
+        expect(skillItems.length).toBeGreaterThan(0);
+        expect(skillItems.every((item) => item.skill?.bundle !== undefined)).toBe(true);
+        expect(skillItems.every((item) => item.resourceUrl !== undefined)).toBe(true);
+
         const githubSkillsItems = catalog.items.filter(
           (item) => item.source.adapter === "github-skills"
         );
         expect(githubSkillsItems.length).toBeGreaterThan(0);
         expect(githubSkillsItems[0].id).toMatch(/^skill:github-skills\//);
+        expect(githubSkillsItems[0].skill?.bundle.path).toBe("my-skill");
       } finally {
         // Restore original trusted-sources.json if it existed
         if (originalTsPath) {

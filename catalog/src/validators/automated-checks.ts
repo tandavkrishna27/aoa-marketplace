@@ -95,7 +95,7 @@ export function runAutomatedChecks(item: CatalogItem, rawManifest?: Record<strin
     }
 
     const allowedTools = item.skill?.frontmatter.allowedTools;
-    if (allowedTools && /(^|\s)(\*|shell|bash|cmd|powershell)(\s|$)/i.test(allowedTools)) {
+    if (allowedTools && /(^|[^A-Za-z0-9_-])(\*|shell|bash|cmd|powershell)([^A-Za-z0-9_-]|$)/i.test(allowedTools)) {
       warnings.push("Skill requests broad allowed-tools permissions");
     }
   }

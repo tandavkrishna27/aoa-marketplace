@@ -134,4 +134,27 @@ Body.
 
     expect(parsed.raw["x-provider-slug"]).toBe("provider-x");
   });
+
+  it("preserves block list values in raw and maps allowed-tools lists", () => {
+    const content = `---
+name: list-tools
+description: Uses list-style allowed tools
+allowed-tools:
+  - Bash
+  - Read
+x-extra-list:
+  - first
+  - second
+---
+
+Body.
+`;
+
+    const parsed = parseFrontmatter(content, "fallback");
+
+    expect(parsed.raw["allowed-tools"]).toEqual(["Bash", "Read"]);
+    expect(parsed.allowedTools).toContain("Bash");
+    expect(parsed.allowedTools).toContain("Read");
+    expect(parsed.raw["x-extra-list"]).toEqual(["first", "second"]);
+  });
 });

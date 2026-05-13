@@ -140,6 +140,28 @@ describe("runAutomatedChecks", () => {
     expect(result.passed).toBe(true);
     expect(result.warnings).toContain("Skill requests broad allowed-tools permissions");
   });
+
+  it.each(["Bash, Read", "Bash(git:*)", "shell, web"])(
+    "warns without failing for broad allowed-tools token %s",
+    (allowedTools) => {
+      const result = runAutomatedChecks({
+        ...validSkillItem,
+        skill: {
+          bundle: {
+            type: "github-directory",
+            repo: "owner/repo",
+            commitSha: "abc1234",
+            path: "skills/tooling",
+            treeUrl: "https://github.com/owner/repo/tree/abc1234/skills/tooling",
+          },
+          frontmatter: { allowedTools, raw: { "allowed-tools": allowedTools } },
+        },
+      });
+
+      expect(result.passed).toBe(true);
+      expect(result.warnings).toContain("Skill requests broad allowed-tools permissions");
+    },
+  );
 });
 
 describe("automated-checks markdown size cap", () => {
