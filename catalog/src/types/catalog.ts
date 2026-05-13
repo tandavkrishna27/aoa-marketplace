@@ -62,7 +62,7 @@ export const ContentSchema = z.object({
 export const SkillBundleSchema = z.object({
   type: z.literal("github-directory"),
   repo: z.string().regex(/^[^/]+\/[^/]+$/),
-  commitSha: z.string().min(6),
+  commitSha: z.string().min(7),
   path: z.string().min(1),
   treeUrl: z.string().url(),
 });

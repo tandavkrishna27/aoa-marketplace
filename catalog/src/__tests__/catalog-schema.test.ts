@@ -53,11 +53,11 @@ describe("CatalogItemSchema skill metadata", () => {
       version: "1.0.0",
       source: {
         adapter: "github-skills",
-        url: "https://github.com/microsoft/azure-skills/tree/abc123/skills/azure-ai",
+        url: "https://github.com/microsoft/azure-skills/tree/abc1234/skills/azure-ai",
         locator: "microsoft/azure-skills/skills/azure-ai",
         commitSha: "catalogsha",
       },
-      resourceUrl: "https://raw.githubusercontent.com/microsoft/azure-skills/abc123/skills/azure-ai/SKILL.md",
+      resourceUrl: "https://raw.githubusercontent.com/microsoft/azure-skills/abc1234/skills/azure-ai/SKILL.md",
       trust: { tier: "verified", source: "github-skills" },
       status: "active",
       addedAt: "2026-05-14T00:00:00.000Z",
@@ -67,9 +67,9 @@ describe("CatalogItemSchema skill metadata", () => {
         bundle: {
           type: "github-directory",
           repo: "microsoft/azure-skills",
-          commitSha: "abc123",
+          commitSha: "abc1234",
           path: "skills/azure-ai",
-          treeUrl: "https://github.com/microsoft/azure-skills/tree/abc123/skills/azure-ai",
+          treeUrl: "https://github.com/microsoft/azure-skills/tree/abc1234/skills/azure-ai",
         },
         frontmatter: {
           name: "azure-ai",
