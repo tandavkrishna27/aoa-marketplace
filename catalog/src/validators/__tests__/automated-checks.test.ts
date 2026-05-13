@@ -100,6 +100,28 @@ describe("runAutomatedChecks", () => {
     expect(result.failures).toContain("skill.bundle.path must be a safe relative path");
   });
 
+  it.each(["skills/..", "C:/escape", "C:\\escape"])(
+    "fails skill bundles with unsafe path %s",
+    (path) => {
+      const result = runAutomatedChecks({
+        ...validSkillItem,
+        skill: {
+          bundle: {
+            type: "github-directory",
+            repo: "owner/repo",
+            commitSha: "abc1234",
+            path,
+            treeUrl: "https://github.com/owner/repo/tree/abc1234/skills/tooling",
+          },
+          frontmatter: { raw: {} },
+        },
+      });
+
+      expect(result.passed).toBe(false);
+      expect(result.failures).toContain("skill.bundle.path must be a safe relative path");
+    },
+  );
+
   it("warns for broad allowed-tools values", () => {
     const result = runAutomatedChecks({
       ...validSkillItem,

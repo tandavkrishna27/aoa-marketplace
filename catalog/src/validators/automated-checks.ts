@@ -14,6 +14,15 @@ export interface CheckResult {
   warnings: string[];
 }
 
+function isSafeRelativePath(path: string): boolean {
+  const normalized = path.replace(/\\/g, "/");
+  if (normalized.length === 0) return false;
+  if (normalized.startsWith("/")) return false;
+  if (/^[A-Za-z]:\//.test(normalized)) return false;
+  if (normalized.includes("\0")) return false;
+  return normalized.split("/").every((segment) => segment !== "" && segment !== "." && segment !== "..");
+}
+
 export function runAutomatedChecks(item: CatalogItem, rawManifest?: Record<string, unknown>): CheckResult {
   const failures: string[] = [];
   const warnings: string[] = [];
@@ -81,16 +90,8 @@ export function runAutomatedChecks(item: CatalogItem, rawManifest?: Record<strin
     }
 
     const path = item.skill?.bundle.path;
-    if (path !== undefined) {
-      const normalized = path.replace(/\\/g, "/");
-      if (
-        normalized.startsWith("/") ||
-        normalized.includes("../") ||
-        normalized === ".." ||
-        normalized.includes("\0")
-      ) {
-        failures.push("skill.bundle.path must be a safe relative path");
-      }
+    if (path !== undefined && !isSafeRelativePath(path)) {
+      failures.push("skill.bundle.path must be a safe relative path");
     }
 
     const allowedTools = item.skill?.frontmatter.allowedTools;
