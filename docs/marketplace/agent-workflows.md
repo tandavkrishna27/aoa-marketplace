@@ -129,17 +129,28 @@ Workflow:
 
 1. Create `content/agents/{slug}/manifest.json`.
 2. Create `content/agents/{slug}/agent.json`.
-3. Add `instructions.md` when `agent.json.instructions.type` is `file`.
-4. Declare all install dependencies in `manifest.json.requires`.
-5. Add runtime aliases in `agent.json.dependencies` only for dependencies declared in `manifest.json.requires`.
-6. Run `pnpm --filter @armyofagents/aoa-marketplace-builder test`.
-7. Run `pnpm --filter @armyofagents/aoa-marketplace-builder typecheck`.
-8. Run `pnpm validate`.
-9. Run `pnpm aggregate`.
+3. Prefer bundle instructions for AoA agents:
+
+```json
+{ "type": "bundle", "entry": "AGENTS.md", "files": ["AGENTS.md", "HEARTBEAT.md", "SOUL.md", "TOOLS.md"] }
+```
+
+4. Add every bundle file listed in `agent.json.instructions.files` in the same agent folder.
+5. Declare skills and plugins in `manifest.json.requires`.
+6. Add runtime aliases in `agent.json.dependencies` only for dependencies declared in `manifest.json.requires`.
+7. Add `aoa.adapterCompatibility` if the agent targets AoA.
+8. Add `aoa.setup` for required secrets or plugin configuration that an installer must collect before the agent can work.
+9. Run `pnpm --filter @armyofagents/aoa-marketplace-builder test`.
+10. Run `pnpm --filter @armyofagents/aoa-marketplace-builder typecheck`.
+11. Run `pnpm validate`.
+12. Run `pnpm aggregate`.
+13. Run `git diff --check`.
 
 Notes:
 
 - `manifest.json.requires` is canonical; `agent.json.dependencies` provides runtime aliases only.
+- Instructions define who the agent is and how it operates; skills are reusable capability modules; plugins are external integrations; setup requirements describe required installer prompts.
+- `resourceUrl` points to `agent.json`; bundle instruction files are referenced by `agent.json.instructions.files` and validated beside it.
 - The optional `aoa` block in `agent.json` is consumer-specific. Do not claim AoA install or runtime support is complete.
 - The catalog builder validates agent file shape, instruction file safety, runtime aliases, and final dependency graph integrity.
 

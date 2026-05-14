@@ -106,11 +106,60 @@ Automated checks require plugin capability descriptions to be present and long e
 
 ## Agents
 
-Agent items use `type: "agent"`. Agent-specific validation requires `content/agents/{slug}/manifest.json` and `content/agents/{slug}/agent.json`. The catalog item keeps shared fields and a commit-pinned `resourceUrl` to `agent.json`. Agent dependencies use shared `requires`; runtime aliases live inside `agent.json` and are validated against `requires`.
+Agent items use `type: "agent"`. Agent-specific validation requires `content/agents/{slug}/manifest.json` and `content/agents/{slug}/agent.json`. The catalog item keeps shared fields and a commit-pinned `resourceUrl` to `agent.json`. Bundle instruction files are not separate catalog resources; they are referenced by `agent.json.instructions.files`. Agent dependencies use shared `requires`; runtime aliases live inside `agent.json` and are validated against `requires`.
 
-The AoA-curated adapter validates agent folders with `catalog/src/sources/aoa-curated/agent-content.ts`. `manifest.json.runtime.entry` must be `agent.json`, file-backed instruction paths must be safe relative paths that exist in the agent folder, and runtime dependency aliases may only point at skill or plugin IDs declared in `manifest.json.requires`.
+The AoA-curated adapter validates agent folders with `catalog/src/sources/aoa-curated/agent-content.ts`. `manifest.json.runtime.entry` must be `agent.json`, file-backed instruction paths must be safe relative paths that exist in the agent folder, bundle instruction `entry` and `files` paths must exist in the same agent folder, and runtime dependency aliases may only point at skill or plugin IDs declared in `manifest.json.requires`.
 
-The generated catalog does not embed `agent.json`; it exposes the agent as a shared catalog item and pins `resourceUrl` to `content/agents/{slug}/agent.json` for consumers. `manifest.json.requires` is canonical for install and dependency graph validation. `agent.json.dependencies` provides runtime aliases only and does not create additional catalog dependencies.
+The generated catalog does not embed `agent.json`; it exposes the agent as a shared catalog item and pins `resourceUrl` to `content/agents/{slug}/agent.json` for consumers. For bundle instructions, consumers read `agent.json.instructions.files` to find files such as `AGENTS.md`, `HEARTBEAT.md`, `SOUL.md`, and `TOOLS.md` beside `agent.json`. The marketplace validates that those bundle files exist in the same agent folder. AoA later materializes them into a managed instructions bundle. `manifest.json.requires` remains canonical for install dependencies and dependency graph validation. `agent.json.dependencies` provides runtime aliases only and does not create additional catalog dependencies.
+
+The agent runtime contract may use bundle instructions:
+
+```json
+{ "type": "bundle", "entry": "AGENTS.md", "files": ["AGENTS.md", "HEARTBEAT.md", "SOUL.md", "TOOLS.md"] }
+```
+
+Instructions define who the agent is and how it operates. Skills are reusable capability modules declared in `manifest.json.requires` and optionally aliased in `agent.json.dependencies.skills`. Plugins are external integrations declared in `manifest.json.requires` and optionally aliased in `agent.json.dependencies.plugins`. Setup requirements describe installer prompts for required secrets or plugin configuration.
+
+AoA-specific runtime metadata may describe adapter compatibility and setup prompts:
+
+```json
+{
+  "aoa": {
+    "adapterCompatibility": {
+      "recommended": "codex",
+      "supported": ["codex", "claude"],
+      "requiresInstructionsBundle": true,
+      "requiresSkillInjection": true
+    },
+    "install": {
+      "defaultStatus": "paused"
+    },
+    "setup": {
+      "secrets": [
+        {
+          "key": "ISSUES_API_TOKEN",
+          "label": "Issues API token",
+          "required": true,
+          "reason": "Allows the issues plugin to read and update issue metadata.",
+          "usedBy": "issues"
+        }
+      ],
+      "pluginConfig": [
+        {
+          "plugin": "plugin:aoa-curated/aoa-plugin-example",
+          "required": true,
+          "reason": "Connect the issues plugin before activating the agent."
+        }
+      ],
+      "notes": [
+        "Keep the agent paused until required setup is complete."
+      ]
+    }
+  }
+}
+```
+
+`aoa.adapterCompatibility` identifies the AoA adapter expectations. `aoa.install` provides optional initial install hints. `aoa.setup` describes what a future installer must collect before the agent can work. These metadata fields do not install dependencies or make the agent runnable by themselves.
 
 Aggregation runs dependency graph validation after dedupe. Shared `requires` entries must resolve to existing catalog items, match the declared type, use valid semver ranges when present, satisfy semver target versions when possible, avoid duplicates, and avoid cycles. Items with invalid dependency graphs are excluded from catalog output.
 

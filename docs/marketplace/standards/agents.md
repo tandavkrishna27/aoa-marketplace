@@ -13,10 +13,21 @@ content/agents/{slug}/
   manifest.json
   agent.json
   instructions.md
+  AGENTS.md
+  HEARTBEAT.md
+  SOUL.md
+  TOOLS.md
   README.md
 ```
 
-`manifest.json` and `agent.json` are required. `instructions.md` is required when `agent.json.instructions.type` is `file` and the path points at `instructions.md`. `README.md` is optional marketplace content and may be inlined when the manifest opts into inline content.
+`manifest.json` and `agent.json` are required. `instructions.md` is required when `agent.json.instructions.type` is `file` and the path points at `instructions.md`. AoA agents should prefer bundle instructions with `AGENTS.md` as the entry file and should include every file listed in `agent.json.instructions.files`, commonly `AGENTS.md`, `HEARTBEAT.md`, `SOUL.md`, and `TOOLS.md`. `README.md` is optional marketplace content and may be inlined when the manifest opts into inline content.
+
+Agent content separates four concepts:
+
+- Instructions define who the agent is and how it operates.
+- Skills are reusable capability modules the agent can call on.
+- Plugins are external integrations the agent can use.
+- Setup requirements describe what an installer must collect before the agent can work, such as secrets or plugin configuration.
 
 ## Manifest Contract
 
@@ -54,13 +65,49 @@ Required fields are `name`, `description`, `version`, `category`, `sourceUrl`, a
   "id": "example",
   "name": "Example Agent",
   "description": "What this agent does and when to use it.",
-  "instructions": { "type": "file", "path": "instructions.md" },
+  "instructions": {
+    "type": "bundle",
+    "entry": "AGENTS.md",
+    "files": ["AGENTS.md", "HEARTBEAT.md", "SOUL.md", "TOOLS.md"]
+  },
   "dependencies": {
     "skills": {
       "docs": "skill:github-skills/owner/repo/path"
     },
     "plugins": {
       "issues": "plugin:aoa-curated/aoa-plugin-example"
+    }
+  },
+  "aoa": {
+    "adapterCompatibility": {
+      "recommended": "codex",
+      "supported": ["codex", "claude"],
+      "requiresInstructionsBundle": true,
+      "requiresSkillInjection": true
+    },
+    "install": {
+      "defaultStatus": "paused"
+    },
+    "setup": {
+      "secrets": [
+        {
+          "key": "ISSUES_API_TOKEN",
+          "label": "Issues API token",
+          "required": true,
+          "reason": "Allows the issues plugin to read and update issue metadata.",
+          "usedBy": "issues"
+        }
+      ],
+      "pluginConfig": [
+        {
+          "plugin": "plugin:aoa-curated/aoa-plugin-example",
+          "required": true,
+          "reason": "Connect the issues plugin before activating the agent."
+        }
+      ],
+      "notes": [
+        "Keep the agent paused until required setup is complete."
+      ]
     }
   }
 }
@@ -70,7 +117,7 @@ Runtime fields are strict. `schemaVersion`, `id`, `name`, `description`, and `in
 
 ## Instructions
 
-Agent instructions may be inline or file-backed:
+Agent instructions may be inline, file-backed, or bundled:
 
 ```json
 { "type": "inline", "content": "Triage issues and propose next actions." }
@@ -81,6 +128,14 @@ Agent instructions may be inline or file-backed:
 ```
 
 File paths must be safe relative paths inside the agent folder. Absolute paths, drive-letter paths, empty path segments, `.`, `..`, and missing files are rejected.
+
+AoA agents should use bundle instructions:
+
+```json
+{ "type": "bundle", "entry": "AGENTS.md", "files": ["AGENTS.md", "HEARTBEAT.md", "SOUL.md", "TOOLS.md"] }
+```
+
+The bundle entry identifies the primary instruction file. Every listed file must exist in the same `content/agents/{slug}/` folder. The marketplace validates the file list and path safety; AoA later materializes these files into a managed instructions bundle. This catalog contract does not mean AoA install or runtime support is complete.
 
 ## Dependency Contract
 
@@ -98,7 +153,62 @@ Use `agent.json.dependencies.skills` and `agent.json.dependencies.plugins` only 
 
 The `aoa` block in `agent.json` is optional and consumer-specific. Marketplace validates that it is structured JSON, but AoA decides how to interpret the values later.
 
-Current accepted keys are `adapterType`, `runtimeConfig`, `adapterConfig`, `permissions`, and `skillKeys`. These fields are hints for future AoA consumers and do not mean AoA installer or runtime support is complete.
+Current accepted keys include `adapterCompatibility`, `install`, `setup`, `runtimeConfig`, `adapterConfig`, `permissions`, and `skillKeys`. `adapterType` is accepted only as legacy compatibility input; new agent definitions should use `adapterCompatibility`. These fields are hints for future AoA consumers and do not mean AoA installer or runtime support is complete.
+
+Use `aoa.adapterCompatibility` to declare the suggested adapter families and runtime features an agent expects:
+
+```json
+{
+  "adapterCompatibility": {
+    "recommended": "codex",
+    "supported": ["codex", "claude"],
+    "requiresInstructionsBundle": true,
+    "requiresSkillInjection": true
+  }
+}
+```
+
+Use `aoa.install` for initial install hints that a future consumer may apply:
+
+```json
+{
+  "install": {
+    "defaultRole": "engineering",
+    "defaultStatus": "paused",
+    "defaultIcon": "wrench"
+  }
+}
+```
+
+Use `aoa.setup` for setup prompts that must be answered before the agent can work:
+
+```json
+{
+  "setup": {
+    "secrets": [
+      {
+        "key": "ISSUES_API_TOKEN",
+        "label": "Issues API token",
+        "required": true,
+        "reason": "Allows the issues plugin to read and update issue metadata.",
+        "usedBy": "issues"
+      }
+    ],
+    "pluginConfig": [
+      {
+        "plugin": "plugin:aoa-curated/aoa-plugin-example",
+        "required": true,
+        "reason": "Connect the issues plugin before activating the agent."
+      }
+    ],
+    "notes": [
+      "Keep the agent paused until required setup is complete."
+    ]
+  }
+}
+```
+
+Setup prompts describe required secrets or plugin configuration for a future installer. They do not install plugins, create secrets, or make the agent runnable by themselves.
 
 ## Validation Rules
 
@@ -108,6 +218,7 @@ The catalog builder enforces:
 - `agent.json` exists, uses `schemaVersion: "agent.v1"`, and validates against the strict runtime schema.
 - `manifest.json.runtime.entry` is exactly `agent.json`.
 - File-backed instruction paths are safe relative paths and exist in the agent folder.
+- Bundle instruction `entry` and every path in `instructions.files` are safe relative paths and exist in the same agent folder.
 - Every `agent.json.dependencies.skills` ID appears in `manifest.json.requires` with `type: "skill"`.
 - Every `agent.json.dependencies.plugins` ID appears in `manifest.json.requires` with `type: "plugin"`.
 - Final catalog dependencies resolve to existing items, match the declared type, use valid semver ranges when present, satisfy target versions when target versions are semver, avoid duplicates, and do not create cycles.
@@ -117,19 +228,24 @@ The catalog builder enforces:
 
 1. Create `content/agents/{slug}/manifest.json`.
 2. Create `content/agents/{slug}/agent.json`.
-3. Add `instructions.md` when `agent.json.instructions.type` is `file`.
-4. Declare all install dependencies in `manifest.json.requires`.
-5. Add runtime aliases in `agent.json.dependencies` only for dependencies declared in `manifest.json.requires`.
-6. Run `pnpm --filter @armyofagents/aoa-marketplace-builder test`.
-7. Run `pnpm --filter @armyofagents/aoa-marketplace-builder typecheck`.
-8. Run `pnpm validate`.
-9. Run `pnpm aggregate`.
-10. Run `git diff --check`.
+3. Prefer bundle instructions for AoA agents.
+4. Add every bundle file listed in `agent.json.instructions.files`, usually `AGENTS.md`, `HEARTBEAT.md`, `SOUL.md`, and `TOOLS.md`.
+5. Declare all install dependencies in `manifest.json.requires`.
+6. Add runtime aliases in `agent.json.dependencies` only for dependencies declared in `manifest.json.requires`.
+7. Add `aoa.adapterCompatibility` when the agent targets AoA.
+8. Add `aoa.setup` for required secrets or plugin configuration.
+9. Run `pnpm --filter @armyofagents/aoa-marketplace-builder test`.
+10. Run `pnpm --filter @armyofagents/aoa-marketplace-builder typecheck`.
+11. Run `pnpm validate`.
+12. Run `pnpm aggregate`.
+13. Run `git diff --check`.
 
 ## Checklist
 
 - Confirm the agent folder follows the required layout.
 - Confirm `manifest.json.requires` is the canonical dependency list.
 - Confirm `agent.json.dependencies` contains runtime aliases only.
+- Confirm AoA agents use bundle instructions and every `instructions.files` entry exists beside `agent.json`.
+- Confirm required setup prompts are documented in `aoa.setup`.
 - Confirm any optional `aoa` block is described as consumer-specific.
 - Confirm docs and PR text say AoA install and runtime support remain a separate consumer milestone.
