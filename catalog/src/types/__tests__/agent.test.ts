@@ -67,6 +67,32 @@ describe("AgentRuntimeSchema", () => {
     expect(AgentRuntimeDependencyAliasSchema.parse("githubIssues")).toBe("githubIssues");
   });
 
+  it("rejects unknown nested runtime fields", () => {
+    expect(() =>
+      AgentRuntimeSchema.parse({
+        schemaVersion: "agent.v1",
+        id: "extra-instructions",
+        name: "Extra Instructions",
+        description: "Has an unsupported instruction field.",
+        instructions: { type: "inline", content: "Hello.", format: "markdown" },
+      }),
+    ).toThrow();
+
+    expect(() =>
+      AgentRuntimeSchema.parse({
+        schemaVersion: "agent.v1",
+        id: "extra-dependencies",
+        name: "Extra Dependencies",
+        description: "Has an unsupported dependency group.",
+        instructions: { type: "inline", content: "Hello." },
+        dependencies: {
+          skills: {},
+          tools: { shell: "tool:shell" },
+        },
+      }),
+    ).toThrow();
+  });
+
   it("validates safe relative instruction paths", () => {
     expect(isSafeAgentRelativePath("instructions.md")).toBe(true);
     expect(isSafeAgentRelativePath("docs/instructions.md")).toBe(true);

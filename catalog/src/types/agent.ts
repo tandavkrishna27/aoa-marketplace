@@ -11,12 +11,12 @@ const CatalogDependencyIdSchema = z.string().min(1);
 export const AgentInlineInstructionsSchema = z.object({
   type: z.literal("inline"),
   content: z.string().trim().min(1),
-});
+}).strict();
 
 export const AgentFileInstructionsSchema = z.object({
   type: z.literal("file"),
   path: z.string().trim().min(1),
-});
+}).strict();
 
 export const AgentInstructionsSchema = z.discriminatedUnion("type", [
   AgentInlineInstructionsSchema,
@@ -26,7 +26,7 @@ export const AgentInstructionsSchema = z.discriminatedUnion("type", [
 export const AgentDependenciesSchema = z.object({
   skills: z.record(AgentRuntimeDependencyAliasSchema, CatalogDependencyIdSchema).optional(),
   plugins: z.record(AgentRuntimeDependencyAliasSchema, CatalogDependencyIdSchema).optional(),
-}).optional();
+}).strict().optional();
 
 export const AgentAoaHintsSchema = z.object({
   adapterType: z.string().min(1).optional(),

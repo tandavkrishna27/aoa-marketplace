@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -69,6 +69,30 @@ describe("loadAndValidateAgentContent", () => {
     });
 
     expect(() => loadAndValidateAgentContent(dir)).toThrow(/instructions file not found/);
+  });
+
+  it("throws when file instructions point to a directory", () => {
+    const dir = makeItemDir();
+    mkdirSync(join(dir, "instructions.md"));
+    writeJson(dir, "agent.json", {
+      ...agent,
+      instructions: { type: "file", path: "instructions.md" },
+    });
+
+    expect(() => loadAndValidateAgentContent(dir)).toThrow(/instructions path is not a file/);
+  });
+
+  it("throws when file instructions resolve outside the agent directory", () => {
+    const dir = makeItemDir();
+    const externalDir = mkdtempSync(join(tmpdir(), "agent-content-external-"));
+    tempDirs.push(externalDir);
+    symlinkSync(externalDir, join(dir, "instructions.md"), "junction");
+    writeJson(dir, "agent.json", {
+      ...agent,
+      instructions: { type: "file", path: "instructions.md" },
+    });
+
+    expect(() => loadAndValidateAgentContent(dir)).toThrow(/instructions path escapes agent directory/);
   });
 
   it("throws when the instruction path is unsafe", () => {
