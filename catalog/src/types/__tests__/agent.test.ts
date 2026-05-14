@@ -49,6 +49,54 @@ describe("AgentRuntimeSchema", () => {
     expect(parsed.instructions.type).toBe("inline");
   });
 
+  it("accepts bundle instructions with entry and multiple files", () => {
+    const parsed = AgentRuntimeSchema.parse({
+      schemaVersion: "agent.v1",
+      id: "bundle-agent",
+      name: "Bundle Agent",
+      description: "Uses bundled instruction files.",
+      instructions: {
+        type: "bundle",
+        entry: "instructions/main.md",
+        files: ["instructions/main.md", "instructions/context.md"],
+      },
+    });
+
+    expect(parsed.instructions.type).toBe("bundle");
+  });
+
+  it("rejects bundle instructions when entry is not listed in files", () => {
+    expect(() =>
+      AgentRuntimeSchema.parse({
+        schemaVersion: "agent.v1",
+        id: "missing-entry-agent",
+        name: "Missing Entry Agent",
+        description: "Has a bundle entry not listed in files.",
+        instructions: {
+          type: "bundle",
+          entry: "instructions/main.md",
+          files: ["instructions/context.md"],
+        },
+      }),
+    ).toThrow(/entry must be included/);
+  });
+
+  it("rejects duplicate bundle instruction files", () => {
+    expect(() =>
+      AgentRuntimeSchema.parse({
+        schemaVersion: "agent.v1",
+        id: "duplicate-files-agent",
+        name: "Duplicate Files Agent",
+        description: "Has duplicate bundle instruction files.",
+        instructions: {
+          type: "bundle",
+          entry: "instructions/main.md",
+          files: ["instructions/main.md", "instructions/main.md"],
+        },
+      }),
+    ).toThrow(/duplicate/);
+  });
+
   it("rejects unsupported schema versions", () => {
     expect(() =>
       AgentRuntimeSchema.parse({

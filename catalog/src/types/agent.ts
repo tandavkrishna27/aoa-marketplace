@@ -18,10 +18,53 @@ export const AgentFileInstructionsSchema = z.object({
   path: z.string().trim().min(1),
 }).strict();
 
+const AgentBundleInstructionsBaseSchema = z.object({
+  type: z.literal("bundle"),
+  entry: z.string().trim().min(1),
+  files: z.array(z.string().trim().min(1)).min(1),
+}).strict();
+
+function refineAgentBundleInstructions(
+  instructions: z.infer<typeof AgentBundleInstructionsBaseSchema>,
+  ctx: z.RefinementCtx,
+): void {
+  const seenFiles = new Set<string>();
+
+  for (const [index, file] of instructions.files.entries()) {
+    if (seenFiles.has(file)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "duplicate bundle instruction file",
+        path: ["files", index],
+      });
+      continue;
+    }
+
+    seenFiles.add(file);
+  }
+
+  if (!seenFiles.has(instructions.entry)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "entry must be included in bundle instruction files",
+      path: ["entry"],
+    });
+  }
+}
+
+export const AgentBundleInstructionsSchema = AgentBundleInstructionsBaseSchema.superRefine(
+  refineAgentBundleInstructions,
+);
+
 export const AgentInstructionsSchema = z.discriminatedUnion("type", [
   AgentInlineInstructionsSchema,
   AgentFileInstructionsSchema,
-]);
+  AgentBundleInstructionsBaseSchema,
+]).superRefine((instructions, ctx) => {
+  if (instructions.type === "bundle") {
+    refineAgentBundleInstructions(instructions, ctx);
+  }
+});
 
 export const AgentDependenciesSchema = z.object({
   skills: z.record(AgentRuntimeDependencyAliasSchema, CatalogDependencyIdSchema).optional(),
