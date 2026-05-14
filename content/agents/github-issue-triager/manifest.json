@@ -1,0 +1,27 @@
+{
+  "id": "agent:aoa-curated/github-issue-triager",
+  "name": "GitHub Issue Triager",
+  "description": "A plugin-backed agent for triaging GitHub-linked AoA issues, classifying priority and risk, preparing next actions, and drafting GitHub issue updates.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "tags": ["official", "featured", "requires-api-key"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": {
+    "entry": "agent.json"
+  },
+  "requires": [
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/writing-plans" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/systematic-debugging" },
+    { "type": "skill", "id": "skill:github-skills/coderabbitai/skills/code-review" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/gh-address-comments" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/security-best-practices" },
+    { "type": "plugin", "id": "plugin:aoa-curated/aoa-plugin-github-issues", "versionRange": "^1.0.0" }
+  ],
+  "capabilities": [
+    { "id": "issues.triage", "description": "Classify GitHub-linked AoA issues by type, severity, priority, owner, and next action." },
+    { "id": "issues.summarize", "description": "Summarize issue history, comments, reproduction details, and open questions." },
+    { "id": "issues.plan", "description": "Convert clear issues into implementation or investigation plans." },
+    { "id": "issues.github-draft", "description": "Draft GitHub issue comments, labels, and status updates for configured repositories." },
+    { "id": "issues.security-risk", "description": "Flag security-sensitive issues and route them for confidential handling when needed." }
+  ]
+}
