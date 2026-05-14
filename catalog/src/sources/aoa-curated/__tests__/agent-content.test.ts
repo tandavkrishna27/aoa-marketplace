@@ -94,4 +94,19 @@ describe("loadAndValidateAgentContent", () => {
 
     expect(() => loadAndValidateAgentContent(dir)).toThrow(/must be declared in manifest\.requires as type skill/);
   });
+
+  it("throws when a runtime plugin dependency is not declared in manifest.requires as a plugin", () => {
+    const dir = makeItemDir();
+    writeJson(dir, "manifest.json", { ...manifest, requires: [] });
+    writeJson(dir, "agent.json", {
+      ...agent,
+      dependencies: {
+        plugins: {
+          githubIssues: "plugin:aoa-curated/aoa-plugin-github-issues",
+        },
+      },
+    });
+
+    expect(() => loadAndValidateAgentContent(dir)).toThrow(/must be declared in manifest\.requires as type plugin/);
+  });
 });
