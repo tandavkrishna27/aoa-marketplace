@@ -30,6 +30,31 @@ export const AgentContentManifestSchema = z.object({
 
 export type AgentContentManifest = z.infer<typeof AgentContentManifestSchema>;
 
+function assertAgentInstructionFile(itemDir: string, relativePath: string): void {
+  if (!isSafeAgentRelativePath(relativePath)) {
+    throw new Error(`agent instructions path is unsafe: ${relativePath}`);
+  }
+  const instructionPath = join(itemDir, relativePath);
+  if (!existsSync(instructionPath)) {
+    throw new Error(`agent instructions file not found: ${relativePath}`);
+  }
+  const realItemDir = realpathSync(itemDir);
+  const realInstructionPath = realpathSync(instructionPath);
+  const relativeToAgent = relative(realItemDir, realInstructionPath);
+  if (
+    relativeToAgent === "" ||
+    relativeToAgent === ".." ||
+    relativeToAgent.startsWith(`..${sep}`) ||
+    isAbsolute(relativeToAgent) ||
+    relativeToAgent.includes("\0")
+  ) {
+    throw new Error(`agent instructions path escapes agent directory: ${relativePath}`);
+  }
+  if (!statSync(instructionPath).isFile()) {
+    throw new Error(`agent instructions path is not a file: ${relativePath}`);
+  }
+}
+
 export function loadAndValidateAgentContent(itemDir: string): AgentContentManifest {
   const manifestPath = join(itemDir, "manifest.json");
   const agentPath = join(itemDir, "agent.json");
@@ -45,27 +70,10 @@ export function loadAndValidateAgentContent(itemDir: string): AgentContentManife
   );
 
   if (runtime.instructions.type === "file") {
-    if (!isSafeAgentRelativePath(runtime.instructions.path)) {
-      throw new Error(`agent instructions path is unsafe: ${runtime.instructions.path}`);
-    }
-    const instructionPath = join(itemDir, runtime.instructions.path);
-    if (!existsSync(instructionPath)) {
-      throw new Error(`agent instructions file not found: ${runtime.instructions.path}`);
-    }
-    const realItemDir = realpathSync(itemDir);
-    const realInstructionPath = realpathSync(instructionPath);
-    const relativeToAgent = relative(realItemDir, realInstructionPath);
-    if (
-      relativeToAgent === "" ||
-      relativeToAgent === ".." ||
-      relativeToAgent.startsWith(`..${sep}`) ||
-      isAbsolute(relativeToAgent) ||
-      relativeToAgent.includes("\0")
-    ) {
-      throw new Error(`agent instructions path escapes agent directory: ${runtime.instructions.path}`);
-    }
-    if (!statSync(instructionPath).isFile()) {
-      throw new Error(`agent instructions path is not a file: ${runtime.instructions.path}`);
+    assertAgentInstructionFile(itemDir, runtime.instructions.path);
+  } else if (runtime.instructions.type === "bundle") {
+    for (const file of runtime.instructions.files) {
+      assertAgentInstructionFile(itemDir, file);
     }
   }
 

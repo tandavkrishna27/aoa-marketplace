@@ -40,6 +40,10 @@ function writeJson(dir: string, filename: string, value: unknown): void {
   writeFileSync(join(dir, filename), `${JSON.stringify(value, null, 2)}\n`);
 }
 
+function writeText(dir: string, filename: string, content = `${filename}\n`): void {
+  writeFileSync(join(dir, filename), content);
+}
+
 afterEach(() => {
   for (const dir of tempDirs.splice(0)) {
     rmSync(dir, { recursive: true, force: true });
@@ -115,6 +119,54 @@ describe("loadAndValidateAgentContent", () => {
     });
 
     expect(() => loadAndValidateAgentContent(dir)).toThrow(/instructions path is unsafe/);
+  });
+
+  it("accepts bundle instructions when every listed file exists", () => {
+    const dir = makeItemDir();
+    writeText(dir, "plan.md");
+    writeText(dir, "prompt.md");
+    writeJson(dir, "agent.json", {
+      ...agent,
+      instructions: { type: "bundle", entry: "plan.md", files: ["plan.md", "prompt.md"] },
+    });
+
+    expect(loadAndValidateAgentContent(dir).id).toBe("agent:aoa-curated/test-agent");
+  });
+
+  it("throws when a bundle file is missing", () => {
+    const dir = makeItemDir();
+    writeText(dir, "plan.md");
+    writeJson(dir, "agent.json", {
+      ...agent,
+      instructions: { type: "bundle", entry: "plan.md", files: ["plan.md", "missing.md"] },
+    });
+
+    expect(() => loadAndValidateAgentContent(dir)).toThrow(/instructions file not found/);
+  });
+
+  it("throws when a bundle file path is unsafe", () => {
+    const dir = makeItemDir();
+    writeText(dir, "plan.md");
+    writeJson(dir, "agent.json", {
+      ...agent,
+      instructions: { type: "bundle", entry: "plan.md", files: ["plan.md", "../HEARTBEAT.md"] },
+    });
+
+    expect(() => loadAndValidateAgentContent(dir)).toThrow(/instructions path is unsafe/);
+  });
+
+  it("throws when a bundle file resolves outside the agent directory", () => {
+    const dir = makeItemDir();
+    const externalDir = mkdtempSync(join(tmpdir(), "agent-content-external-"));
+    tempDirs.push(externalDir);
+    writeText(dir, "plan.md");
+    symlinkSync(externalDir, join(dir, "prompt.md"), "junction");
+    writeJson(dir, "agent.json", {
+      ...agent,
+      instructions: { type: "bundle", entry: "plan.md", files: ["plan.md", "prompt.md"] },
+    });
+
+    expect(() => loadAndValidateAgentContent(dir)).toThrow(/instructions path escapes agent directory/);
   });
 
   it("throws when a runtime skill dependency is not declared in manifest.requires", () => {
