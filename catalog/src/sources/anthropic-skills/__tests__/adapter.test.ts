@@ -50,7 +50,11 @@ version: 1.2.3
       };
 
       const items = await anthropicSkillsAdapter.normalize(
-        { cloneDir, cloneTimestamp: "2026-05-14T00:00:00.000Z" },
+        {
+          cloneDir,
+          cloneTimestamp: "2026-05-14T00:00:00.000Z",
+          sourceCommitSha: "abc1234567890fedcba9876543210fedcba98765",
+        },
         ctx,
       );
 
@@ -60,8 +64,20 @@ version: 1.2.3
       expect(items[0].item.description).toBe("Build polished frontend experiences");
       expect(items[0].item.version).toBe("1.2.3");
       expect(items[0].item.source.url).toBe(
-        "https://github.com/anthropics/skills/tree/main/skills/frontend-design",
+        "https://github.com/anthropics/skills/tree/abc1234567890fedcba9876543210fedcba98765/skills/frontend-design",
       );
+      expect(items[0].item.resourceUrl).toBe(
+        "https://raw.githubusercontent.com/anthropics/skills/abc1234567890fedcba9876543210fedcba98765/skills/frontend-design/SKILL.md",
+      );
+      expect(items[0].item.skill?.bundle).toEqual({
+        type: "github-directory",
+        repo: "anthropics/skills",
+        commitSha: "abc1234567890fedcba9876543210fedcba98765",
+        path: "skills/frontend-design",
+        treeUrl:
+          "https://github.com/anthropics/skills/tree/abc1234567890fedcba9876543210fedcba98765/skills/frontend-design",
+      });
+      expect(items[0].item.skill?.frontmatter.raw.name).toBe("frontend-design");
       expect(items[0].item.content?.inline).toContain("# Frontend Design");
       expect(items[0].rawManifest).toBeUndefined();
     },
@@ -94,7 +110,11 @@ version: 1.0.0
       };
 
       const items = await anthropicSkillsAdapter.normalize(
-        { cloneDir, cloneTimestamp: "2026-05-14T00:00:00.000Z" },
+        {
+          cloneDir,
+          cloneTimestamp: "2026-05-14T00:00:00.000Z",
+          sourceCommitSha: "abc1234567890fedcba9876543210fedcba98765",
+        },
         ctx,
       );
 
@@ -117,7 +137,7 @@ version: 1.0.0
     expect(first.type).toBe("skill");
     expect(first.trust.tier).toBe("verified");
     expect(first.id).toMatch(/^skill:anthropic\//);
-    expect(first.source.url).toMatch(/^https:\/\/github\.com\/anthropics\/skills\/tree\/main\//);
+    expect(first.source.url).toMatch(/^https:\/\/github\.com\/anthropics\/skills\/tree\/[0-9a-f]{40}\//);
     expect(first.content?.inline).toBeDefined();
     // anthropic-skills omits rawManifest (no license in frontmatter)
     expect(normalizedItems[0].rawManifest).toBeUndefined();

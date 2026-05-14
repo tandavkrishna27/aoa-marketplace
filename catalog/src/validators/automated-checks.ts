@@ -14,6 +14,15 @@ export interface CheckResult {
   warnings: string[];
 }
 
+function isSafeRelativePath(path: string): boolean {
+  const normalized = path.replace(/\\/g, "/");
+  if (normalized.length === 0) return false;
+  if (normalized.startsWith("/")) return false;
+  if (/^[A-Za-z]:/.test(normalized)) return false;
+  if (normalized.includes("\0")) return false;
+  return normalized.split("/").every((segment) => segment !== "" && segment !== "." && segment !== "..");
+}
+
 export function runAutomatedChecks(item: CatalogItem, rawManifest?: Record<string, unknown>): CheckResult {
   const failures: string[] = [];
   const warnings: string[] = [];
@@ -73,6 +82,22 @@ export function runAutomatedChecks(item: CatalogItem, rawManifest?: Record<strin
     failures.push(
       `inline content size ${item.content.inline.length} bytes exceeds ${MAX_INLINE_SIZE}-byte cap`,
     );
+  }
+
+  if (item.type === "skill") {
+    if (item.resourceUrl && !item.skill?.bundle) {
+      failures.push("skill item with resourceUrl must declare skill.bundle");
+    }
+
+    const path = item.skill?.bundle.path;
+    if (path !== undefined && !isSafeRelativePath(path)) {
+      failures.push("skill.bundle.path must be a safe relative path");
+    }
+
+    const allowedTools = item.skill?.frontmatter.allowedTools;
+    if (allowedTools && /(^|[^A-Za-z0-9_-])(\*|shell|bash|cmd|powershell)([^A-Za-z0-9_-]|$)/i.test(allowedTools)) {
+      warnings.push("Skill requests broad allowed-tools permissions");
+    }
   }
 
   return {

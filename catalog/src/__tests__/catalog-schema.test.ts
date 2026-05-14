@@ -42,3 +42,49 @@ describe("TagSchema requires-cli-tooling", () => {
     expect(() => TagSchema.parse("official")).not.toThrow();
   });
 });
+
+describe("CatalogItemSchema skill metadata", () => {
+  it("accepts skill bundle and frontmatter metadata", () => {
+    const item = {
+      id: "skill:github-skills/microsoft/azure-skills/azure-ai",
+      type: "skill",
+      name: "azure-ai",
+      description: "Azure AI guidance",
+      version: "1.0.0",
+      source: {
+        adapter: "github-skills",
+        url: "https://github.com/microsoft/azure-skills/tree/abc1234/skills/azure-ai",
+        locator: "microsoft/azure-skills/skills/azure-ai",
+        commitSha: "catalogsha",
+      },
+      resourceUrl: "https://raw.githubusercontent.com/microsoft/azure-skills/abc1234/skills/azure-ai/SKILL.md",
+      trust: { tier: "verified", source: "github-skills" },
+      status: "active",
+      addedAt: "2026-05-14T00:00:00.000Z",
+      category: "engineering",
+      tags: [],
+      skill: {
+        bundle: {
+          type: "github-directory",
+          repo: "microsoft/azure-skills",
+          commitSha: "abc1234",
+          path: "skills/azure-ai",
+          treeUrl: "https://github.com/microsoft/azure-skills/tree/abc1234/skills/azure-ai",
+        },
+        frontmatter: {
+          name: "azure-ai",
+          description: "Azure AI guidance",
+          license: "MIT",
+          compatibility: "Requires Azure CLI",
+          allowedTools: "shell",
+          metadata: { provider: "Microsoft" },
+          raw: { license: "MIT", metadata: { provider: "Microsoft" } },
+        },
+      },
+    };
+
+    expect(CatalogItemSchema.shape.skill).toBeDefined();
+    expect(() => CatalogItemSchema.parse(item)).not.toThrow();
+    expect(CatalogItemSchema.parse(item).skill).toEqual(item.skill);
+  });
+});

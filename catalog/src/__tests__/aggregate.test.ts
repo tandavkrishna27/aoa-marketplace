@@ -12,6 +12,31 @@ describe("aggregate", () => {
   // Either way, validateOnly: true skips writing dist/catalog.json.
   it("runs end-to-end without crashing", async () => {
     const catalog = await aggregate({ validateOnly: true });
+    const skillItems = catalog.items.filter((item) => item.type === "skill");
+
+    if (skillItems.length > 0) {
+      expect(skillItems.every((item) => item.skill?.bundle !== undefined)).toBe(true);
+      expect(skillItems.every((item) => item.resourceUrl !== undefined)).toBe(true);
+    }
+
+    if (catalog.items.some((item) => item.source.adapter === "anthropic-skills")) {
+      const anthropicFrontend = catalog.items.find(
+        (item) => item.id === "skill:anthropic/frontend-design"
+      );
+      expect(anthropicFrontend?.skill?.bundle.path).toBe("skills/frontend-design");
+    }
+
+    const azureNested = catalog.items.find(
+      (item) =>
+        item.id ===
+        "skill:github-skills/microsoft/azure-skills/microsoft-foundry/models/deploy-model/capacity"
+    );
+    if (azureNested) {
+      expect(azureNested.skill?.bundle.path).toBe(
+        "skills/microsoft-foundry/models/deploy-model/capacity"
+      );
+    }
+
     expect(catalog.schemaVersion).toBe("1.0.0");
     expect(catalog.itemCount).toBeGreaterThanOrEqual(0);
     expect(catalog.items.every((i) => i.id.length > 0)).toBe(true);
@@ -115,11 +140,17 @@ This is a test skill.`,
 
         // Verify catalog contains github-skills items
         expect(catalog.itemCount).toBeGreaterThan(0);
+        const skillItems = catalog.items.filter((item) => item.type === "skill");
+        expect(skillItems.length).toBeGreaterThan(0);
+        expect(skillItems.every((item) => item.skill?.bundle !== undefined)).toBe(true);
+        expect(skillItems.every((item) => item.resourceUrl !== undefined)).toBe(true);
+
         const githubSkillsItems = catalog.items.filter(
           (item) => item.source.adapter === "github-skills"
         );
         expect(githubSkillsItems.length).toBeGreaterThan(0);
         expect(githubSkillsItems[0].id).toMatch(/^skill:github-skills\//);
+        expect(githubSkillsItems[0].skill?.bundle.path).toBe("my-skill");
       } finally {
         // Restore original trusted-sources.json if it existed
         if (originalTsPath) {

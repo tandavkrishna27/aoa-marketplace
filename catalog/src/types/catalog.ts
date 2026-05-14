@@ -59,6 +59,34 @@ export const ContentSchema = z.object({
   { message: "content must have either inline or url" },
 );
 
+export const SkillBundleSchema = z.object({
+  type: z.literal("github-directory"),
+  repo: z.string().regex(/^[^/]+\/[^/]+$/),
+  commitSha: z.string().min(7),
+  path: z.string().min(1),
+  treeUrl: z.string().url(),
+});
+export type SkillBundle = z.infer<typeof SkillBundleSchema>;
+
+export const SkillFrontmatterSchema = z.object({
+  name: z.string().optional(),
+  description: z.string().optional(),
+  license: z.string().optional(),
+  compatibility: z.string().optional(),
+  metadata: z.record(z.string()).optional(),
+  allowedTools: z.string().optional(),
+  userInvocable: z.boolean().optional(),
+  disableModelInvocation: z.boolean().optional(),
+  raw: z.record(z.unknown()).default({}),
+});
+export type SkillFrontmatter = z.infer<typeof SkillFrontmatterSchema>;
+
+export const SkillMetadataSchema = z.object({
+  bundle: SkillBundleSchema,
+  frontmatter: SkillFrontmatterSchema,
+});
+export type SkillMetadata = z.infer<typeof SkillMetadataSchema>;
+
 export const CatalogItemSchema = z.object({
   id: z.string(),
   type: ItemTypeSchema,
@@ -81,6 +109,7 @@ export const CatalogItemSchema = z.object({
   // NEW: runtime primitives this skill needs at agent runtime — purely declarative,
   // does not block install. Surfaced as a warning banner on AoA's install modal.
   runtimeRequires: z.array(z.string()).optional(),
+  skill: SkillMetadataSchema.optional(),
 });
 export type CatalogItem = z.infer<typeof CatalogItemSchema>;
 

@@ -183,6 +183,8 @@ export const githubSkillsAdapter: SourceAdapter = {
           const content = readFileSync(skillFile, "utf-8");
           const fm = parseFrontmatter(content, fallbackName);
           const sha = src.sourceCommitSha;
+          const skillPath = relPath.replace(/\/SKILL\.md$/, "");
+          const treeUrl = `https://github.com/${src.config.repo}/tree/${sha}/${skillPath}`;
           const runtimeRequires = mergeRuntimeRequires(fm.runtimeRequires, id, overrides);
 
           // Category: frontmatter > source default > fallback "productivity"
@@ -203,8 +205,8 @@ export const githubSkillsAdapter: SourceAdapter = {
             version: fm.version,
             source: {
               adapter: "github-skills",
-              url: `https://github.com/${src.config.repo}/tree/${sha}/${relPath.replace(/\/SKILL\.md$/, "")}`,
-              locator: `${src.config.repo}/${relPath.replace(/\/SKILL\.md$/, "")}`,
+              url: treeUrl,
+              locator: `${src.config.repo}/${skillPath}`,
               commitSha: ctx.commitSha,
             },
             resourceUrl: `https://raw.githubusercontent.com/${src.config.repo}/${sha}/${relPath}`,
@@ -214,6 +216,26 @@ export const githubSkillsAdapter: SourceAdapter = {
             category: catParsed.success ? catParsed.data : "productivity",
             tags: z.array(TagSchema).parse(rawTags),
             runtimeRequires: runtimeRequires.length > 0 ? runtimeRequires : undefined,
+            skill: {
+              bundle: {
+                type: "github-directory",
+                repo: src.config.repo,
+                commitSha: sha,
+                path: skillPath,
+                treeUrl,
+              },
+              frontmatter: {
+                name: fm.name,
+                description: fm.description,
+                license: fm.license,
+                compatibility: fm.compatibility,
+                metadata: fm.metadata,
+                allowedTools: fm.allowedTools,
+                userInvocable: fm.userInvocable,
+                disableModelInvocation: fm.disableModelInvocation,
+                raw: fm.raw,
+              },
+            },
           };
 
           items.push({

@@ -222,6 +222,9 @@ Body.`,
       expect(deepest?.item.source.locator).toBe(
         "local/fake/skills/microsoft-foundry/models/deploy-model/capacity",
       );
+      expect(deepest?.item.skill?.bundle.path).toBe(
+        "skills/microsoft-foundry/models/deploy-model/capacity",
+      );
       expect(deepest?.item.resourceUrl).toMatch(
         /\/skills\/microsoft-foundry\/models\/deploy-model\/capacity\/SKILL\.md$/,
       );
@@ -339,11 +342,73 @@ Body.`,
       expect(foo!.item.category).toBe("engineering");
       expect(foo!.item.source.adapter).toBe("github-skills");
       expect(foo!.item.source.locator).toBe("local/fake/skills/foo");
+      expect(foo!.item.skill?.bundle).toEqual({
+        type: "github-directory",
+        repo: "local/fake",
+        commitSha: expect.stringMatching(/^[a-f0-9]{7,40}$/),
+        path: "skills/foo",
+        treeUrl: expect.stringMatching(
+          /^https:\/\/github\.com\/local\/fake\/tree\/[a-f0-9]{7,40}\/skills\/foo$/,
+        ),
+      });
+      expect(foo!.item.skill?.frontmatter.license).toBeUndefined();
+      expect(foo!.item.skill?.frontmatter.raw.name).toBe("foo");
       expect(foo!.item.resourceUrl).toMatch(/raw\.githubusercontent\.com\/local\/fake/);
       expect(foo!.item.runtimeRequires).toBeUndefined();
       const bar = items.find((i) => i.item.id.endsWith("/bar"));
       expect(bar!.item.category).toBe("productivity"); // fallback to defaultCategory
       expect(foo!.rawManifest?.license).toBe("MIT");
+    } finally {
+      delete process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO;
+      rmSync(tmp, { recursive: true });
+    }
+  });
+
+  it("points bundle at the full skill directory when support files exist", async () => {
+    const tmp = mkdtempSync(join(tmpdir(), "ghs-bundle-"));
+    try {
+      const fixture = makeFixtureRepo(tmp, "fake.git", {
+        "LICENSE": "MIT License\n",
+        "skills/tooling/SKILL.md": `---
+name: tooling
+description: Tooling skill
+license: MIT
+compatibility: Requires shell
+allowed-tools: shell
+metadata:
+  provider: TestCo
+---
+
+Body.`,
+        "skills/tooling/scripts/run.sh": "echo ok\n",
+        "skills/tooling/references/guide.md": "# Guide\n",
+        "skills/tooling/assets/template.txt": "template\n",
+      });
+      writeFileSync(
+        join(tmp, "trusted-sources.json"),
+        JSON.stringify({
+          schemaVersion: "1.0.0",
+          trustedSources: [
+            {
+              adapter: "github-skills",
+              tier: "verified",
+              reason: "fixture",
+              config: { repo: "local/fake", ref: "main", skillsPath: "skills" },
+            },
+          ],
+        }),
+      );
+      process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO = `local/fake=file://${fixture}`;
+      const ctx = { workDir: tmp, logger: silentLogger(), commitSha: "deadbeef" };
+      const raw = await githubSkillsAdapter.fetch(ctx);
+      const items = await githubSkillsAdapter.normalize(raw, ctx);
+
+      expect(items).toHaveLength(1);
+      expect(items[0].item.skill?.bundle.path).toBe("skills/tooling");
+      expect(items[0].item.skill?.frontmatter.license).toBe("MIT");
+      expect(items[0].item.skill?.frontmatter.compatibility).toBe("Requires shell");
+      expect(items[0].item.skill?.frontmatter.allowedTools).toBe("shell");
+      expect(items[0].item.skill?.frontmatter.metadata).toEqual({ provider: "TestCo" });
     } finally {
       delete process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO;
       rmSync(tmp, { recursive: true });
