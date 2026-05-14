@@ -1,0 +1,9 @@
+{
+  "id": "agent:aoa-curated/bundle-missing-file",
+  "name": "Bundle Missing File",
+  "description": "Invalid fixture with a missing bundle file.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" }
+}

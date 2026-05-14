@@ -1,0 +1,9 @@
+{
+  "id": "agent:aoa-curated/bundle-unsafe-path",
+  "name": "Bundle Unsafe Path",
+  "description": "Invalid fixture with an unsafe bundle file path.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" }
+}

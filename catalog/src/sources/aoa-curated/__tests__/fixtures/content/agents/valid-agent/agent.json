@@ -3,7 +3,11 @@
   "id": "valid-agent",
   "name": "Valid Agent",
   "description": "Valid marketplace agent fixture.",
-  "instructions": { "type": "file", "path": "instructions.md" },
+  "instructions": {
+    "type": "bundle",
+    "entry": "AGENTS.md",
+    "files": ["AGENTS.md", "HEARTBEAT.md", "SOUL.md", "TOOLS.md"]
+  },
   "dependencies": {
     "skills": {
       "openaiDocs": "skill:github-skills/openai/skills/openai-docs",
@@ -15,13 +19,33 @@
     }
   },
   "aoa": {
-    "adapterType": "codex_local",
-    "runtimeConfig": {},
-    "adapterConfig": {},
-    "permissions": {},
-    "skillKeys": [
-      "skill:github-skills/openai/skills/openai-docs",
-      "skill:github-skills/auth0/skills/auth0"
-    ]
+    "adapterCompatibility": {
+      "recommended": "codex_local",
+      "supported": ["codex_local", "claude_local", "opencode_local", "cursor"],
+      "requiresInstructionsBundle": true,
+      "requiresSkillInjection": true
+    },
+    "install": { "defaultRole": "lead", "defaultStatus": "paused", "defaultIcon": "code" },
+    "runtimeConfig": { "heartbeat": { "enabled": false, "intervalSec": 3600 } },
+    "permissions": { "canCreateAgents": false },
+    "setup": {
+      "secrets": [
+        {
+          "key": "GITHUB_TOKEN",
+          "label": "GitHub token",
+          "required": true,
+          "reason": "Required to read and update GitHub issues.",
+          "usedBy": "plugin:aoa-curated/aoa-plugin-github-issues"
+        }
+      ],
+      "pluginConfig": [
+        {
+          "plugin": "plugin:aoa-curated/aoa-plugin-github-issues",
+          "required": true,
+          "reason": "Connect a repository before the agent can triage issues."
+        }
+      ],
+      "notes": ["Install paused until GitHub access is configured."]
+    }
   }
 }

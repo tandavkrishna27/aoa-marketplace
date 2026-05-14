@@ -81,6 +81,9 @@ describe("aoaCuratedAdapter agent standard", () => {
     expect(ids).not.toContain("agent:aoa-curated/bad-schema-version");
     expect(ids).not.toContain("agent:aoa-curated/missing-instructions");
     expect(ids).not.toContain("agent:aoa-curated/undeclared-alias");
+    expect(ids).not.toContain("agent:aoa-curated/bundle-missing-entry");
+    expect(ids).not.toContain("agent:aoa-curated/bundle-missing-file");
+    expect(ids).not.toContain("agent:aoa-curated/bundle-unsafe-path");
   });
 });
 

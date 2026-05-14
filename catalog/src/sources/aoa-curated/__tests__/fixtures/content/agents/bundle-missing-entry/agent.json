@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "bundle-missing-entry",
+  "name": "Bundle Missing Entry",
+  "description": "Invalid fixture with bundle entry omitted from files.",
+  "instructions": {
+    "type": "bundle",
+    "entry": "AGENTS.md",
+    "files": ["HEARTBEAT.md"]
+  }
+}

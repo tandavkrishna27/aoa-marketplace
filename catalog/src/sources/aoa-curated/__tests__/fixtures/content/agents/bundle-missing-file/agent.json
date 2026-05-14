@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "bundle-missing-file",
+  "name": "Bundle Missing File",
+  "description": "Invalid fixture with a missing bundle file.",
+  "instructions": {
+    "type": "bundle",
+    "entry": "AGENTS.md",
+    "files": ["AGENTS.md", "HEARTBEAT.md"]
+  }
+}
