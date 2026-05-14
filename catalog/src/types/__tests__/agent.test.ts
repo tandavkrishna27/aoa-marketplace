@@ -97,6 +97,106 @@ describe("AgentRuntimeSchema", () => {
     ).toThrow(/duplicate/);
   });
 
+  it("accepts AoA adapter compatibility, install hints, runtime config, adapter config, permissions, skill keys, and setup requirements", () => {
+    const parsed = AgentRuntimeSchema.parse({
+      schemaVersion: "agent.v1",
+      id: "aoa-metadata-agent",
+      name: "AoA Metadata Agent",
+      description: "Uses structured AoA metadata.",
+      instructions: { type: "inline", content: "Review issues." },
+      aoa: {
+        adapterCompatibility: {
+          recommended: "codex_local",
+          supported: ["codex_local", "claude_local", "opencode_local", "cursor"],
+          requiresInstructionsBundle: true,
+          requiresSkillInjection: true,
+        },
+        install: {
+          defaultRole: "lead",
+          defaultStatus: "paused",
+          defaultIcon: "code",
+        },
+        runtimeConfig: { heartbeat: { enabled: false, intervalSec: 3600 } },
+        adapterConfig: {},
+        permissions: { canCreateAgents: false },
+        skillKeys: ["skill:github-skills/coderabbitai/skills/code-review"],
+        setup: {
+          secrets: [
+            {
+              key: "GITHUB_TOKEN",
+              label: "GitHub token",
+              required: true,
+              reason: "Required to read and update GitHub issues.",
+              usedBy: "plugin:aoa-curated/aoa-plugin-github-issues",
+            },
+          ],
+          pluginConfig: [
+            {
+              plugin: "plugin:aoa-curated/aoa-plugin-github-issues",
+              required: true,
+              reason: "Connect a repository before the agent can triage issues.",
+            },
+          ],
+          notes: ["Install paused until GitHub access is configured."],
+        },
+      },
+    });
+
+    expect(parsed.aoa?.adapterCompatibility?.recommended).toBe("codex_local");
+    expect(parsed.aoa?.install?.defaultStatus).toBe("paused");
+    expect(parsed.aoa?.setup?.secrets?.[0]?.key).toBe("GITHUB_TOKEN");
+  });
+
+  it("rejects AoA recommended adapter when it is not included in supported adapters", () => {
+    expect(() =>
+      AgentRuntimeSchema.parse({
+        schemaVersion: "agent.v1",
+        id: "unsupported-recommended-agent",
+        name: "Unsupported Recommended Agent",
+        description: "Has a recommended adapter outside the supported list.",
+        instructions: { type: "inline", content: "Review issues." },
+        aoa: {
+          adapterCompatibility: {
+            recommended: "codex_local",
+            supported: ["claude_local"],
+          },
+        },
+      }),
+    ).toThrow(/recommended adapter must be included/);
+  });
+
+  it("rejects invalid AoA install status", () => {
+    expect(() =>
+      AgentRuntimeSchema.parse({
+        schemaVersion: "agent.v1",
+        id: "invalid-install-status-agent",
+        name: "Invalid Install Status Agent",
+        description: "Uses an unsupported install status.",
+        instructions: { type: "inline", content: "Review issues." },
+        aoa: {
+          install: {
+            defaultStatus: "running",
+          },
+        },
+      }),
+    ).toThrow();
+  });
+
+  it("accepts deprecated AoA adapter type compatibility input", () => {
+    const parsed = AgentRuntimeSchema.parse({
+      schemaVersion: "agent.v1",
+      id: "deprecated-adapter-type-agent",
+      name: "Deprecated Adapter Type Agent",
+      description: "Uses the old adapter type hint.",
+      instructions: { type: "inline", content: "Review issues." },
+      aoa: {
+        adapterType: "codex_local",
+      },
+    });
+
+    expect(parsed.aoa?.adapterType).toBe("codex_local");
+  });
+
   it("rejects unsupported schema versions", () => {
     expect(() =>
       AgentRuntimeSchema.parse({

@@ -71,12 +71,60 @@ export const AgentDependenciesSchema = z.object({
   plugins: z.record(AgentRuntimeDependencyAliasSchema, CatalogDependencyIdSchema).optional(),
 }).strict().optional();
 
+export const AgentAoaAdapterCompatibilitySchema = z.object({
+  recommended: z.string().trim().min(1).optional(),
+  supported: z.array(z.string().trim().min(1)).min(1).optional(),
+  requiresInstructionsBundle: z.boolean().optional(),
+  requiresSkillInjection: z.boolean().optional(),
+}).strict().superRefine((compatibility, ctx) => {
+  if (
+    compatibility.recommended !== undefined &&
+    compatibility.supported !== undefined &&
+    !compatibility.supported.includes(compatibility.recommended)
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "recommended adapter must be included in supported adapters",
+      path: ["recommended"],
+    });
+  }
+});
+
+export const AgentAoaInstallHintsSchema = z.object({
+  defaultRole: z.string().trim().min(1).optional(),
+  defaultStatus: z.enum(["active", "paused", "terminated"]).optional(),
+  defaultIcon: z.string().trim().min(1).optional(),
+}).strict();
+
+export const AgentAoaSetupSecretSchema = z.object({
+  key: z.string().trim().min(1),
+  label: z.string().trim().min(1),
+  required: z.boolean().optional(),
+  reason: z.string().trim().min(1),
+  usedBy: z.string().trim().min(1).optional(),
+}).strict();
+
+export const AgentAoaSetupPluginConfigSchema = z.object({
+  plugin: z.string().trim().min(1),
+  required: z.boolean().optional(),
+  reason: z.string().trim().min(1),
+}).strict();
+
+export const AgentAoaSetupSchema = z.object({
+  secrets: z.array(AgentAoaSetupSecretSchema).optional(),
+  pluginConfig: z.array(AgentAoaSetupPluginConfigSchema).optional(),
+  notes: z.array(z.string().trim().min(1)).optional(),
+}).strict();
+
 export const AgentAoaHintsSchema = z.object({
   adapterType: z.string().min(1).optional(),
+  adapterCompatibility: AgentAoaAdapterCompatibilitySchema.optional(),
+  install: AgentAoaInstallHintsSchema.optional(),
   runtimeConfig: z.record(z.unknown()).optional(),
   adapterConfig: z.record(z.unknown()).optional(),
   permissions: z.record(z.unknown()).optional(),
   skillKeys: z.array(z.string().min(1)).optional(),
+  setup: AgentAoaSetupSchema.optional(),
 }).strict().optional();
 
 export const AgentRuntimeSchema = z.object({
