@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
-import type { ItemType } from "../../types/catalog.js";
+import { RequiresSchema } from "../../types/catalog.js";
 import {
   AgentRuntimeSchema,
   collectAgentRuntimeDependencyIds,
@@ -20,11 +20,7 @@ export const AgentContentManifestSchema = z.object({
   category: z.string().min(1),
   tags: z.array(z.string()).optional(),
   capabilities: z.array(z.object({ id: z.string().min(1), description: z.string().min(1) })).optional(),
-  requires: z.array(z.object({
-    type: z.custom<ItemType>((value) => ["skill", "plugin", "agent", "team"].includes(String(value))),
-    id: z.string().min(1),
-    versionRange: z.string().optional(),
-  })).optional(),
+  requires: z.array(RequiresSchema).optional(),
   contentInline: z.boolean().optional(),
   sourceUrl: z.string().url(),
   license: z.string().optional(),
