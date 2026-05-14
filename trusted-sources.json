@@ -45,6 +45,144 @@
         "skillsPath": "skills",
         "defaultCategory": "engineering"
       }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Angular official skills",
+      "config": { "repo": "angular/skills", "ref": "main", "skillsPath": "", "ignore": ["**/.git/**", "**/node_modules/**", "**/dist/**"], "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Google Gemini official skills",
+      "config": { "repo": "google-gemini/gemini-skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Stripe official AI skills",
+      "config": { "repo": "stripe/ai", "ref": "main", "skillsPath": "skills", "defaultCategory": "integrations" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Expo official skills",
+      "config": { "repo": "expo/skills", "ref": "main", "skillsPath": "plugins/expo/skills", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Cloudflare official skills",
+      "config": { "repo": "cloudflare/skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Hugging Face official skills",
+      "config": { "repo": "huggingface/skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "data" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "WordPress official agent skills",
+      "config": { "repo": "WordPress/agent-skills", "ref": "trunk", "skillsPath": "skills", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "OpenAI official skills",
+      "config": { "repo": "openai/skills", "ref": "main", "skillsPath": "skills/.curated", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Figma official MCP skills",
+      "config": { "repo": "figma/mcp-server-guide", "ref": "main", "skillsPath": "skills", "defaultCategory": "design" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Notion official cookbook skills",
+      "config": { "repo": "makenotion/notion-cookbook", "ref": "main", "skillsPath": "skills/claude", "defaultCategory": "productivity" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Resend official skills",
+      "config": { "repo": "resend/resend-skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "integrations" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Auth0 official agent skills",
+      "config": { "repo": "auth0/agent-skills", "ref": "main", "skillsPath": "plugins/auth0/skills", "defaultCategory": "integrations" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Brave official search skills",
+      "config": { "repo": "brave/brave-search-skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "integrations" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Apollo GraphQL official skills",
+      "config": { "repo": "apollographql/skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "CodeRabbit official skills",
+      "config": { "repo": "coderabbitai/skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Datadog Labs official agent skills",
+      "config": { "repo": "datadog-labs/agent-skills", "ref": "main", "skillsPath": "", "ignore": ["**/.git/**", "**/node_modules/**", "**/dist/**"], "defaultCategory": "operations" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Firebase official agent skills",
+      "config": { "repo": "firebase/agent-skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Flutter official skills",
+      "config": { "repo": "flutter/skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Netlify official context and skills",
+      "config": { "repo": "netlify/context-and-tools", "ref": "main", "skillsPath": "skills", "defaultCategory": "engineering" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Google Workspace CLI official skills",
+      "config": { "repo": "googleworkspace/cli", "ref": "main", "skillsPath": "skills", "defaultCategory": "productivity" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Google Labs Stitch official skills",
+      "config": { "repo": "google-labs-code/stitch-skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "design" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Neon official agent skills",
+      "config": { "repo": "neondatabase/agent-skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "data" }
+    },
+    {
+      "adapter": "github-skills",
+      "tier": "verified",
+      "reason": "Redis official agent skills",
+      "config": { "repo": "redis/agent-skills", "ref": "main", "skillsPath": "skills", "defaultCategory": "data" }
     }
   ]
 }
