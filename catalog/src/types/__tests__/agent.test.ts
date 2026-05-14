@@ -1,0 +1,78 @@
+import { describe, expect, it } from "vitest";
+import {
+  AgentRuntimeSchema,
+  AgentRuntimeDependencyAliasSchema,
+  isSafeAgentRelativePath,
+} from "../agent.js";
+
+describe("AgentRuntimeSchema", () => {
+  it("accepts an agent.v1 runtime with multiple skill and plugin aliases", () => {
+    const parsed = AgentRuntimeSchema.parse({
+      schemaVersion: "agent.v1",
+      id: "issue-triager",
+      name: "Issue Triager",
+      description: "Triages issues and proposes next actions.",
+      instructions: { type: "file", path: "instructions.md" },
+      dependencies: {
+        skills: {
+          openaiDocs: "skill:github-skills/openai/skills/openai-docs",
+          auth0: "skill:github-skills/auth0/skills/auth0",
+        },
+        plugins: {
+          githubIssues: "plugin:aoa-curated/aoa-plugin-github-issues",
+          slack: "plugin:aoa-curated/aoa-plugin-slack",
+        },
+      },
+      aoa: {
+        adapterType: "codex_local",
+        runtimeConfig: {},
+        adapterConfig: {},
+        permissions: {},
+        skillKeys: ["skill:github-skills/openai/skills/openai-docs"],
+      },
+    });
+
+    expect(parsed.schemaVersion).toBe("agent.v1");
+    expect(parsed.dependencies?.skills?.openaiDocs).toContain("openai-docs");
+    expect(parsed.dependencies?.plugins?.githubIssues).toContain("github-issues");
+  });
+
+  it("accepts inline instructions with non-empty content", () => {
+    const parsed = AgentRuntimeSchema.parse({
+      schemaVersion: "agent.v1",
+      id: "inline-agent",
+      name: "Inline Agent",
+      description: "Uses inline instructions.",
+      instructions: { type: "inline", content: "You triage issues." },
+    });
+
+    expect(parsed.instructions.type).toBe("inline");
+  });
+
+  it("rejects unsupported schema versions", () => {
+    expect(() =>
+      AgentRuntimeSchema.parse({
+        schemaVersion: "agent.v2",
+        id: "future-agent",
+        name: "Future Agent",
+        description: "Uses a future schema.",
+        instructions: { type: "inline", content: "Hello." },
+      }),
+    ).toThrow();
+  });
+
+  it("rejects invalid dependency alias names", () => {
+    expect(() => AgentRuntimeDependencyAliasSchema.parse("github-issues")).toThrow();
+    expect(() => AgentRuntimeDependencyAliasSchema.parse("1githubIssues")).toThrow();
+    expect(AgentRuntimeDependencyAliasSchema.parse("githubIssues")).toBe("githubIssues");
+  });
+
+  it("validates safe relative instruction paths", () => {
+    expect(isSafeAgentRelativePath("instructions.md")).toBe(true);
+    expect(isSafeAgentRelativePath("docs/instructions.md")).toBe(true);
+    expect(isSafeAgentRelativePath("../instructions.md")).toBe(false);
+    expect(isSafeAgentRelativePath("/tmp/instructions.md")).toBe(false);
+    expect(isSafeAgentRelativePath("C:/tmp/instructions.md")).toBe(false);
+    expect(isSafeAgentRelativePath("docs//instructions.md")).toBe(false);
+  });
+});
