@@ -59,15 +59,19 @@ describe("resolveTrustTier", () => {
 describe("loadTrustedSources", () => {
   it("reads trusted-sources.json from monorepo root and returns all entries", () => {
     const sources = loadTrustedSources(REPO_ROOT);
-    expect(sources).toHaveLength(5);
+    expect(sources).toHaveLength(28);
     expect(sources.find((s) => s.adapter === "aoa-curated")?.tier).toBe("verified");
     expect(sources.find((s) => s.adapter === "anthropic-skills")?.tier).toBe("verified");
     const githubSkillsSources = sources.filter((s) => s.adapter === "github-skills");
-    expect(githubSkillsSources).toHaveLength(3);
+    expect(githubSkillsSources).toHaveLength(26);
     expect(githubSkillsSources.every((s) => s.tier === "verified")).toBe(true);
     const azureSkillsSource = githubSkillsSources.find(
       (s) => (s as { config?: { repo?: string } }).config?.repo === "microsoft/azure-skills",
     );
     expect(azureSkillsSource?.tier).toBe("verified");
+    const openAiSkillsSource = githubSkillsSources.find(
+      (s) => (s as { config?: { repo?: string } }).config?.repo === "openai/skills",
+    );
+    expect(openAiSkillsSource?.tier).toBe("verified");
   });
 });
