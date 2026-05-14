@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "valid-agent",
+  "name": "Valid Agent",
+  "description": "Valid marketplace agent fixture.",
+  "instructions": { "type": "file", "path": "instructions.md" },
+  "dependencies": {
+    "skills": {
+      "openaiDocs": "skill:github-skills/openai/skills/openai-docs",
+      "auth0": "skill:github-skills/auth0/skills/auth0"
+    },
+    "plugins": {
+      "githubIssues": "plugin:aoa-curated/aoa-plugin-github-issues",
+      "slack": "plugin:aoa-curated/aoa-plugin-slack"
+    }
+  },
+  "aoa": {
+    "adapterType": "codex_local",
+    "runtimeConfig": {},
+    "adapterConfig": {},
+    "permissions": {},
+    "skillKeys": [
+      "skill:github-skills/openai/skills/openai-docs",
+      "skill:github-skills/auth0/skills/auth0"
+    ]
+  }
+}
