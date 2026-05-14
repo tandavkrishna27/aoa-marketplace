@@ -16,6 +16,7 @@ export interface CheckResult {
 
 function isSafeRelativePath(path: string): boolean {
   const normalized = path.replace(/\\/g, "/");
+  if (normalized === ".") return true;
   if (normalized.length === 0) return false;
   if (normalized.startsWith("/")) return false;
   if (/^[A-Za-z]:/.test(normalized)) return false;

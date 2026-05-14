@@ -30,6 +30,10 @@ describe("validateSkillBundlePath", () => {
   test("accepts nested relative paths", () => {
     expect(() => validateSkillBundlePath("skills/group/deep-skill")).not.toThrow();
   });
+
+  test("accepts dot as the repo-root bundle path", () => {
+    expect(() => validateSkillBundlePath(".")).not.toThrow();
+  });
 });
 
 describe("installSkillBundle", () => {
@@ -72,6 +76,22 @@ describe("installSkillBundle", () => {
     expect(existsSync(join(destination, "SKILL.md"))).toBe(true);
     expect(existsSync(join(destination, "scripts", "deep.sh"))).toBe(true);
     expect(existsSync(join(destination, "..", "other"))).toBe(false);
+  });
+
+  test("installs a repo-root bundle path", () => {
+    const fixture = createRepoFixture({
+      "SKILL.md": "# Root Skill\n",
+      "references/root.md": "# Root Reference\n",
+    });
+    const destination = join(fixture.root, "installed", "root-skill");
+
+    installSkillBundle(localBundle(fixture.repo, fixture.commitSha, "."), {
+      destination,
+      repoUrl: fixture.repo,
+    });
+
+    expect(existsSync(join(destination, "SKILL.md"))).toBe(true);
+    expect(existsSync(join(destination, "references", "root.md"))).toBe(true);
   });
 
   test("fails when destination exists and overwrite is false", () => {
