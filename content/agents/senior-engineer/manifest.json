@@ -1,0 +1,38 @@
+{
+  "id": "agent:aoa-curated/senior-engineer",
+  "name": "Senior Engineer",
+  "description": "A skill-only senior engineering agent for architecture review, planning, debugging, test discipline, code review, security guidance, and implementation quality.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "tags": ["official", "featured"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": {
+    "entry": "agent.json"
+  },
+  "requires": [
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/brainstorming" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/writing-plans" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/using-git-worktrees" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/test-driven-development" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/systematic-debugging" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/dispatching-parallel-agents" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/subagent-driven-development" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/executing-plans" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/requesting-code-review" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/receiving-code-review" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/verification-before-completion" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/finishing-a-development-branch" },
+    { "type": "skill", "id": "skill:github-skills/coderabbitai/skills/code-review" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/security-best-practices" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/openai-docs" }
+  ],
+  "capabilities": [
+    { "id": "engineering.discover", "description": "Clarify ambiguous requirements and shape implementation approaches." },
+    { "id": "engineering.plan", "description": "Create implementation plans with tests, checkpoints, and review steps." },
+    { "id": "engineering.implement", "description": "Guide disciplined implementation using isolated worktrees and test-driven workflows." },
+    { "id": "engineering.debug", "description": "Investigate bugs and failures systematically before proposing fixes." },
+    { "id": "engineering.review", "description": "Review code, architecture, tests, security risks, and reviewer feedback." },
+    { "id": "engineering.verify", "description": "Verify work before completion with concrete test, typecheck, build, or runtime evidence." },
+    { "id": "engineering.delegate", "description": "Use subagent-driven development when the active runtime supports real subagent delegation." }
+  ]
+}

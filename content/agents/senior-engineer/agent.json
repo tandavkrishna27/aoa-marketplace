@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "senior-engineer",
+  "name": "Senior Engineer",
+  "description": "A skill-only senior engineering agent for architecture review, planning, debugging, test discipline, code review, security guidance, and implementation quality.",
+  "instructions": {
+    "type": "bundle",
+    "entry": "AGENTS.md",
+    "files": ["AGENTS.md", "SOUL.md", "TOOLS.md", "HEARTBEAT.md"]
+  },
+  "dependencies": {
+    "skills": {
+      "brainstorming": "skill:github-skills/obra/superpowers/brainstorming",
+      "writingPlans": "skill:github-skills/obra/superpowers/writing-plans",
+      "gitWorktrees": "skill:github-skills/obra/superpowers/using-git-worktrees",
+      "tdd": "skill:github-skills/obra/superpowers/test-driven-development",
+      "debugging": "skill:github-skills/obra/superpowers/systematic-debugging",
+      "parallelAgents": "skill:github-skills/obra/superpowers/dispatching-parallel-agents",
+      "subagentDevelopment": "skill:github-skills/obra/superpowers/subagent-driven-development",
+      "executingPlans": "skill:github-skills/obra/superpowers/executing-plans",
+      "requestingReview": "skill:github-skills/obra/superpowers/requesting-code-review",
+      "receivingReview": "skill:github-skills/obra/superpowers/receiving-code-review",
+      "verification": "skill:github-skills/obra/superpowers/verification-before-completion",
+      "finishingBranch": "skill:github-skills/obra/superpowers/finishing-a-development-branch",
+      "codeReview": "skill:github-skills/coderabbitai/skills/code-review",
+      "securityBestPractices": "skill:github-skills/openai/skills/security-best-practices",
+      "openaiDocs": "skill:github-skills/openai/skills/openai-docs"
+    }
+  },
+  "aoa": {
+    "adapterCompatibility": {
+      "recommended": "codex_local",
+      "supported": ["codex_local", "claude_local"],
+      "requiresInstructionsBundle": true,
+      "requiresSkillInjection": true
+    },
+    "install": {
+      "defaultRole": "engineering",
+      "defaultStatus": "paused",
+      "defaultIcon": "code"
+    },
+    "runtimeConfig": {
+      "heartbeat": {
+        "enabled": true,
+        "wakeOnDemand": true,
+        "intervalSec": 0,
+        "maxConcurrentRuns": 1
+      }
+    },
+    "permissions": {
+      "requiresWorkspaceAccess": true,
+      "canCreateAgents": false,
+      "canManageMarketplace": false,
+      "canUseSubagentsWhenRuntimeSupportsIt": true
+    },
+    "skillKeys": [
+      "skill:github-skills/obra/superpowers/brainstorming",
+      "skill:github-skills/obra/superpowers/writing-plans",
+      "skill:github-skills/obra/superpowers/using-git-worktrees",
+      "skill:github-skills/obra/superpowers/test-driven-development",
+      "skill:github-skills/obra/superpowers/systematic-debugging",
+      "skill:github-skills/obra/superpowers/dispatching-parallel-agents",
+      "skill:github-skills/obra/superpowers/subagent-driven-development",
+      "skill:github-skills/obra/superpowers/executing-plans",
+      "skill:github-skills/obra/superpowers/requesting-code-review",
+      "skill:github-skills/obra/superpowers/receiving-code-review",
+      "skill:github-skills/obra/superpowers/verification-before-completion",
+      "skill:github-skills/obra/superpowers/finishing-a-development-branch",
+      "skill:github-skills/coderabbitai/skills/code-review",
+      "skill:github-skills/openai/skills/security-best-practices",
+      "skill:github-skills/openai/skills/openai-docs"
+    ],
+    "setup": {
+      "notes": [
+        "This agent is skill-only and does not require plugin configuration or secrets.",
+        "Install required skills before activating the agent.",
+        "Subagent-driven development is adapter/runtime dependent. If unavailable, the agent should decompose work without spawning child agents."
+      ]
+    }
+  }
+}
