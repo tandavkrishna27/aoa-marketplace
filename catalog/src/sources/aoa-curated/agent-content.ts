@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { isAbsolute, join, relative, sep } from "node:path";
 import { z } from "zod";
 import { RequiresSchema } from "../../types/catalog.js";
 import {
@@ -55,7 +55,13 @@ export function loadAndValidateAgentContent(itemDir: string): AgentContentManife
     const realItemDir = realpathSync(itemDir);
     const realInstructionPath = realpathSync(instructionPath);
     const relativeToAgent = relative(realItemDir, realInstructionPath);
-    if (relativeToAgent.startsWith("..") || relativeToAgent === "" || relativeToAgent.includes("\0")) {
+    if (
+      relativeToAgent === "" ||
+      relativeToAgent === ".." ||
+      relativeToAgent.startsWith(`..${sep}`) ||
+      isAbsolute(relativeToAgent) ||
+      relativeToAgent.includes("\0")
+    ) {
       throw new Error(`agent instructions path escapes agent directory: ${runtime.instructions.path}`);
     }
     if (!statSync(instructionPath).isFile()) {

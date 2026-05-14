@@ -95,6 +95,18 @@ describe("loadAndValidateAgentContent", () => {
     expect(() => loadAndValidateAgentContent(dir)).toThrow(/instructions path escapes agent directory/);
   });
 
+  it("allows safe paths that start with two dots but remain inside the agent directory", () => {
+    const dir = makeItemDir();
+    mkdirSync(join(dir, "..safe"));
+    writeFileSync(join(dir, "..safe", "instructions.md"), "Use the safe local file.\n");
+    writeJson(dir, "agent.json", {
+      ...agent,
+      instructions: { type: "file", path: "..safe/instructions.md" },
+    });
+
+    expect(loadAndValidateAgentContent(dir).id).toBe("agent:aoa-curated/test-agent");
+  });
+
   it("throws when the instruction path is unsafe", () => {
     const dir = makeItemDir();
     writeJson(dir, "agent.json", {
