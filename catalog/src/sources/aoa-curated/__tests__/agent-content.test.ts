@@ -197,4 +197,36 @@ describe("loadAndValidateAgentContent", () => {
 
     expect(() => loadAndValidateAgentContent(dir)).toThrow(/must be declared in manifest\.requires as type plugin/);
   });
+
+  it("throws when an AoA skill key is not declared in manifest.requires as a skill", () => {
+    const dir = makeItemDir();
+    writeJson(dir, "agent.json", {
+      ...agent,
+      aoa: {
+        skillKeys: ["skill:github-skills/coderabbitai/skills/code-review"],
+      },
+    });
+
+    expect(() => loadAndValidateAgentContent(dir)).toThrow(/AoA skill key .* must be declared in manifest\.requires as type skill/);
+  });
+
+  it("throws when an AoA setup plugin is not declared in manifest.requires as a plugin", () => {
+    const dir = makeItemDir();
+    writeJson(dir, "agent.json", {
+      ...agent,
+      aoa: {
+        setup: {
+          pluginConfig: [
+            {
+              plugin: "plugin:aoa-curated/aoa-plugin-github-issues",
+              required: true,
+              reason: "Connect GitHub before activating the agent.",
+            },
+          ],
+        },
+      },
+    });
+
+    expect(() => loadAndValidateAgentContent(dir)).toThrow(/AoA setup plugin .* must be declared in manifest\.requires as type plugin/);
+  });
 });

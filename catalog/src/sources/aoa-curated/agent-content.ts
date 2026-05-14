@@ -89,6 +89,16 @@ export function loadAndValidateAgentContent(itemDir: string): AgentContentManife
       throw new Error(`agent runtime plugin dependency ${id} must be declared in manifest.requires as type plugin`);
     }
   }
+  for (const id of runtime.aoa?.skillKeys ?? []) {
+    if (requiresById.get(id) !== "skill") {
+      throw new Error(`agent AoA skill key ${id} must be declared in manifest.requires as type skill`);
+    }
+  }
+  for (const setup of runtime.aoa?.setup?.pluginConfig ?? []) {
+    if (requiresById.get(setup.plugin) !== "plugin") {
+      throw new Error(`agent AoA setup plugin ${setup.plugin} must be declared in manifest.requires as type plugin`);
+    }
+  }
 
   return manifest;
 }

@@ -126,8 +126,8 @@ AoA-specific runtime metadata may describe adapter compatibility and setup promp
 {
   "aoa": {
     "adapterCompatibility": {
-      "recommended": "codex",
-      "supported": ["codex", "claude"],
+      "recommended": "codex_local",
+      "supported": ["codex_local", "claude_local"],
       "requiresInstructionsBundle": true,
       "requiresSkillInjection": true
     },
@@ -159,7 +159,7 @@ AoA-specific runtime metadata may describe adapter compatibility and setup promp
 }
 ```
 
-`aoa.adapterCompatibility` identifies the AoA adapter expectations. `aoa.install` provides optional initial install hints. `aoa.setup` describes what a future installer must collect before the agent can work. These metadata fields do not install dependencies or make the agent runnable by themselves.
+`aoa.adapterCompatibility` identifies the AoA adapter expectations. `aoa.install` provides optional initial install hints. `aoa.setup` describes what a future installer must collect before the agent can work. `aoa.setup.pluginConfig[].plugin` and `aoa.skillKeys[]` must reference dependencies declared in `manifest.json.requires`. These metadata fields do not install dependencies or make the agent runnable by themselves.
 
 Aggregation runs dependency graph validation after dedupe. Shared `requires` entries must resolve to existing catalog items, match the declared type, use valid semver ranges when present, satisfy semver target versions when possible, avoid duplicates, and avoid cycles. Items with invalid dependency graphs are excluded from catalog output.
 

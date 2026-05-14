@@ -80,8 +80,8 @@ Required fields are `name`, `description`, `version`, `category`, `sourceUrl`, a
   },
   "aoa": {
     "adapterCompatibility": {
-      "recommended": "codex",
-      "supported": ["codex", "claude"],
+      "recommended": "codex_local",
+      "supported": ["codex_local", "claude_local"],
       "requiresInstructionsBundle": true,
       "requiresSkillInjection": true
     },
@@ -160,8 +160,8 @@ Use `aoa.adapterCompatibility` to declare the suggested adapter families and run
 ```json
 {
   "adapterCompatibility": {
-    "recommended": "codex",
-    "supported": ["codex", "claude"],
+    "recommended": "codex_local",
+    "supported": ["codex_local", "claude_local"],
     "requiresInstructionsBundle": true,
     "requiresSkillInjection": true
   }
@@ -208,7 +208,7 @@ Use `aoa.setup` for setup prompts that must be answered before the agent can wor
 }
 ```
 
-Setup prompts describe required secrets or plugin configuration for a future installer. They do not install plugins, create secrets, or make the agent runnable by themselves.
+Setup prompts describe required secrets or plugin configuration for a future installer. `aoa.setup.pluginConfig[].plugin` must point at a plugin declared in `manifest.json.requires`, and every `aoa.skillKeys[]` entry must point at a skill declared in `manifest.json.requires`. Setup metadata does not install plugins, create secrets, or make the agent runnable by itself.
 
 ## Validation Rules
 
@@ -221,6 +221,8 @@ The catalog builder enforces:
 - Bundle instruction `entry` and every path in `instructions.files` are safe relative paths and exist in the same agent folder.
 - Every `agent.json.dependencies.skills` ID appears in `manifest.json.requires` with `type: "skill"`.
 - Every `agent.json.dependencies.plugins` ID appears in `manifest.json.requires` with `type: "plugin"`.
+- Every `aoa.skillKeys[]` ID appears in `manifest.json.requires` with `type: "skill"`.
+- Every `aoa.setup.pluginConfig[].plugin` ID appears in `manifest.json.requires` with `type: "plugin"`.
 - Final catalog dependencies resolve to existing items, match the declared type, use valid semver ranges when present, satisfy target versions when target versions are semver, avoid duplicates, and do not create cycles.
 - Agents that fail source validation or dependency graph validation are excluded from the generated catalog.
 
