@@ -19,6 +19,27 @@ describe("aggregate", () => {
       expect(skillItems.every((item) => item.resourceUrl !== undefined)).toBe(true);
     }
 
+    if (catalog.items.length > 0) {
+      expect(catalog.items.every((item) => item.provider !== undefined)).toBe(true);
+    }
+
+    const discord = catalog.items.find((item) => item.id === "plugin:aoa-curated/aoa-plugin-discord");
+    if (discord) {
+      expect(discord.provider?.id).toBe("aoa");
+    }
+
+    const openaiDocs = catalog.items.find((item) => item.id === "skill:github-skills/openai/skills/openai-docs");
+    if (openaiDocs) {
+      expect(openaiDocs.provider?.id).toBe("openai");
+    }
+
+    const remotion = catalog.items.find(
+      (item) => item.id === "skill:github-skills/google-labs-code/stitch-skills/remotion",
+    );
+    if (remotion) {
+      expect(remotion.provider?.id).toBe("google-labs-stitch");
+    }
+
     if (catalog.items.some((item) => item.source.adapter === "anthropic-skills")) {
       const anthropicFrontend = catalog.items.find(
         (item) => item.id === "skill:anthropic/frontend-design"
@@ -144,6 +165,7 @@ This is a test skill.`,
         expect(skillItems.length).toBeGreaterThan(0);
         expect(skillItems.every((item) => item.skill?.bundle !== undefined)).toBe(true);
         expect(skillItems.every((item) => item.resourceUrl !== undefined)).toBe(true);
+        expect(catalog.items.every((item) => item.provider !== undefined)).toBe(true);
 
         const githubSkillsItems = catalog.items.filter(
           (item) => item.source.adapter === "github-skills"

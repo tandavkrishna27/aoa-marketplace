@@ -7,6 +7,7 @@ import { anthropicSkillsAdapter } from "./sources/anthropic-skills/adapter.js";
 import { githubSkillsAdapter } from "./sources/github-skills/adapter.js";
 import { runAutomatedChecks } from "./validators/automated-checks.js";
 import { loadTrustedSources, resolveTrustTier } from "./validators/trust-resolver.js";
+import { loadProviderRegistry, resolveProviderForItem } from "./providers/provider-registry.js";
 import type { CatalogFile, CatalogItem, TrustTier } from "./types/catalog.js";
 import type { SourceAdapter, SourceAdapterContext, NormalizedItem } from "./types/source-adapter.js";
 
@@ -41,6 +42,7 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
   const warnings: string[] = [];
 
   const trustedSources = loadTrustedSources(REPO_ROOT);
+  const providerRegistry = loadProviderRegistry(REPO_ROOT);
   const commitSha = getRepoCommitSha();
 
   for (const adapter of ADAPTERS) {
@@ -66,6 +68,7 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
           ...item,
           trust: { ...item.trust, tier: resolveTrustTier(item, trustedSources) },
         };
+        resolvedItem.provider = resolveProviderForItem(resolvedItem, providerRegistry);
 
         // Run automated checks — pass rawManifest so license validation fires
         const result = runAutomatedChecks(resolvedItem, rawManifest);

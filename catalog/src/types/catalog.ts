@@ -40,6 +40,15 @@ export const TrustRefSchema = z.object({
   reviewedVersion: z.string().optional(),
 });
 
+export const ProviderRefSchema = z.object({
+  id: z.string().regex(/^[a-z0-9][a-z0-9-]*$/),
+  name: z.string().min(1),
+  homepageUrl: z.string().url().optional(),
+  logoUrl: z.string().url().optional(),
+  fallbackInitials: z.string().min(1).max(6),
+});
+export type ProviderRef = z.infer<typeof ProviderRefSchema>;
+
 export const CapabilitySchema = z.object({
   id: z.string(),
   description: z.string(),
@@ -94,6 +103,7 @@ export const CatalogItemSchema = z.object({
   description: z.string().min(1),
   version: z.string(), // semver, validated by validator
   source: SourceRefSchema,
+  provider: ProviderRefSchema.optional(),
   trust: TrustRefSchema,
   status: z.enum(["active", "deprecated", "quarantined"]),
   addedAt: z.string().datetime(),
