@@ -155,17 +155,33 @@ export const githubSkillsAdapter: SourceAdapter = {
         ctx.logger.warn(`skillsPath ${src.config.skillsPath} not found in ${src.config.repo}`);
         continue;
       }
-      const skillFiles = walkSkillFiles(skillsRoot, src.config.ignore, skillsRoot);
+      const skillFiles = walkSkillFiles(skillsRoot, src.config.ignore, skillsRoot).sort((a, b) => {
+        const aDir = a
+          .slice(skillsRoot.length + 1)
+          .replace(/\\/g, "/")
+          .replace(/\/SKILL\.md$/, "");
+        const bDir = b
+          .slice(skillsRoot.length + 1)
+          .replace(/\\/g, "/")
+          .replace(/\/SKILL\.md$/, "");
+        const depthDelta = aDir.split("/").length - bDir.split("/").length;
+        if (depthDelta !== 0) return depthDelta;
+        return aDir < bDir ? -1 : aDir > bDir ? 1 : 0;
+      });
       ctx.logger.info(`${src.config.repo}: found ${skillFiles.length} SKILL.md files`);
 
       for (const skillFile of skillFiles) {
-        const slug = skillFile.slice(skillsRoot.length + 1).split(/[\\/]/)[0];
         const relPath = skillFile.slice(src.cloneDir.length + 1).replace(/\\/g, "/");
-        const id = `skill:github-skills/${src.config.repo}/${slug}`;
+        const skillDir = skillFile
+          .slice(skillsRoot.length + 1)
+          .replace(/\\/g, "/")
+          .replace(/\/SKILL\.md$/, "");
+        const fallbackName = skillDir.split("/").pop() ?? skillDir;
+        const id = `skill:github-skills/${src.config.repo}/${skillDir}`;
 
         try {
           const content = readFileSync(skillFile, "utf-8");
-          const fm = parseFrontmatter(content, slug);
+          const fm = parseFrontmatter(content, fallbackName);
           const sha = src.sourceCommitSha;
           const runtimeRequires = mergeRuntimeRequires(fm.runtimeRequires, id, overrides);
 
