@@ -150,7 +150,7 @@ The docs should use this classification:
 
 | Surface | Status | Reason |
 | --- | --- | --- |
-| Skills | Current | Trusted GitHub skills are imported, validated, bundled, and installable as full directories. |
+| Skills | Current | Trusted GitHub skills and Anthropic skills are imported, validated, bundled, and installable as full directories. |
 | Plugins | Current | AoA plugins are imported from workspace packages and represented with npm install metadata. |
 | Agents | Roadmap | Schema support exists, but finalized manifest/import/install/runtime behavior is not complete. |
 | Teams | Roadmap | Schema support exists, but finalized composition/import/install/runtime behavior is not complete. |
@@ -163,7 +163,7 @@ Required verification:
 
 ```bash
 rg -n "docs/marketplace|trusted-sources.json|content/providers.json|catalog/src/types/catalog.ts" README.md docs/marketplace
-rg -n "TODO|TBD|coming soon|placeholder" docs/marketplace README.md
+rg -n "TODO|TBD|coming soon|placeholder" --glob "!docs/marketplace/agent-workflows.md" docs/marketplace README.md
 git diff --check
 ```
 

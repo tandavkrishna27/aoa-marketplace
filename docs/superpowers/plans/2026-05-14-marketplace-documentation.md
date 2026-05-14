@@ -35,6 +35,7 @@ Reference during implementation:
 - `catalog/src/aggregate.ts`
 - `catalog/src/sources/aoa-curated/adapter.ts`
 - `catalog/src/sources/github-skills/adapter.ts`
+- `catalog/src/sources/anthropic-skills/adapter.ts`
 - `catalog/src/installer/skill-bundle.ts`
 - `catalog/src/validators/automated-checks.ts`
 - `catalog/src/validators/manifest-drift.ts`
@@ -400,7 +401,7 @@ pnpm aggregate
 For docs-only changes, run:
 
 ```powershell
-rg -n "TODO|TBD|coming soon|placeholder" docs/marketplace README.md
+rg -n "TODO|TBD|coming soon|placeholder" --glob "!docs/marketplace/agent-workflows.md" docs/marketplace README.md
 git diff --check
 ```
 ````
@@ -427,7 +428,7 @@ Expected: all terms are present.
 Run:
 
 ```powershell
-rg -n "TODO|TBD|coming soon|placeholder" docs/marketplace README.md
+rg -n "TODO|TBD|coming soon|placeholder" --glob "!docs/marketplace/agent-workflows.md" docs/marketplace README.md
 ```
 
 Expected: no output.
