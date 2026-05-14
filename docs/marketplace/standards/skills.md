@@ -22,12 +22,13 @@ some-skill/
 
 Only `SKILL.md` is required. Other files are optional and are copied with the bundle when installed.
 
-The `github-skills` and `anthropic-skills` source configs control where the importers look:
+The active skill sources are configured differently:
 
 - `trusted-sources.json` lists trusted sources.
-- The source config names the repository, ref, `skillsPath`, ignore patterns, and optional default category.
+- For `github-skills`, the source config names the repository, ref, `skillsPath`, ignore patterns, and optional default category.
 - `catalog/src/sources/github-skills/adapter.ts` walks the configured `skillsPath` for `SKILL.md` files.
-- `catalog/src/sources/anthropic-skills/adapter.ts` emits trusted Anthropic skill bundles with installable `skill.bundle` metadata.
+- `catalog/src/sources/anthropic-skills/adapter.ts` is a fixed trusted adapter for `https://github.com/anthropics/skills.git`; it does not read a repo, ref, or `skillsPath` from `trusted-sources.json`.
+- The Anthropic adapter emits trusted skill bundles with installable `skill.bundle` metadata from the upstream repo layout.
 
 ## SKILL.md
 
@@ -90,11 +91,11 @@ Current installable skill items include:
 
 Import behavior:
 
-- `catalog/src/sources/github-skills/adapter.ts` and `catalog/src/sources/anthropic-skills/adapter.ts` read their trusted source configuration.
-- They clone each configured GitHub repository and ref.
-- They walk the configured skills root for `SKILL.md`.
-- They emit catalog items with `type: "skill"`, `resourceUrl`, `skill.bundle`, and `skill.frontmatter`.
-- They pin `resourceUrl` and `skill.bundle` to the upstream source commit.
+- `catalog/src/sources/github-skills/adapter.ts` reads configured trusted source entries from `trusted-sources.json`.
+- The GitHub skills adapter clones each configured GitHub repository and ref, then walks the configured `skillsPath` for `SKILL.md`.
+- `catalog/src/sources/anthropic-skills/adapter.ts` clones the fixed `anthropics/skills` upstream repo and detects its skill root.
+- Both active skill adapters emit catalog items with `type: "skill"`, `resourceUrl`, `skill.bundle`, and `skill.frontmatter`.
+- Both active skill adapters pin `resourceUrl` and `skill.bundle` to the upstream source commit they cloned.
 
 Install behavior:
 
