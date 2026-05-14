@@ -70,6 +70,18 @@ describe("aoaCuratedAdapter agent standard", () => {
       { type: "plugin", id: "plugin:aoa-curated/aoa-plugin-slack", versionRange: "^1.0.0" },
     ]);
   });
+
+  it("skips invalid agent folders and keeps valid agents", async () => {
+    const fetched = await aoaCuratedAdapter.fetch(ctx);
+    const items = await aoaCuratedAdapter.normalize(fetched, ctx);
+    const ids = items.map((entry) => entry.item.id);
+
+    expect(ids).toContain("agent:aoa-curated/valid-agent");
+    expect(ids).not.toContain("agent:aoa-curated/missing-agent-json");
+    expect(ids).not.toContain("agent:aoa-curated/bad-schema-version");
+    expect(ids).not.toContain("agent:aoa-curated/missing-instructions");
+    expect(ids).not.toContain("agent:aoa-curated/undeclared-alias");
+  });
 });
 
 describe("aoaCuratedAdapter — M.2.0 catalog field additions", () => {

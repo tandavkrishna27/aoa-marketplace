@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "agent.v2",
+  "id": "bad-schema-version",
+  "name": "Bad Schema Version",
+  "description": "Invalid fixture with unsupported agent schema.",
+  "instructions": { "type": "inline", "content": "Hello." }
+}
