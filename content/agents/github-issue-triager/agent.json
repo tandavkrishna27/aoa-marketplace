@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "github-issue-triager",
+  "name": "GitHub Issue Triager",
+  "description": "A plugin-backed agent for triaging GitHub-linked AoA issues, classifying priority and risk, preparing next actions, and drafting GitHub issue updates.",
+  "instructions": {
+    "type": "bundle",
+    "entry": "AGENTS.md",
+    "files": ["AGENTS.md", "SOUL.md", "TOOLS.md", "HEARTBEAT.md"]
+  },
+  "dependencies": {
+    "skills": {
+      "writingPlans": "skill:github-skills/obra/superpowers/writing-plans",
+      "debugging": "skill:github-skills/obra/superpowers/systematic-debugging",
+      "codeReview": "skill:github-skills/coderabbitai/skills/code-review",
+      "githubComments": "skill:github-skills/openai/skills/gh-address-comments",
+      "securityBestPractices": "skill:github-skills/openai/skills/security-best-practices"
+    },
+    "plugins": {
+      "githubIssues": "plugin:aoa-curated/aoa-plugin-github-issues"
+    }
+  },
+  "aoa": {
+    "adapterCompatibility": {
+      "recommended": "codex_local",
+      "supported": ["codex_local", "claude_local"],
+      "requiresInstructionsBundle": true,
+      "requiresSkillInjection": true
+    },
+    "install": {
+      "defaultRole": "engineering",
+      "defaultStatus": "paused",
+      "defaultIcon": "github"
+    },
+    "runtimeConfig": {
+      "heartbeat": {
+        "enabled": true,
+        "wakeOnDemand": true,
+        "intervalSec": 0,
+        "maxConcurrentRuns": 1
+      }
+    },
+    "permissions": {
+      "requiresWorkspaceAccess": false,
+      "canCreateAgents": false,
+      "canManageMarketplace": false,
+      "canUpdateExternalIssuesWhenPluginAllowsIt": true
+    },
+    "skillKeys": [
+      "skill:github-skills/obra/superpowers/writing-plans",
+      "skill:github-skills/obra/superpowers/systematic-debugging",
+      "skill:github-skills/coderabbitai/skills/code-review",
+      "skill:github-skills/openai/skills/gh-address-comments",
+      "skill:github-skills/openai/skills/security-best-practices"
+    ],
+    "setup": {
+      "secrets": [
+        {
+          "key": "GITHUB_TOKEN",
+          "label": "GitHub token",
+          "required": true,
+          "reason": "Allows the GitHub Issues plugin to read linked issues and, when permitted, draft or post issue comments and status updates.",
+          "usedBy": "plugin:aoa-curated/aoa-plugin-github-issues"
+        }
+      ],
+      "pluginConfig": [
+        {
+          "plugin": "plugin:aoa-curated/aoa-plugin-github-issues",
+          "required": true,
+          "reason": "Connect a GitHub repository before the agent can triage or update linked issues."
+        }
+      ],
+      "notes": [
+        "Keep the agent paused until the GitHub Issues plugin is installed and configured.",
+        "Use the least-privilege GitHub token scope that supports the configured issue workflow.",
+        "Default behavior should prepare suggested updates; posting to GitHub should depend on AoA/plugin permissions and user configuration."
+      ]
+    }
+  }
+}

@@ -5,6 +5,7 @@ import type { SourceAdapter, SourceAdapterContext, NormalizedItem } from "../../
 import type { CatalogItem, ItemType } from "../../types/catalog.js";
 import { CategorySchema, TagSchema } from "../../types/catalog.js";
 import { checkManifestDrift } from "../../validators/manifest-drift.js";
+import { loadAndValidateAgentContent } from "./agent-content.js";
 
 function fileAddedAt(filePath: string): string {
   // Use the file's mtime as a deterministic "added at" timestamp.
@@ -48,6 +49,7 @@ interface ContentManifest {
   sourceUrl: string;
   license?: string;
   featured?: boolean;
+  runtime?: { entry: string };
 }
 
 const NON_PLUGIN_TYPES: Exclude<ItemType, "plugin">[] = ["skill", "agent", "team"];
@@ -194,7 +196,11 @@ export const aoaCuratedAdapter: SourceAdapter = {
 
         let raw: ContentManifest;
         try {
-          raw = JSON.parse(readFileSync(manifestPath, "utf-8")) as ContentManifest;
+          if (type === "agent") {
+            raw = loadAndValidateAgentContent(itemDir);
+          } else {
+            raw = JSON.parse(readFileSync(manifestPath, "utf-8")) as ContentManifest;
+          }
 
           const id = raw.id ?? `${type}:aoa-curated/${slug}`;
 

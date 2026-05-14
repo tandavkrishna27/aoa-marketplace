@@ -1,6 +1,6 @@
 # Agent Workflows
 
-Use this page as the operational runbook before changing marketplace sources, provider metadata, AoA-curated plugins, or AoA-curated content. Skills and plugins are current marketplace surfaces. Agents and teams are roadmap/proposed surfaces unless a future standard says otherwise.
+Use this page as the operational runbook before changing marketplace sources, provider metadata, AoA-curated plugins, or AoA-curated content. Skills, plugins, and agents are current marketplace catalog surfaces. AoA install and runtime support remain a separate consumer milestone for agents. Teams are roadmap/proposed unless a future standard says otherwise.
 
 ## Before Editing
 
@@ -114,6 +114,46 @@ git diff --check
 
 If warnings come from a plugin capability or manifest drift issue, also run the plugin package checks listed in the plugin workflow.
 
+## Adding an Agent
+
+Inspect these files:
+
+- `docs/marketplace/standards/agents.md`
+- `docs/marketplace/catalog-schema.md`
+- `catalog/src/types/agent.ts`
+- `catalog/src/sources/aoa-curated/agent-content.ts`
+- `catalog/src/sources/aoa-curated/adapter.ts`
+- `catalog/src/validators/dependency-graph.ts`
+
+Workflow:
+
+1. Create `content/agents/{slug}/manifest.json`.
+2. Create `content/agents/{slug}/agent.json`.
+3. Prefer bundle instructions for AoA agents:
+
+```json
+{ "type": "bundle", "entry": "AGENTS.md", "files": ["AGENTS.md", "HEARTBEAT.md", "SOUL.md", "TOOLS.md"] }
+```
+
+4. Add every bundle file listed in `agent.json.instructions.files` in the same agent folder.
+5. Declare skills and plugins in `manifest.json.requires`.
+6. Add runtime aliases in `agent.json.dependencies` only for dependencies declared in `manifest.json.requires`.
+7. Add `aoa.adapterCompatibility` if the agent targets AoA.
+8. Add `aoa.setup` for required secrets or plugin configuration that an installer must collect before the agent can work.
+9. Run `pnpm --filter @armyofagents/aoa-marketplace-builder test`.
+10. Run `pnpm --filter @armyofagents/aoa-marketplace-builder typecheck`.
+11. Run `pnpm validate`.
+12. Run `pnpm aggregate`.
+13. Run `git diff --check`.
+
+Notes:
+
+- `manifest.json.requires` is canonical; `agent.json.dependencies` provides runtime aliases only.
+- Instructions define who the agent is and how it operates; skills are reusable capability modules; plugins are external integrations; setup requirements describe required installer prompts.
+- `resourceUrl` points to `agent.json`; bundle instruction files are referenced by `agent.json.instructions.files` and validated beside it.
+- The optional `aoa` block in `agent.json` is consumer-specific. Do not claim AoA install or runtime support is complete.
+- The catalog builder validates agent file shape, instruction file safety, runtime aliases, and final dependency graph integrity.
+
 ## Add Or Update An AoA Plugin
 
 Inspect these files:
@@ -134,7 +174,7 @@ Workflow:
 3. Confirm `manifest.json` has `id`, `displayName`, `description`, `version`, `license`, `capabilities`, `capabilityDescriptions`, and `marketplace` metadata.
 4. Confirm every capability has a concrete human-readable description.
 5. Build before relying on drift checks, because `catalog/src/validators/manifest-drift.ts` compares against compiled manifest output when it exists.
-6. Do not describe agents or teams as active plugin standards. If they appear in plugin text, call them roadmap/proposed unless implementation has changed.
+6. Do not describe agents or teams as active plugin standards. Agents are an enforced catalog standard, not a plugin standard. Teams remain roadmap/proposed unless implementation has changed.
 
 Run these commands, replacing the package name with the plugin being changed:
 
@@ -172,7 +212,7 @@ Workflow:
 4. Do not use `content/skills/*` as the active path for new installable skills yet. Local AoA-curated skills are not a complete active skill path while validation rejects skill items that have `resourceUrl` without `skill.bundle`.
 5. For skills, use the trusted GitHub skill source workflow unless or until bundle metadata support is implemented for `content/skills`.
 6. Run validation before aggregation so schema or manifest failures are visible early.
-7. If adding agent or team-shaped content, label the surface as roadmap/proposed in docs and PR text unless importer, installer, dependency, and runtime behavior are all implemented.
+7. If adding agent content, follow the Adding an Agent workflow and keep AoA installer/runtime claims out of docs and PR text. If adding team-shaped content, label the surface as roadmap/proposed unless importer, installer, dependency, and runtime behavior are all implemented.
 
 Run these commands:
 
@@ -223,6 +263,6 @@ rg -n "trusted-sources.json|content/providers.json|pnpm validate|pnpm aggregate|
 - For plugin changes, name the plugin package, version, capabilities reviewed, and drift/build/test commands run.
 - For aggregation warnings, list each accepted warning and why it is acceptable.
 - For failures, confirm they were fixed or explain why rejected items are expected.
-- Keep skills and plugins described as current standards, and agents or teams as roadmap/proposed unless active implementation has landed.
+- Keep skills, plugins, and agents described as current catalog standards. Do not claim AoA install or runtime support for agents. Keep teams as roadmap/proposed unless active implementation has landed.
 - Include the exact verification commands run and their results.
 - Run `git diff --check` after the final edit.

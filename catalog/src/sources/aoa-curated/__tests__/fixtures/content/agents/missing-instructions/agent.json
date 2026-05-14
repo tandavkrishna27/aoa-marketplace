@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "missing-instructions",
+  "name": "Missing Instructions",
+  "description": "Invalid fixture with missing instruction file.",
+  "instructions": { "type": "file", "path": "instructions.md" }
+}

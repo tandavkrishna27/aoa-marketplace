@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "bundle-unsafe-path",
+  "name": "Bundle Unsafe Path",
+  "description": "Invalid fixture with an unsafe bundle file path.",
+  "instructions": {
+    "type": "bundle",
+    "entry": "AGENTS.md",
+    "files": ["AGENTS.md", "../HEARTBEAT.md"]
+  }
+}

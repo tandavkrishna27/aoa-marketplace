@@ -1,0 +1,10 @@
+{
+  "id": "agent:aoa-curated/missing-instructions",
+  "name": "Missing Instructions",
+  "description": "Invalid fixture with missing instruction file.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" }
+}

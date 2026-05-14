@@ -1,0 +1,9 @@
+{
+  "id": "agent:aoa-curated/bundle-missing-entry",
+  "name": "Bundle Missing Entry",
+  "description": "Invalid fixture with bundle entry omitted from files.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" }
+}

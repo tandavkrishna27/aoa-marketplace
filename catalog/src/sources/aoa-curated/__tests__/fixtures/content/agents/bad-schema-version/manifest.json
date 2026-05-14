@@ -1,0 +1,10 @@
+{
+  "id": "agent:aoa-curated/bad-schema-version",
+  "name": "Bad Schema Version",
+  "description": "Invalid fixture with unsupported agent schema.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" }
+}
