@@ -5,6 +5,10 @@ export interface DependencyGraphValidationResult {
   failuresByItemId: Map<string, string[]>;
 }
 
+export interface DependencyCascadeValidationResult extends DependencyGraphValidationResult {
+  invalidIds: Set<string>;
+}
+
 function addFailure(map: Map<string, string[]>, itemId: string, message: string): void {
   const existing = map.get(itemId) ?? [];
   existing.push(message);
@@ -79,4 +83,32 @@ export function validateCatalogDependencies(items: CatalogItem[]): DependencyGra
   for (const item of items) visit(item);
 
   return { failuresByItemId };
+}
+
+export function collectDependencyInvalidItemIds(items: CatalogItem[]): DependencyCascadeValidationResult {
+  const { failuresByItemId } = validateCatalogDependencies(items);
+  const invalidIds = new Set(failuresByItemId.keys());
+  const reverseDependents = new Map<string, string[]>();
+
+  for (const item of items) {
+    for (const req of item.requires ?? []) {
+      const dependents = reverseDependents.get(req.id) ?? [];
+      dependents.push(item.id);
+      reverseDependents.set(req.id, dependents);
+    }
+  }
+
+  const queue = Array.from(invalidIds);
+  for (let index = 0; index < queue.length; index += 1) {
+    const rejectedId = queue[index];
+    for (const dependentId of reverseDependents.get(rejectedId) ?? []) {
+      if (invalidIds.has(dependentId)) continue;
+
+      invalidIds.add(dependentId);
+      addFailure(failuresByItemId, dependentId, `dependency ${rejectedId} was rejected`);
+      queue.push(dependentId);
+    }
+  }
+
+  return { invalidIds, failuresByItemId };
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogItem } from "../../types/catalog.js";
-import { validateCatalogDependencies } from "../dependency-graph.js";
+import { collectDependencyInvalidItemIds, validateCatalogDependencies } from "../dependency-graph.js";
 
 function item(id: string, type: CatalogItem["type"], extra: Partial<CatalogItem> = {}): CatalogItem {
   return {
@@ -100,5 +100,31 @@ describe("validateCatalogDependencies", () => {
 
     expect(result.failuresByItemId.get("agent:test/a")?.join(" ")).toContain("cycle");
     expect(result.failuresByItemId.get("agent:test/b")?.join(" ")).toContain("cycle");
+  });
+});
+
+describe("collectDependencyInvalidItemIds", () => {
+  it("cascades dependency rejection to transitive dependents", () => {
+    const result = collectDependencyInvalidItemIds([
+      item("agent:test/bad", "agent", {
+        requires: [{ type: "skill", id: "skill:test/missing" }],
+      }),
+      item("agent:test/dependent", "agent", {
+        requires: [{ type: "agent", id: "agent:test/bad" }],
+      }),
+      item("agent:test/transitive", "agent", {
+        requires: [{ type: "agent", id: "agent:test/dependent" }],
+      }),
+    ]);
+
+    expect(result.invalidIds).toEqual(
+      new Set(["agent:test/bad", "agent:test/dependent", "agent:test/transitive"]),
+    );
+    expect(result.failuresByItemId.get("agent:test/dependent")?.join(" ")).toContain(
+      "dependency agent:test/bad was rejected",
+    );
+    expect(result.failuresByItemId.get("agent:test/transitive")?.join(" ")).toContain(
+      "dependency agent:test/dependent was rejected",
+    );
   });
 });
