@@ -1,0 +1,229 @@
+{
+  "schemaVersion": "1.0.0",
+  "providers": [
+    {
+      "id": "aoa",
+      "name": "Army of Agents",
+      "homepageUrl": "https://armyofagents.com",
+      "logoUrl": "https://github.com/MeteoriteLabs.png",
+      "fallbackInitials": "AOA",
+      "repos": ["MeteoriteLabs/aoa-marketplace"]
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "homepageUrl": "https://anthropic.com",
+      "logoUrl": "https://github.com/anthropics.png",
+      "fallbackInitials": "AN",
+      "repos": ["anthropics/skills"]
+    },
+    {
+      "id": "microsoft-azure",
+      "name": "Microsoft Azure",
+      "homepageUrl": "https://azure.microsoft.com",
+      "logoUrl": "https://github.com/Azure.png",
+      "fallbackInitials": "AZ",
+      "repos": ["microsoft/azure-skills"]
+    },
+    {
+      "id": "gstack",
+      "name": "gstack",
+      "homepageUrl": "https://github.com/garrytan/gstack",
+      "logoUrl": "https://github.com/garrytan.png",
+      "fallbackInitials": "GS",
+      "repos": ["garrytan/gstack"]
+    },
+    {
+      "id": "superpowers",
+      "name": "Superpowers",
+      "homepageUrl": "https://github.com/obra/superpowers",
+      "logoUrl": "https://github.com/obra.png",
+      "fallbackInitials": "SP",
+      "repos": ["obra/superpowers"]
+    },
+    {
+      "id": "angular",
+      "name": "Angular",
+      "homepageUrl": "https://angular.dev",
+      "logoUrl": "https://github.com/angular.png",
+      "fallbackInitials": "NG",
+      "repos": ["angular/skills"]
+    },
+    {
+      "id": "google-gemini",
+      "name": "Google Gemini",
+      "homepageUrl": "https://ai.google.dev",
+      "logoUrl": "https://github.com/google-gemini.png",
+      "fallbackInitials": "GG",
+      "repos": ["google-gemini/gemini-skills"]
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe",
+      "homepageUrl": "https://stripe.com",
+      "logoUrl": "https://github.com/stripe.png",
+      "fallbackInitials": "ST",
+      "repos": ["stripe/ai"]
+    },
+    {
+      "id": "expo",
+      "name": "Expo",
+      "homepageUrl": "https://expo.dev",
+      "logoUrl": "https://github.com/expo.png",
+      "fallbackInitials": "EX",
+      "repos": ["expo/skills"]
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare",
+      "homepageUrl": "https://cloudflare.com",
+      "logoUrl": "https://github.com/cloudflare.png",
+      "fallbackInitials": "CF",
+      "repos": ["cloudflare/skills"]
+    },
+    {
+      "id": "hugging-face",
+      "name": "Hugging Face",
+      "homepageUrl": "https://huggingface.co",
+      "logoUrl": "https://github.com/huggingface.png",
+      "fallbackInitials": "HF",
+      "repos": ["huggingface/skills"]
+    },
+    {
+      "id": "wordpress",
+      "name": "WordPress",
+      "homepageUrl": "https://wordpress.org",
+      "logoUrl": "https://github.com/WordPress.png",
+      "fallbackInitials": "WP",
+      "repos": ["WordPress/agent-skills"]
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "homepageUrl": "https://openai.com",
+      "logoUrl": "https://github.com/openai.png",
+      "fallbackInitials": "OI",
+      "repos": ["openai/skills"]
+    },
+    {
+      "id": "figma",
+      "name": "Figma",
+      "homepageUrl": "https://figma.com",
+      "logoUrl": "https://github.com/figma.png",
+      "fallbackInitials": "FG",
+      "repos": ["figma/mcp-server-guide"]
+    },
+    {
+      "id": "notion",
+      "name": "Notion",
+      "homepageUrl": "https://notion.com",
+      "logoUrl": "https://github.com/makenotion.png",
+      "fallbackInitials": "NO",
+      "repos": ["makenotion/notion-cookbook"]
+    },
+    {
+      "id": "resend",
+      "name": "Resend",
+      "homepageUrl": "https://resend.com",
+      "logoUrl": "https://github.com/resend.png",
+      "fallbackInitials": "RS",
+      "repos": ["resend/resend-skills"]
+    },
+    {
+      "id": "auth0",
+      "name": "Auth0",
+      "homepageUrl": "https://auth0.com",
+      "logoUrl": "https://github.com/auth0.png",
+      "fallbackInitials": "A0",
+      "repos": ["auth0/agent-skills"]
+    },
+    {
+      "id": "brave",
+      "name": "Brave",
+      "homepageUrl": "https://brave.com",
+      "logoUrl": "https://github.com/brave.png",
+      "fallbackInitials": "BR",
+      "repos": ["brave/brave-search-skills"]
+    },
+    {
+      "id": "apollo-graphql",
+      "name": "Apollo GraphQL",
+      "homepageUrl": "https://apollographql.com",
+      "logoUrl": "https://github.com/apollographql.png",
+      "fallbackInitials": "AG",
+      "repos": ["apollographql/skills"]
+    },
+    {
+      "id": "coderabbit",
+      "name": "CodeRabbit",
+      "homepageUrl": "https://coderabbit.ai",
+      "logoUrl": "https://github.com/coderabbitai.png",
+      "fallbackInitials": "CR",
+      "repos": ["coderabbitai/skills"]
+    },
+    {
+      "id": "datadog",
+      "name": "Datadog",
+      "homepageUrl": "https://datadoghq.com",
+      "logoUrl": "https://github.com/datadog-labs.png",
+      "fallbackInitials": "DD",
+      "repos": ["datadog-labs/agent-skills"]
+    },
+    {
+      "id": "firebase",
+      "name": "Firebase",
+      "homepageUrl": "https://firebase.google.com",
+      "logoUrl": "https://github.com/firebase.png",
+      "fallbackInitials": "FB",
+      "repos": ["firebase/agent-skills"]
+    },
+    {
+      "id": "flutter",
+      "name": "Flutter",
+      "homepageUrl": "https://flutter.dev",
+      "logoUrl": "https://github.com/flutter.png",
+      "fallbackInitials": "FL",
+      "repos": ["flutter/skills"]
+    },
+    {
+      "id": "netlify",
+      "name": "Netlify",
+      "homepageUrl": "https://netlify.com",
+      "logoUrl": "https://github.com/netlify.png",
+      "fallbackInitials": "NF",
+      "repos": ["netlify/context-and-tools"]
+    },
+    {
+      "id": "google-workspace",
+      "name": "Google Workspace",
+      "homepageUrl": "https://workspace.google.com",
+      "logoUrl": "https://github.com/googleworkspace.png",
+      "fallbackInitials": "GW",
+      "repos": ["googleworkspace/cli"]
+    },
+    {
+      "id": "google-labs-stitch",
+      "name": "Google Labs Stitch",
+      "homepageUrl": "https://stitch.withgoogle.com",
+      "logoUrl": "https://github.com/google-labs-code.png",
+      "fallbackInitials": "GL",
+      "repos": ["google-labs-code/stitch-skills"]
+    },
+    {
+      "id": "neon",
+      "name": "Neon",
+      "homepageUrl": "https://neon.tech",
+      "logoUrl": "https://github.com/neondatabase.png",
+      "fallbackInitials": "NE",
+      "repos": ["neondatabase/agent-skills"]
+    },
+    {
+      "id": "redis",
+      "name": "Redis",
+      "homepageUrl": "https://redis.io",
+      "logoUrl": "https://github.com/redis.png",
+      "fallbackInitials": "RD",
+      "repos": ["redis/agent-skills"]
+    }
+  ]
+}

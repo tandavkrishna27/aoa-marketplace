@@ -81,10 +81,20 @@ describe("CatalogItemSchema skill metadata", () => {
           raw: { license: "MIT", metadata: { provider: "Microsoft" } },
         },
       },
+      provider: {
+        id: "microsoft-azure",
+        name: "Microsoft Azure",
+        homepageUrl: "https://azure.microsoft.com",
+        logoUrl: "https://github.com/Azure.png",
+        fallbackInitials: "AZ",
+      },
     };
 
     expect(CatalogItemSchema.shape.skill).toBeDefined();
+    expect(CatalogItemSchema.shape.provider).toBeDefined();
     expect(() => CatalogItemSchema.parse(item)).not.toThrow();
-    expect(CatalogItemSchema.parse(item).skill).toEqual(item.skill);
+    const parsed = CatalogItemSchema.parse(item);
+    expect(parsed.skill).toEqual(item.skill);
+    expect(parsed.provider).toEqual(item.provider);
   });
 });
