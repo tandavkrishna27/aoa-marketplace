@@ -17,8 +17,8 @@ describe("aoaCuratedAdapter", () => {
     const raw = await aoaCuratedAdapter.fetch(ctx);
     const normalizedItems = await aoaCuratedAdapter.normalize(raw, ctx);
 
-    // Should find 1 plugin (plugins/example) + 1 skill (content/skills/example-skill) = 2 items
-    expect(normalizedItems).toHaveLength(2);
+    // Should find 1 plugin, 1 skill, and 1 valid agent.
+    expect(normalizedItems).toHaveLength(3);
 
     const pluginEntry = normalizedItems.find((n) => n.item.type === "plugin");
     expect(pluginEntry).toBeDefined();
@@ -51,6 +51,36 @@ describe("aoaCuratedAdapter", () => {
     const raw = await aoaCuratedAdapter.fetch(emptyCtx);
     const items = await aoaCuratedAdapter.normalize(raw, emptyCtx);
     expect(items).toEqual([]);
+  });
+});
+
+describe("aoaCuratedAdapter agent standard", () => {
+  it("emits a validated agent item with multiple skill and plugin requirements", async () => {
+    const fetched = await aoaCuratedAdapter.fetch(ctx);
+    const items = await aoaCuratedAdapter.normalize(fetched, ctx);
+    const agent = items.find((i) => i.item.id === "agent:aoa-curated/valid-agent");
+
+    expect(agent).toBeDefined();
+    expect(agent!.item.type).toBe("agent");
+    expect(agent!.item.resourceUrl).toContain("/content/agents/valid-agent/agent.json");
+    expect(agent!.item.requires).toEqual([
+      { type: "skill", id: "skill:github-skills/openai/skills/openai-docs" },
+      { type: "skill", id: "skill:github-skills/auth0/skills/auth0" },
+      { type: "plugin", id: "plugin:aoa-curated/aoa-plugin-github-issues", versionRange: "^1.0.0" },
+      { type: "plugin", id: "plugin:aoa-curated/aoa-plugin-slack", versionRange: "^1.0.0" },
+    ]);
+  });
+
+  it("skips invalid agent folders and keeps valid agents", async () => {
+    const fetched = await aoaCuratedAdapter.fetch(ctx);
+    const items = await aoaCuratedAdapter.normalize(fetched, ctx);
+    const ids = items.map((entry) => entry.item.id);
+
+    expect(ids).toContain("agent:aoa-curated/valid-agent");
+    expect(ids).not.toContain("agent:aoa-curated/missing-agent-json");
+    expect(ids).not.toContain("agent:aoa-curated/bad-schema-version");
+    expect(ids).not.toContain("agent:aoa-curated/missing-instructions");
+    expect(ids).not.toContain("agent:aoa-curated/undeclared-alias");
   });
 });
 

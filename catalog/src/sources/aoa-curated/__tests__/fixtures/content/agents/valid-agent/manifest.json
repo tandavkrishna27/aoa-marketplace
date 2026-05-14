@@ -1,0 +1,19 @@
+{
+  "id": "agent:aoa-curated/valid-agent",
+  "name": "Valid Agent",
+  "description": "Valid marketplace agent fixture.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "requires": [
+    { "type": "skill", "id": "skill:github-skills/openai/skills/openai-docs" },
+    { "type": "skill", "id": "skill:github-skills/auth0/skills/auth0" },
+    { "type": "plugin", "id": "plugin:aoa-curated/aoa-plugin-github-issues", "versionRange": "^1.0.0" },
+    { "type": "plugin", "id": "plugin:aoa-curated/aoa-plugin-slack", "versionRange": "^1.0.0" }
+  ],
+  "capabilities": [
+    { "id": "issues.triage", "description": "Triage issues and propose next actions." }
+  ]
+}

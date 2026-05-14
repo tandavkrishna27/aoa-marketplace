@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "undeclared-alias",
+  "name": "Undeclared Alias",
+  "description": "Invalid fixture with an undeclared runtime alias.",
+  "instructions": { "type": "inline", "content": "Hello." },
+  "dependencies": {
+    "skills": {
+      "openaiDocs": "skill:github-skills/openai/skills/openai-docs"
+    }
+  }
+}

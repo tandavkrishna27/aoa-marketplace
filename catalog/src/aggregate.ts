@@ -6,6 +6,7 @@ import { aoaCuratedAdapter } from "./sources/aoa-curated/adapter.js";
 import { anthropicSkillsAdapter } from "./sources/anthropic-skills/adapter.js";
 import { githubSkillsAdapter } from "./sources/github-skills/adapter.js";
 import { runAutomatedChecks } from "./validators/automated-checks.js";
+import { collectDependencyInvalidItemIds } from "./validators/dependency-graph.js";
 import { loadTrustedSources, resolveTrustTier } from "./validators/trust-resolver.js";
 import { loadProviderRegistry, resolveProviderForItem } from "./providers/provider-registry.js";
 import type { CatalogFile, CatalogItem, TrustTier } from "./types/catalog.js";
@@ -103,14 +104,21 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
     a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
   );
 
+  const dependencyResult = collectDependencyInvalidItemIds(deduped);
+  for (const [itemId, failures] of dependencyResult.failuresByItemId) {
+    errors.push(`${itemId}: ${failures.join(", ")}`);
+    console.error(`[dependency-graph] REJECT ${itemId}: ${failures.join(", ")}`);
+  }
+  const dependencyChecked = deduped.filter((item) => !dependencyResult.invalidIds.has(item.id));
+
   const catalog: CatalogFile = {
     schemaVersion: "1.0.0",
     generatedAt: new Date().toISOString(),
-    itemCount: deduped.length,
-    items: deduped,
+    itemCount: dependencyChecked.length,
+    items: dependencyChecked,
   };
 
-  console.log(`\nAggregation complete: ${deduped.length} items`);
+  console.log(`\nAggregation complete: ${dependencyChecked.length} items`);
   console.log(`  Errors: ${errors.length}`);
   console.log(`  Warnings: ${warnings.length}`);
 

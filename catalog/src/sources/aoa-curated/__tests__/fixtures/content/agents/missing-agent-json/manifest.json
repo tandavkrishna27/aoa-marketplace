@@ -1,0 +1,10 @@
+{
+  "id": "agent:aoa-curated/missing-agent-json",
+  "name": "Missing Agent JSON",
+  "description": "Invalid fixture with no agent.json.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" }
+}

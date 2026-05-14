@@ -61,6 +61,14 @@ describe("aggregate", () => {
     expect(catalog.schemaVersion).toBe("1.0.0");
     expect(catalog.itemCount).toBeGreaterThanOrEqual(0);
     expect(catalog.items.every((i) => i.id.length > 0)).toBe(true);
+    const itemsById = new Map(catalog.items.map((item) => [item.id, item]));
+    for (const item of catalog.items) {
+      for (const req of item.requires ?? []) {
+        const target = itemsById.get(req.id);
+        expect(target, `${item.id} requires missing item ${req.id}`).toBeDefined();
+        expect(target?.type, `${item.id} declares ${req.id} as ${req.type}`).toBe(req.type);
+      }
+    }
     expect(catalog.generatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
   }, { timeout: 60_000 });
 

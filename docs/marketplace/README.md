@@ -20,10 +20,10 @@ Start with these pages when changing marketplace behavior:
 | --- | --- | --- |
 | Skills | Current | [standards/skills.md](standards/skills.md) |
 | Plugins | Current | [standards/plugins.md](standards/plugins.md) |
-| Agents | Roadmap | [standards/agents.md](standards/agents.md) |
+| Agents | Current catalog standard | [standards/agents.md](standards/agents.md) |
 | Teams | Roadmap | [standards/teams.md](standards/teams.md) |
 
-Skills and plugins are current marketplace surfaces. Agents and teams are represented in the catalog direction, but their full marketplace standards remain roadmap work until importer, installer, dependency, and runtime behavior are finalized.
+Skills, plugins, and agents are current marketplace catalog surfaces. The marketplace agent standard is enforced once validated by the catalog builder. AoA install and runtime support remain a separate consumer milestone, so do not claim AoA can install or run agents yet. Teams remain roadmap work until importer, installer, dependency, and runtime behavior are finalized.
 
 ## How The Catalog Is Built
 
