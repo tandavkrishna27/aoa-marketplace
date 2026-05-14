@@ -183,8 +183,12 @@ export const githubSkillsAdapter: SourceAdapter = {
           const content = readFileSync(skillFile, "utf-8");
           const fm = parseFrontmatter(content, fallbackName);
           const sha = src.sourceCommitSha;
-          const skillPath = relPath.replace(/\/SKILL\.md$/, "");
-          const treeUrl = `https://github.com/${src.config.repo}/tree/${sha}/${skillPath}`;
+          const skillPath = relPath === "SKILL.md" ? "." : relPath.replace(/\/SKILL\.md$/, "");
+          const treeUrl =
+            skillPath === "."
+              ? `https://github.com/${src.config.repo}/tree/${sha}`
+              : `https://github.com/${src.config.repo}/tree/${sha}/${skillPath}`;
+          const locator = skillPath === "." ? src.config.repo : `${src.config.repo}/${skillPath}`;
           const runtimeRequires = mergeRuntimeRequires(fm.runtimeRequires, id, overrides);
 
           // Category: frontmatter > source default > fallback "productivity"
@@ -206,7 +210,7 @@ export const githubSkillsAdapter: SourceAdapter = {
             source: {
               adapter: "github-skills",
               url: treeUrl,
-              locator: `${src.config.repo}/${skillPath}`,
+              locator,
               commitSha: ctx.commitSha,
             },
             resourceUrl: `https://raw.githubusercontent.com/${src.config.repo}/${sha}/${relPath}`,

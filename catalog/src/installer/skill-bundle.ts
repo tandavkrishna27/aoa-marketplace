@@ -27,6 +27,9 @@ export interface InstallSkillBundleResult {
 
 export function validateSkillBundlePath(path: string): void {
   const normalized = path.replace(/\\/g, "/");
+  if (normalized === ".") {
+    return;
+  }
   const segments = normalized.split("/");
 
   if (

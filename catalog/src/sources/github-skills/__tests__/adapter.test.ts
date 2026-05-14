@@ -364,6 +364,51 @@ Body.`,
     }
   });
 
+  it("uses repo root as bundle path for root-level SKILL.md", async () => {
+    const tmp = mkdtempSync(join(tmpdir(), "ghs-root-skill-"));
+    try {
+      const fixture = makeFixtureRepo(tmp, "fake.git", {
+        "LICENSE": "MIT License\n",
+        "SKILL.md": `---
+name: root-skill
+description: Root skill
+---
+
+Body.`,
+        "references/root.md": "# Root Reference\n",
+      });
+      writeFileSync(
+        join(tmp, "trusted-sources.json"),
+        JSON.stringify({
+          schemaVersion: "1.0.0",
+          trustedSources: [
+            {
+              adapter: "github-skills",
+              tier: "verified",
+              reason: "fixture",
+              config: { repo: "local/fake", ref: "main", skillsPath: "" },
+            },
+          ],
+        }),
+      );
+      process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO = `local/fake=file://${fixture}`;
+      const ctx = { workDir: tmp, logger: silentLogger(), commitSha: "deadbeef" };
+      const raw = await githubSkillsAdapter.fetch(ctx);
+      const items = await githubSkillsAdapter.normalize(raw, ctx);
+
+      expect(items).toHaveLength(1);
+      expect(items[0].item.id).toBe("skill:github-skills/local/fake/SKILL.md");
+      expect(items[0].item.source.locator).toBe("local/fake");
+      expect(items[0].item.source.url).toMatch(/^https:\/\/github\.com\/local\/fake\/tree\/[a-f0-9]{7,40}$/);
+      expect(items[0].item.skill?.bundle.path).toBe(".");
+      expect(items[0].item.skill?.bundle.treeUrl).toBe(items[0].item.source.url);
+      expect(items[0].item.resourceUrl).toMatch(/\/SKILL\.md$/);
+    } finally {
+      delete process.env.GITHUB_SKILLS_TEST_OVERRIDE_REPO;
+      rmSync(tmp, { recursive: true });
+    }
+  });
+
   it("points bundle at the full skill directory when support files exist", async () => {
     const tmp = mkdtempSync(join(tmpdir(), "ghs-bundle-"));
     try {

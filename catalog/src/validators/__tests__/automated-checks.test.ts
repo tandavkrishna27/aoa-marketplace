@@ -122,6 +122,25 @@ describe("runAutomatedChecks", () => {
     },
   );
 
+  it("accepts dot as the repo-root skill bundle path", () => {
+    const result = runAutomatedChecks({
+      ...validSkillItem,
+      source: { ...validSkillItem.source, url: "https://github.com/owner/repo/tree/abc1234", locator: "owner/repo" },
+      skill: {
+        bundle: {
+          type: "github-directory",
+          repo: "owner/repo",
+          commitSha: "abc1234",
+          path: ".",
+          treeUrl: "https://github.com/owner/repo/tree/abc1234",
+        },
+        frontmatter: { raw: {} },
+      },
+    });
+
+    expect(result.passed).toBe(true);
+  });
+
   it("warns for broad allowed-tools values", () => {
     const result = runAutomatedChecks({
       ...validSkillItem,
