@@ -2,10 +2,11 @@ import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 import type { SourceAdapter, SourceAdapterContext, NormalizedItem } from "../../types/source-adapter.js";
-import type { CatalogItem, ItemType } from "../../types/catalog.js";
+import type { CatalogItem, ItemType, SkillMetadata } from "../../types/catalog.js";
 import { CategorySchema, TagSchema } from "../../types/catalog.js";
 import { checkManifestDrift } from "../../validators/manifest-drift.js";
 import { loadAndValidateAgentContent } from "./agent-content.js";
+import { parseFrontmatter } from "../../utils/frontmatter.js";
 
 function fileAddedAt(filePath: string): string {
   // Use the file's mtime as a deterministic "added at" timestamp.
@@ -217,6 +218,42 @@ export const aoaCuratedAdapter: SourceAdapter = {
           const resourceFile = RESOURCE_FILE_BY_TYPE[type];
           const resourceUrl = `${REPO_RAW_BASE}/${ctx.commitSha}/content/${typeDirName}/${slug}/${resourceFile}`;
 
+          // For skill items: populate skill.bundle + skill.frontmatter from SKILL.md.
+          // The bundle is required by automated-checks when resourceUrl is set (checks.ts:89).
+          // aoa-curated skills live in content/skills/{slug}/SKILL.md (not README.md).
+          let skillMeta: SkillMetadata | undefined;
+          if (type === "skill") {
+            const skillMdPath = join(itemDir, "SKILL.md");
+            if (existsSync(skillMdPath)) {
+              const skillContent = readFileSync(skillMdPath, "utf-8");
+              const fm = parseFrontmatter(skillContent, slug);
+              skillMeta = {
+                bundle: {
+                  type: "github-directory",
+                  repo: "MeteoriteLabs/aoa-marketplace",
+                  commitSha: ctx.commitSha,
+                  path: `content/skills/${slug}`,
+                  treeUrl: `${REPO_RAW_BASE}/${ctx.commitSha}/content/${typeDirName}/${slug}`,
+                },
+                frontmatter: {
+                  name: fm.name || undefined,
+                  description: fm.description || undefined,
+                  license: fm.license,
+                  compatibility: fm.compatibility,
+                  metadata: fm.metadata,
+                  allowedTools: fm.allowedTools,
+                  userInvocable: fm.userInvocable,
+                  disableModelInvocation: fm.disableModelInvocation,
+                  raw: fm.raw,
+                },
+              };
+              // aoa-curated skills serve inline content from SKILL.md (no README.md fallback)
+              if (raw.contentInline && !content) {
+                content = { inline: skillContent };
+              }
+            }
+          }
+
           const item: CatalogItem = {
             id,
             type,
@@ -238,6 +275,7 @@ export const aoaCuratedAdapter: SourceAdapter = {
             capabilities: raw.capabilities,
             requires: raw.requires,
             content,
+            skill: skillMeta,
             featured: raw.featured,
           };
           items.push({ item, rawManifest: raw as unknown as Record<string, unknown> });
