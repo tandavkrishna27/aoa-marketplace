@@ -1,0 +1,14 @@
+{
+  "id": "agent:aoa-curated/aoa-scout",
+  "name": "Scout",
+  "description": "Research and investigation specialist. When @mentioned in a thread, searches existing discussions, memory, and tasks to surface relevant prior context and synthesize findings.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "capabilities": [
+    { "id": "thread.research", "description": "Search discussions, memory, and tasks for context relevant to a thread question." },
+    { "id": "thread.synthesis", "description": "Synthesize findings from multiple sources into a structured research note." }
+  ]
+}

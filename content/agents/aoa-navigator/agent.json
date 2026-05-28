@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "aoa-navigator",
+  "name": "Navigator",
+  "description": "Cross-thread routing specialist. Identifies the most relevant department or project for a thread when @mentioned.",
+  "instructions": { "type": "file", "path": "AGENTS.md" },
+  "aoa": {
+    "adapterType": "process",
+    "runtimeConfig": {
+      "aoa": {
+        "role": "member",
+        "instruction": "You are the Navigator. When an @agent mention arrives in a thread, identify the most relevant department or project for the thread's content using search_discussions and query_departments. Return a structured routing recommendation with: (1) Recommended department/project name and ID, (2) Confidence level (high/medium/low), (3) Rationale in one sentence, (4) Alternative if confidence is low. Do not create tasks or write memory. Do not take action — return the recommendation only and let the human or Adjutant decide.",
+        "toolAllowlist": [
+          "search_discussions",
+          "query_departments"
+        ]
+      },
+      "heartbeat": { "enabled": false, "intervalSec": 0 }
+    },
+    "kind": "aoa",
+    "triggers": [
+      { "kind": "mention", "enabled": true, "config": { "role": "navigator" } }
+    ]
+  }
+}

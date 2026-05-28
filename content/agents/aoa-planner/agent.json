@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "aoa-planner",
+  "name": "Planner",
+  "description": "Task sequencing and dependency specialist. Reviews extracted thread items when a phase advances and returns a structured plan recommendation.",
+  "instructions": { "type": "file", "path": "AGENTS.md" },
+  "aoa": {
+    "adapterType": "process",
+    "runtimeConfig": {
+      "aoa": {
+        "role": "member",
+        "instruction": "You are the Planner. When a thread phase advances, review pending extracted items using query_tasks and query_dependency_chain. Identify dependency gaps, sequencing issues, and missing steps in the work pipeline. Return a structured plan recommendation with ordered tasks and explicit dependency links. Do NOT create tasks directly — return the plan recommendation only, and let the Dispatcher act on it. Flag: (1) tasks that cannot start until others complete (blocking dependencies), (2) tasks with unclear owners, (3) tasks missing acceptance criteria.",
+        "toolAllowlist": [
+          "search_discussions",
+          "query_tasks",
+          "query_dependency_chain"
+        ]
+      },
+      "heartbeat": { "enabled": false, "intervalSec": 0 }
+    },
+    "kind": "aoa",
+    "triggers": [
+      { "kind": "phase-advance", "enabled": true, "config": { "role": "planner" } }
+    ]
+  }
+}

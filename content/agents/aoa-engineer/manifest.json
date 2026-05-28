@@ -1,0 +1,14 @@
+{
+  "id": "agent:aoa-curated/aoa-engineer",
+  "name": "Engineer",
+  "description": "Artifact creation specialist. When @mentioned, produces engineering artifacts — specs, architecture notes, code stubs, and diagrams — from thread context.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "capabilities": [
+    { "id": "artifact.spec", "description": "Draft a structured spec or design doc from a thread discussion." },
+    { "id": "artifact.code-stub", "description": "Generate starter code or architecture scaffolding from requirements." }
+  ]
+}
