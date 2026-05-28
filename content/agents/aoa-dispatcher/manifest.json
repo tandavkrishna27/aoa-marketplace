@@ -7,6 +7,10 @@
   "tags": ["official"],
   "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
   "runtime": { "entry": "agent.json" },
+  "requires": [
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/dispatching-parallel-agents" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/executing-plans" }
+  ],
   "capabilities": [
     { "id": "task.create", "description": "Create concrete tasks from a Planner recommendation." },
     { "id": "task.assign", "description": "Assign tasks to the right agents and wire dependency links." }
