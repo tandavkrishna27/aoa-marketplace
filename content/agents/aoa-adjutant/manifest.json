@@ -1,0 +1,14 @@
+{
+  "id": "agent:aoa-curated/aoa-adjutant",
+  "name": "Adjutant",
+  "description": "Discuss-phase director. Monitors thread state, determines when discuss conditions are met, advances phases, and delegates work to the other crew members.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "capabilities": [
+    { "id": "thread.phase-advance", "description": "Evaluate discuss-phase completion criteria and advance thread state." },
+    { "id": "crew.delegation", "description": "Delegate sub-tasks to Scout, Engineer, Planner, and Dispatcher." }
+  ]
+}

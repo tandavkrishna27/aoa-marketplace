@@ -1,0 +1,14 @@
+{
+  "id": "agent:aoa-curated/aoa-planner",
+  "name": "Planner",
+  "description": "Task sequencing and dependency specialist. When a thread phase advances, reviews extracted items and produces a structured plan with dependency ordering.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "capabilities": [
+    { "id": "task.sequencing", "description": "Identify dependency gaps and sequencing issues in extracted thread items." },
+    { "id": "task.plan-artifact", "description": "Produce a structured plan artifact with ordered tasks and dependency graph." }
+  ]
+}

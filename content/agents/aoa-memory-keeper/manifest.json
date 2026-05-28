@@ -1,0 +1,15 @@
+{
+  "id": "agent:aoa-curated/aoa-memory-keeper",
+  "name": "Memory Keeper",
+  "description": "Memory proposal specialist. Reviews discussion entries and extracted items for patterns worth capturing, proposes memory items (pending approval), and detects conflicts with existing memory.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "capabilities": [
+    { "id": "memory.propose", "description": "Propose memory items (status=pending) from discussion patterns." },
+    { "id": "memory.dedup", "description": "Find similar existing memory before proposing to prevent duplicates." },
+    { "id": "memory.conflict", "description": "Detect contradictions between proposed items and active memory." }
+  ]
+}
