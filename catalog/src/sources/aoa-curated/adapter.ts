@@ -71,6 +71,7 @@ const RESOURCE_FILE_BY_TYPE: Record<Exclude<ItemType, "plugin">, string> = {
 };
 
 const REPO_RAW_BASE = "https://raw.githubusercontent.com/MeteoriteLabs/aoa-marketplace";
+const REPO_TREE_BASE = "https://github.com/MeteoriteLabs/aoa-marketplace/tree";
 const REPO_RELEASES_BASE = "https://github.com/MeteoriteLabs/aoa-marketplace/releases/download";
 
 export const aoaCuratedAdapter: SourceAdapter = {
@@ -233,7 +234,7 @@ export const aoaCuratedAdapter: SourceAdapter = {
                   repo: "MeteoriteLabs/aoa-marketplace",
                   commitSha: ctx.commitSha,
                   path: `content/skills/${slug}`,
-                  treeUrl: `${REPO_RAW_BASE}/${ctx.commitSha}/content/${typeDirName}/${slug}`,
+                  treeUrl: `${REPO_TREE_BASE}/${ctx.commitSha}/content/${typeDirName}/${slug}`,
                 },
                 frontmatter: {
                   name: fm.name || undefined,
