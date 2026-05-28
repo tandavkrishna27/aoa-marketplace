@@ -19,6 +19,11 @@
       "heartbeat": { "enabled": false, "intervalSec": 0 }
     },
     "kind": "aoa",
+    "skillKeys": [
+      "skill:github-skills/obra/superpowers/writing-plans",
+      "skill:github-skills/garrytan/gstack/spec",
+      "skill:github-skills/obra/superpowers/brainstorming"
+    ],
     "triggers": [
       { "kind": "phase-advance", "enabled": true, "config": { "role": "planner" } }
     ]
