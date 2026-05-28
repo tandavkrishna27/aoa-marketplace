@@ -1,0 +1,38 @@
+{
+  "id": "team:aoa-curated/default-crew",
+  "name": "AoA Default Crew",
+  "description": "The 7-agent crew that orchestrates thread discussions in AoA. Includes Adjutant (discuss-phase director), Scout (research), Engineer (artifacts), Navigator (routing), Planner (sequencing), Dispatcher (task creation), and Memory Keeper (memory proposals).",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official", "featured"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "team.json" },
+  "requires": [
+    { "type": "agent", "id": "agent:aoa-curated/aoa-adjutant" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-scout" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-engineer" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-navigator" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-planner" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-dispatcher" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-memory-keeper" },
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/office-hours" },
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/investigate" },
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/review" },
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/spec" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/dispatching-parallel-agents" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/writing-plans" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/brainstorming" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/systematic-debugging" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/test-driven-development" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/verification-before-completion" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/using-git-worktrees" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/executing-plans" },
+    { "type": "skill", "id": "skill:github-skills/coderabbitai/skills/code-review" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/security-best-practices" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/gh-address-comments" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/gh-fix-ci" }
+  ],
+  "capabilities": [
+    { "id": "crew.thread-orchestration", "description": "Full discuss-phase orchestration for AoA threads." }
+  ]
+}

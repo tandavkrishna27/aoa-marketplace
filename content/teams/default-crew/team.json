@@ -1,0 +1,21 @@
+{
+  "slug": "aoa-crew",
+  "description": "The AoA Default Crew — 7 agents that orchestrate thread discussions.",
+  "manifest": {
+    "schemaVersion": "aoa-crew.v1",
+    "installOrder": ["adjutant", "scout", "engineer", "navigator", "planner", "dispatcher", "memory-keeper"],
+    "adapterCompatibility": {
+      "supported": ["process", "codex_local", "claude_local", "gemini_local"],
+      "membersInheritWhenSingleChoice": true
+    }
+  },
+  "agents": [
+    { "templateOrigin": "agent:aoa-curated/aoa-adjutant",      "name": "Adjutant" },
+    { "templateOrigin": "agent:aoa-curated/aoa-scout",         "name": "Scout" },
+    { "templateOrigin": "agent:aoa-curated/aoa-engineer",      "name": "Engineer" },
+    { "templateOrigin": "agent:aoa-curated/aoa-navigator",     "name": "Navigator" },
+    { "templateOrigin": "agent:aoa-curated/aoa-planner",       "name": "Planner" },
+    { "templateOrigin": "agent:aoa-curated/aoa-dispatcher",    "name": "Dispatcher" },
+    { "templateOrigin": "agent:aoa-curated/aoa-memory-keeper", "name": "Memory Keeper" }
+  ]
+}

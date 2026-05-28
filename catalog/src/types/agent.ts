@@ -116,6 +116,13 @@ export const AgentAoaSetupSchema = z.object({
   notes: z.array(z.string().trim().min(1)).optional(),
 }).strict();
 
+export const AoaTriggerSchema = z.object({
+  kind: z.string().min(1),
+  enabled: z.boolean(),
+  config: z.record(z.unknown()).default({}),
+});
+export type AoaTrigger = z.infer<typeof AoaTriggerSchema>;
+
 export const AgentAoaHintsSchema = z.object({
   adapterType: z.string().min(1).optional(),
   adapterCompatibility: AgentAoaAdapterCompatibilitySchema.optional(),
@@ -125,6 +132,10 @@ export const AgentAoaHintsSchema = z.object({
   permissions: z.record(z.unknown()).optional(),
   skillKeys: z.array(z.string().min(1)).optional(),
   setup: AgentAoaSetupSchema.optional(),
+  /** AoA-specific agent kind (e.g. "aoa" for crew agents). Stored in agents.kind at install time. */
+  kind: z.string().min(1).optional(),
+  /** Trigger bindings seeded into aoa_agent_triggers at install time. */
+  triggers: z.array(AoaTriggerSchema).optional(),
 }).strict().optional();
 
 export const AgentRuntimeSchema = z.object({
