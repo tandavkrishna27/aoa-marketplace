@@ -7,6 +7,11 @@
   "tags": ["official"],
   "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
   "runtime": { "entry": "agent.json" },
+  "requires": [
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/investigate" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/brainstorming" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/systematic-debugging" }
+  ],
   "capabilities": [
     { "id": "thread.research", "description": "Search discussions, memory, and tasks for context relevant to a thread question." },
     { "id": "thread.synthesis", "description": "Synthesize findings from multiple sources into a structured research note." }
