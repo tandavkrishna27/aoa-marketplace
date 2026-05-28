@@ -1,0 +1,13 @@
+{
+  "id": "agent:aoa-curated/aoa-navigator",
+  "name": "Navigator",
+  "description": "Cross-thread routing specialist. When @mentioned, identifies the most relevant department or project for the thread's content and returns a structured routing recommendation.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "capabilities": [
+    { "id": "thread.routing", "description": "Identify the best department or project for a given thread topic." }
+  ]
+}

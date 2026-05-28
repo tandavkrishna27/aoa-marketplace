@@ -1,0 +1,25 @@
+{
+  "id": "agent:aoa-curated/aoa-engineer",
+  "name": "Engineer",
+  "description": "Artifact creation specialist. When @mentioned, produces engineering artifacts — specs, architecture notes, code stubs, and diagrams — from thread context.",
+  "version": "1.0.0",
+  "category": "engineering",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "requires": [
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/test-driven-development" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/systematic-debugging" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/verification-before-completion" },
+    { "type": "skill", "id": "skill:github-skills/obra/superpowers/using-git-worktrees" },
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/review" },
+    { "type": "skill", "id": "skill:github-skills/coderabbitai/skills/code-review" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/security-best-practices" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/gh-address-comments" },
+    { "type": "skill", "id": "skill:github-skills/openai/skills/gh-fix-ci" }
+  ],
+  "capabilities": [
+    { "id": "artifact.spec", "description": "Draft a structured spec or design doc from a thread discussion." },
+    { "id": "artifact.code-stub", "description": "Generate starter code or architecture scaffolding from requirements." }
+  ]
+}
