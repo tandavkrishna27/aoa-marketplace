@@ -1,0 +1,11 @@
+{
+  "id": "skill:aoa-curated/aoa-design-shotgun-html",
+  "name": "AoA Design Shotgun (HTML)",
+  "description": "Generates 3–4 distinct HTML mockup variants for a UI component or page, comparing approaches before committing to one. AoA adaptation of the gstack design-shotgun pattern — outputs HTML rather than image files.",
+  "version": "1.0.0",
+  "category": "design",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "contentInline": true,
+  "runtime": { "entry": "SKILL.md" }
+}
