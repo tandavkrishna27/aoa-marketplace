@@ -21,6 +21,10 @@
       "heartbeat": { "enabled": false, "intervalSec": 0 }
     },
     "kind": "aoa",
+    "skillKeys": [
+      "skill:github-skills/obra/superpowers/dispatching-parallel-agents",
+      "skill:github-skills/obra/superpowers/executing-plans"
+    ],
     "triggers": [
       { "kind": "phase-advance", "enabled": true, "config": { "role": "dispatcher" } }
     ]

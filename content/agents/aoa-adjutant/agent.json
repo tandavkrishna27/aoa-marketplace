@@ -22,6 +22,11 @@
       "heartbeat": { "enabled": false, "intervalSec": 0 }
     },
     "kind": "aoa",
+    "skillKeys": [
+      "skill:github-skills/garrytan/gstack/office-hours",
+      "skill:github-skills/obra/superpowers/dispatching-parallel-agents",
+      "skill:github-skills/obra/superpowers/writing-plans"
+    ],
     "triggers": [
       { "kind": "sweep", "enabled": true, "config": { "role": "adjutant" } }
     ]

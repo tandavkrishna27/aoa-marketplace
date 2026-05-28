@@ -20,6 +20,11 @@
       "heartbeat": { "enabled": false, "intervalSec": 0 }
     },
     "kind": "aoa",
+    "skillKeys": [
+      "skill:github-skills/garrytan/gstack/investigate",
+      "skill:github-skills/obra/superpowers/brainstorming",
+      "skill:github-skills/obra/superpowers/systematic-debugging"
+    ],
     "triggers": [
       { "kind": "mention", "enabled": true, "config": { "role": "scout" } }
     ]

@@ -20,6 +20,17 @@
       "heartbeat": { "enabled": false, "intervalSec": 0 }
     },
     "kind": "aoa",
+    "skillKeys": [
+      "skill:github-skills/obra/superpowers/test-driven-development",
+      "skill:github-skills/obra/superpowers/systematic-debugging",
+      "skill:github-skills/obra/superpowers/verification-before-completion",
+      "skill:github-skills/obra/superpowers/using-git-worktrees",
+      "skill:github-skills/garrytan/gstack/review",
+      "skill:github-skills/coderabbitai/skills/code-review",
+      "skill:github-skills/openai/skills/security-best-practices",
+      "skill:github-skills/openai/skills/gh-address-comments",
+      "skill:github-skills/openai/skills/gh-fix-ci"
+    ],
     "triggers": [
       { "kind": "mention", "enabled": true, "config": { "role": "engineer" } }
     ]
