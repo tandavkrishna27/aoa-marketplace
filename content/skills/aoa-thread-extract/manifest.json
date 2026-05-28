@@ -1,0 +1,11 @@
+{
+  "id": "skill:aoa-curated/aoa-thread-extract",
+  "name": "AoA Thread Extract",
+  "description": "Extracts decisions, tasks, insights, context, references, and preferences from AoA thread discussion entries and submits them via submit_extracted_items.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "contentInline": true,
+  "runtime": { "entry": "SKILL.md" }
+}

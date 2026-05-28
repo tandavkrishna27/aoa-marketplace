@@ -1,0 +1,22 @@
+{
+  "id": "team:aoa-curated/default-crew",
+  "name": "AoA Default Crew",
+  "description": "The 7-agent crew that orchestrates thread discussions in AoA. Includes Adjutant (discuss-phase director), Scout (research), Engineer (artifacts), Navigator (routing), Planner (sequencing), Dispatcher (task creation), and Memory Keeper (memory proposals).",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official", "featured"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "team.json" },
+  "requires": [
+    { "type": "agent", "id": "agent:aoa-curated/aoa-adjutant" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-scout" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-engineer" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-navigator" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-planner" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-dispatcher" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-memory-keeper" }
+  ],
+  "capabilities": [
+    { "id": "crew.thread-orchestration", "description": "Full discuss-phase orchestration for AoA threads." }
+  ]
+}
