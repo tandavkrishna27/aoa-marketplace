@@ -1,0 +1,14 @@
+{
+  "id": "agent:aoa-curated/aoa-chronicler",
+  "name": "Chronicler",
+  "description": "Keeps each thread's routing card accurate — a tight factual summary and key entity terms — updated silently on every sweep. Never posts to the thread.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "requires": [],
+  "capabilities": [
+    { "id": "thread.summarization", "description": "Maintain each thread's routing card (summary + key entity terms) silently on every sweep." }
+  ]
+}

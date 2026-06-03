@@ -1,7 +1,7 @@
 {
   "id": "agent:aoa-curated/aoa-engineer",
   "name": "Engineer",
-  "description": "Artifact creation specialist. When @mentioned, produces engineering artifacts — specs, architecture notes, code stubs, and diagrams — from thread context.",
+  "description": "Artifact creation for threads — produces documents, reports, designs, and code, requests a workspace when the work needs a runtime, and posts the deliverable back to the thread.",
   "version": "1.0.0",
   "category": "engineering",
   "tags": ["official"],
@@ -19,7 +19,7 @@
     { "type": "skill", "id": "skill:github-skills/openai/skills/gh-fix-ci" }
   ],
   "capabilities": [
-    { "id": "artifact.spec", "description": "Draft a structured spec or design doc from a thread discussion." },
-    { "id": "artifact.code-stub", "description": "Generate starter code or architecture scaffolding from requirements." }
+    { "id": "artifact.create", "description": "Create and version artifacts (document, report, design, or code) from thread context." },
+    { "id": "artifact.workspace", "description": "Request a thread workspace when the deliverable needs a runtime, and post the artifact back to the thread." }
   ]
 }

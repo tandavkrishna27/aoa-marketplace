@@ -1,7 +1,7 @@
 {
   "id": "agent:aoa-curated/aoa-planner",
   "name": "Planner",
-  "description": "Task sequencing and dependency specialist. When a thread phase advances, reviews extracted items and produces a structured plan with dependency ordering.",
+  "description": "Turns a converged discussion into a structured plan artifact — sequences work, names dependencies and acceptance criteria, and frames the thread's scope. Does not create tasks (that stays behind the Adjutant chokepoint).",
   "version": "1.0.0",
   "category": "workflows",
   "tags": ["official"],
@@ -13,7 +13,7 @@
     { "type": "skill", "id": "skill:github-skills/obra/superpowers/brainstorming" }
   ],
   "capabilities": [
-    { "id": "task.sequencing", "description": "Identify dependency gaps and sequencing issues in extracted thread items." },
-    { "id": "task.plan-artifact", "description": "Produce a structured plan artifact with ordered tasks and dependency graph." }
+    { "id": "task.sequencing", "description": "Identify dependency gaps, sequencing issues, and missing steps in extracted thread items on phase-advance." },
+    { "id": "plan.artifact", "description": "Produce a document-type plan artifact (Goal, Tasks with dependencies and acceptance criteria, Sequencing) and frame the thread's scope via scope proposal and intent." }
   ]
 }
