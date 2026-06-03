@@ -1,13 +1,15 @@
 {
   "id": "agent:aoa-curated/aoa-navigator",
   "name": "Navigator",
-  "description": "Cross-thread routing specialist. When @mentioned, identifies the most relevant department or project for the thread's content and returns a structured routing recommendation.",
+  "description": "Cross-thread routing and spin-off. On @mention or ambiguous-inbox routing, decides whether material belongs in an existing thread (attach), a new thread (spin-off / promote), or a department, and links related threads. Does not create tasks or write memory.",
   "version": "1.0.0",
   "category": "workflows",
   "tags": ["official"],
   "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
   "runtime": { "entry": "agent.json" },
   "capabilities": [
-    { "id": "thread.routing", "description": "Identify the best department or project for a given thread topic." }
+    { "id": "thread.routing", "description": "Decide whether inbound material attaches to an existing thread, spins off into a new one, or routes to a department." },
+    { "id": "thread.linking", "description": "Link related threads when a meaningful precedent exists." },
+    { "id": "inbox.routing", "description": "Route a single ambiguous inbox item: attach, branch/promote, or defer to a human." }
   ]
 }
