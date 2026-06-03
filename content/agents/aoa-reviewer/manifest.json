@@ -1,0 +1,17 @@
+{
+  "id": "agent:aoa-curated/aoa-reviewer",
+  "name": "Reviewer",
+  "description": "Critiques crew artifacts, plans, and perspectives in a thread — strengths, gaps, risks, and concrete fixes. Advise only; the founder is the final approver.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "requires": [
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/review" },
+    { "type": "skill", "id": "skill:github-skills/coderabbitai/skills/code-review" }
+  ],
+  "capabilities": [
+    { "id": "thread.review", "description": "Critique an artifact, plan, or perspective in a thread and post a structured review (strengths, gaps, risks, fixes)." }
+  ]
+}

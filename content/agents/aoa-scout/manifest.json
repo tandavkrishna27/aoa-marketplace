@@ -1,7 +1,7 @@
 {
   "id": "agent:aoa-curated/aoa-scout",
   "name": "Scout",
-  "description": "Research and investigation specialist. When @mentioned in a thread, searches existing discussions, memory, and tasks to surface relevant prior context and synthesize findings.",
+  "description": "Internal-only research and investigation for threads. The Adjutant delegates research to Scout, which finds precedent in memory and related threads and posts a single synthesis entry back to the thread.",
   "version": "1.0.0",
   "category": "workflows",
   "tags": ["official"],
@@ -13,7 +13,7 @@
     { "type": "skill", "id": "skill:github-skills/obra/superpowers/systematic-debugging" }
   ],
   "capabilities": [
-    { "id": "thread.research", "description": "Search discussions, memory, and tasks for context relevant to a thread question." },
-    { "id": "thread.synthesis", "description": "Synthesize findings from multiple sources into a structured research note." }
+    { "id": "thread.research", "description": "Investigate a thread using internal-only sources — similar memory, related threads, and discussion search (no web browse in Phase 1)." },
+    { "id": "thread.synthesis", "description": "Synthesize findings into one summary entry posted back to the thread, linking meaningful precedent in related threads." }
   ]
 }
