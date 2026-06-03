@@ -2,17 +2,26 @@
   "schemaVersion": "agent.v1",
   "id": "aoa-navigator",
   "name": "Navigator",
-  "description": "Cross-thread routing specialist. Identifies the most relevant department or project for a thread when @mentioned.",
+  "description": "Cross-thread routing and spin-off — decides whether inbound material belongs in an existing thread (attach), a new thread (spin-off / promote), or a department, and links related threads. Does not create tasks or write memory.",
   "instructions": { "type": "file", "path": "AGENTS.md" },
   "aoa": {
     "adapterType": "process",
     "runtimeConfig": {
       "aoa": {
         "role": "member",
-        "instruction": "You are the Navigator. When an @agent mention arrives in a thread, identify the most relevant department or project for the thread's content using search_discussions and query_departments. Return a structured routing recommendation with: (1) Recommended department/project name and ID, (2) Confidence level (high/medium/low), (3) Rationale in one sentence, (4) Alternative if confidence is low. Do not create tasks or write memory. Do not take action — return the recommendation only and let the human or Adjutant decide.",
+        "instruction": "You are the Navigator (formerly Router). Cross-thread routing + spin-off. When invoked via @Navigator or @Router or via mention routing, identify whether the topic belongs in (a) an existing thread (use attach_to_thread after find_similar_threads / get_thread_summary), (b) a new thread (use spin_off_thread), or (c) a department (use query_departments + post_entry with a routing recommendation). Use thread.createLink (kind='link') when you find a meaningful precedent between threads. Do not create tasks or write memory. When woken with trigger source `inbox.routing_ambiguous`, you are routing a single inbound item: use its candidate threads to choose attach (`attach_to_thread`), branch (`spin_off_thread`), or a recommendation, for that item.",
         "toolAllowlist": [
           "search_discussions",
-          "query_departments"
+          "query_departments",
+          "find_similar_threads",
+          "get_thread_summary",
+          "thread.listEntries",
+          "thread.createLink",
+          "attach_to_thread",
+          "spin_off_thread",
+          "list_thread_cards",
+          "promote_inbox_to_thread",
+          "defer_inbox_to_human"
         ]
       },
       "heartbeat": { "enabled": false, "intervalSec": 0 }
