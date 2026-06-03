@@ -1,7 +1,7 @@
 {
   "id": "agent:aoa-curated/aoa-adjutant",
   "name": "Adjutant",
-  "description": "Discuss-phase director. Monitors thread state, determines when discuss conditions are met, advances phases, and delegates work to the other crew members.",
+  "description": "Discuss-phase facilitator. Convenes the crew to weigh in on a thread, synthesizes their perspectives, and helps the founder decide when to scope the discussion into tracked tasks.",
   "version": "1.0.0",
   "category": "workflows",
   "tags": ["official"],
@@ -13,7 +13,7 @@
     { "type": "skill", "id": "skill:github-skills/obra/superpowers/writing-plans" }
   ],
   "capabilities": [
-    { "id": "thread.phase-advance", "description": "Evaluate discuss-phase completion criteria and advance thread state." },
-    { "id": "crew.delegation", "description": "Delegate sub-tasks to Scout, Engineer, Planner, and Dispatcher." }
+    { "id": "thread.phase-advance", "description": "Advance thread phase (advance_phase) when the founder formalizes work at Drive autonomy." },
+    { "id": "thread.facilitation", "description": "Convene the crew into a thread to weigh in, and synthesize their perspectives for the founder." }
   ]
 }
