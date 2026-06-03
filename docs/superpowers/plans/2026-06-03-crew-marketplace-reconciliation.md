@@ -49,7 +49,7 @@ For each existing crew agent `aoa-<role>`:
 2. **Rewrite `agent.json`** `runtimeConfig.aoa`:
    - `toolAllowlist` = the EXACT array from the codebase allowlist. Every entry must be a real tool name (verify against `CB/server/src/services/internal-agent/tool-registry.ts` + `tools/`). Remove every legacy/non-existent name.
    - `instruction` = the codebase persona text (the `ensure-*` instruction string).
-   - `role` stays `member`; `triggers[0].config.role` = the real role key (`adjutant`/`scout`/`engineer`/`planner`/`navigator`/`memory_keeper`); `triggers[0].kind` = the codebase trigger kind (Adjutant `sweep`; Scout/Engineer `mention`; Planner `phase-advance`; Navigator `mention`; Memory Keeper `outbox`).
+   - `role` stays `member`; `triggers[].config.role` = the real role key (`adjutant`/`scout`/`engineer`/`planner`/`navigator`/`memory_keeper`); `triggers[].kind` = the codebase trigger kind(s) (Adjutant `sweep`; Scout `mention`; Engineer `mention` **and** `phase-advance` — dual-triggered; Planner `phase-advance`; Navigator `mention`; Memory Keeper `sweep` — migrated from the dead `outbox` trigger).
    - `kind` = `aoa`. Keep `schemaVersion`, `id`, `instructions: { type: "file", path: "AGENTS.md" }`, `heartbeat: { enabled: false, intervalSec: 0 }`, `skillKeys` (unchanged).
 3. **Rewrite `AGENTS.md`** so the persona matches the new instruction. Remove any reference to the retired **Dispatcher** (say "the founder approves the scope card" or "Dispatcher (retired) → the system creates tasks on approval" as appropriate to the role).
 4. **Keep `manifest.json`** `requires` (skills) as-is; only fix `description` if it references the wrong behavior/tools.
@@ -131,7 +131,7 @@ cd "CB" && git add server/src/services/internal-agent/aoa-agents/autonomy.ts ser
 - [ ] Read `CB/.../ensure-scout.ts` for the exact `SCOUT` allowlist + instruction. Apply the Shared procedure. `triggers[0]` = `{ kind: "mention", config: { role: "scout" } }`. Validate, commit `content/agents/aoa-scout`.
 
 ## Task 3: Reconcile aoa-engineer (repo MP)
-- [ ] Read `CB/.../ensure-engineer.ts` for the exact allowlist + instruction. Apply the Shared procedure. `triggers[0]` = `{ kind: "mention", config: { role: "engineer" } }`. Validate, commit `content/agents/aoa-engineer`.
+- [ ] Read `CB/.../ensure-engineer.ts` for the exact allowlist + instruction. Apply the Shared procedure. `triggers` = BOTH `{ kind: "mention", config: { role: "engineer" } }` AND `{ kind: "phase-advance", config: { role: "engineer" } }` — Engineer is dual-triggered in the codebase. Validate, commit `content/agents/aoa-engineer`.
 
 ## Task 4: Reconcile aoa-planner (repo MP)
 - [ ] Read `CB/.../ensure-command-staff.ts` `roleToolAllowlist("planner")` (MUST include `post_entry` — the session fix) + `ROLE_INSTRUCTIONS.planner`. Apply the Shared procedure. `triggers[0]` = `{ kind: "phase-advance", config: { role: "planner" } }`. Validate, commit `content/agents/aoa-planner`.
@@ -140,7 +140,7 @@ cd "CB" && git add server/src/services/internal-agent/aoa-agents/autonomy.ts ser
 - [ ] Read `CB/.../ensure-command-staff.ts` `roleToolAllowlist("navigator")` + `ROLE_INSTRUCTIONS.navigator`. Apply the Shared procedure. `triggers[0]` = `{ kind: "mention", config: { role: "navigator" } }`. Validate, commit `content/agents/aoa-navigator`.
 
 ## Task 6: Reconcile aoa-memory-keeper (repo MP)
-- [ ] Read `CB/.../ensure-command-staff.ts` `roleToolAllowlist("memory_keeper")` + `ROLE_INSTRUCTIONS.memory_keeper`. Apply the Shared procedure. `triggers[0]` = `{ kind: "outbox", config: { role: "memory_keeper" } }`. Validate, commit `content/agents/aoa-memory-keeper`.
+- [ ] Read `CB/.../ensure-command-staff.ts` `roleToolAllowlist("memory_keeper")` + `ROLE_INSTRUCTIONS.memory_keeper`. Apply the Shared procedure. `triggers[0]` = `{ kind: "sweep", config: { role: "memory_keeper" } }` (the codebase migrated MK from the dead `outbox` trigger to `sweep`). Validate, commit `content/agents/aoa-memory-keeper`.
 
 ---
 
