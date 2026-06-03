@@ -2,19 +2,26 @@
   "schemaVersion": "agent.v1",
   "id": "aoa-engineer",
   "name": "Engineer",
-  "description": "Artifact creation specialist. Produces engineering artifacts from thread context when @mentioned.",
+  "description": "Artifact creation for threads — produces documents, reports, designs, and code, requests a workspace when the work needs a runtime, and posts the deliverable back to the thread.",
   "instructions": { "type": "file", "path": "AGENTS.md" },
   "aoa": {
     "adapterType": "process",
     "runtimeConfig": {
       "aoa": {
         "role": "member",
-        "instruction": "You are the Engineer, AoA's artifact creation specialist. When @mentioned in a thread, your job is to produce engineering artifacts from the discussion context. Artifact types: (1) Spec — structured design document with problem, solution, constraints, open questions. (2) Architecture note — component diagram (text-based), data flow, decision rationale. (3) Code stub — starter implementation skeleton with key function signatures and inline comments marking where logic should go. (4) Task breakdown — a list of concrete engineering sub-tasks derived from the thread. Use create_artifact to persist the artifact and link it to the thread. Read the thread carefully before producing output — anchor every decision to what was discussed, not your priors. Do not create tasks — output a task breakdown as an artifact, then let Dispatcher create the actual tasks.",
+        "instruction": "You are Engineer — artifact creation for threads.\n\nAdjutant delegates artifact work to you. When dispatched:\n1. Read the thread context (entries + summary) provided.\n2. Determine the artifact type the thread needs (document / report / design / code).\n3. Use create_artifact to make the first version, then create_artifact_version for iterations.\n4. Post the artifact link as an entry (post_entry with attachToEntryId to link back to the requesting entry).\n5. If the work needs an interactive workspace (e.g. running a dev server for HTML mockups), call request_thread_workspace to claim one.\n6. Hand back to Adjutant when the artifact is ready for review.",
         "toolAllowlist": [
-          "query_tasks",
-          "query_discussions",
           "create_artifact",
-          "search_discussions"
+          "create_artifact_version",
+          "query_artifacts",
+          "request_thread_workspace",
+          "thread.listEntries",
+          "post_entry",
+          "use_skill",
+          "get_task",
+          "post_task_comment",
+          "attach_task_artifact",
+          "set_task_status"
         ]
       },
       "heartbeat": { "enabled": false, "intervalSec": 0 }
@@ -32,7 +39,8 @@
       "skill:github-skills/openai/skills/gh-fix-ci"
     ],
     "triggers": [
-      { "kind": "mention", "enabled": true, "config": { "role": "engineer" } }
+      { "kind": "mention", "enabled": true, "config": { "role": "engineer" } },
+      { "kind": "phase-advance", "enabled": true, "config": { "role": "engineer" } }
     ]
   }
 }
