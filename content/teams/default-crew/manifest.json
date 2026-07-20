@@ -1,7 +1,7 @@
 {
   "id": "team:aoa-curated/default-crew",
   "name": "AoA Default Crew",
-  "description": "The crew that orchestrates thread discussions in AoA. Includes Adjutant (discuss-phase facilitator), Scout (research), Engineer (artifacts), Navigator (routing), Planner (sequencing), Memory Keeper (memory proposals), Chronicler (thread summaries), and Reviewer (critique).",
+  "description": "The crew that orchestrates thread discussions in AoA. Includes Adjutant (discuss-phase facilitator), Scout (research), Engineer (artifacts), Navigator (routing), Planner (sequencing), Memory Keeper (memory proposals), Chronicler (thread summaries), Reviewer (critique), and Librarian (turns braindumps into proposed memory).",
   "version": "1.0.0",
   "category": "workflows",
   "tags": ["official", "featured"],
@@ -16,6 +16,7 @@
     { "type": "agent", "id": "agent:aoa-curated/aoa-memory-keeper" },
     { "type": "agent", "id": "agent:aoa-curated/aoa-chronicler" },
     { "type": "agent", "id": "agent:aoa-curated/aoa-reviewer" },
+    { "type": "agent", "id": "agent:aoa-curated/aoa-librarian" },
     { "type": "skill", "id": "skill:github-skills/garrytan/gstack/office-hours" },
     { "type": "skill", "id": "skill:github-skills/garrytan/gstack/investigate" },
     { "type": "skill", "id": "skill:github-skills/garrytan/gstack/review" },
