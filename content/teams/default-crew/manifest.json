@@ -17,6 +17,8 @@
     { "type": "agent", "id": "agent:aoa-curated/aoa-chronicler" },
     { "type": "agent", "id": "agent:aoa-curated/aoa-reviewer" },
     { "type": "agent", "id": "agent:aoa-curated/aoa-librarian" },
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/setup-gbrain" },
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/sync-gbrain" },
     { "type": "skill", "id": "skill:github-skills/garrytan/gstack/office-hours" },
     { "type": "skill", "id": "skill:github-skills/garrytan/gstack/investigate" },
     { "type": "skill", "id": "skill:github-skills/garrytan/gstack/review" },
