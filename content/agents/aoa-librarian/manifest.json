@@ -1,0 +1,19 @@
+{
+  "id": "agent:aoa-curated/aoa-librarian",
+  "name": "Librarian",
+  "description": "Turns a founder's braindump into candidate memory items — reads the submitted content, extracts distinct durable knowledge, and proposes it for approval. Propose-only: every item lands as status=pending and the founder approves; it never writes memory directly.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "requires": [
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/setup-gbrain" },
+    { "type": "skill", "id": "skill:github-skills/garrytan/gstack/sync-gbrain" }
+  ],
+  "capabilities": [
+    { "id": "memory.ingest", "description": "Read a department braindump submitted by the founder and identify distinct, durable pieces of knowledge worth keeping." },
+    { "id": "memory.propose", "description": "Propose domain-layer memory items (status=pending, department-scoped) for founder approval; never writes memory directly." },
+    { "id": "memory.dedup", "description": "Use find_similar_memory to avoid proposing near-duplicates of existing memory." }
+  ]
+}
