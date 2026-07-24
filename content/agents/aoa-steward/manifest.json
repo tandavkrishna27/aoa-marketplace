@@ -1,0 +1,14 @@
+{
+  "id": "agent:aoa-curated/aoa-steward",
+  "name": "Steward",
+  "description": "Keeps the Inbox Hub understandable — reads redacted hub curation context and writes one concise curation summary per sweep. Never takes lifecycle actions and never posts to threads.",
+  "version": "1.0.0",
+  "category": "workflows",
+  "tags": ["official"],
+  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "runtime": { "entry": "agent.json" },
+  "requires": [],
+  "capabilities": [
+    { "id": "hub.curation", "description": "Read redacted Inbox Hub curation context and write one concise curation summary or explanation for a hub item or group." }
+  ]
+}

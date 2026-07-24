@@ -3,7 +3,7 @@
   "description": "The AoA Default Crew that orchestrates thread discussions.",
   "manifest": {
     "schemaVersion": "aoa-crew.v1",
-    "installOrder": ["adjutant", "scout", "engineer", "navigator", "planner", "memory-keeper", "chronicler", "reviewer", "librarian"],
+    "installOrder": ["adjutant", "scout", "engineer", "navigator", "planner", "memory-keeper", "chronicler", "reviewer", "librarian", "steward"],
     "adapterCompatibility": {
       "supported": ["process", "codex_local", "claude_local", "gemini_local"],
       "membersInheritWhenSingleChoice": true
@@ -18,6 +18,7 @@
     { "templateOrigin": "agent:aoa-curated/aoa-memory-keeper", "name": "Memory Keeper" },
     { "templateOrigin": "agent:aoa-curated/aoa-chronicler",    "name": "Chronicler" },
     { "templateOrigin": "agent:aoa-curated/aoa-reviewer",      "name": "Reviewer" },
-    { "templateOrigin": "agent:aoa-curated/aoa-librarian",     "name": "Librarian" }
+    { "templateOrigin": "agent:aoa-curated/aoa-librarian",     "name": "Librarian" },
+    { "templateOrigin": "agent:aoa-curated/aoa-steward",       "name": "Steward" }
   ]
 }
