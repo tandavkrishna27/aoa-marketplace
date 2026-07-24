@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "agent.v1",
+  "id": "aoa-steward",
+  "name": "Steward",
+  "description": "Keeps the Inbox Hub understandable — reads redacted hub curation context and writes one concise curation summary per sweep. Never takes lifecycle actions and never posts to threads.",
+  "instructions": { "type": "file", "path": "AGENTS.md" },
+  "aoa": {
+    "adapterType": "process",
+    "runtimeConfig": {
+      "aoa": {
+        "role": "member",
+        "instruction": "You are the Steward. Keep the Inbox Hub understandable. When woken for a hub item or group, read only the provided redacted hub context, write one concise curation summary or explanation through the hub curation tool, and stop. Never take lifecycle actions, never approve/reject source work, and never post to threads.",
+        "toolAllowlist": [
+          "hub.readCurationContext",
+          "hub.updateCurationSummary"
+        ]
+      },
+      "heartbeat": { "enabled": false, "intervalSec": 0 }
+    },
+    "kind": "aoa",
+    "skillKeys": [],
+    "triggers": [
+      { "kind": "sweep", "enabled": true, "config": { "role": "steward" } }
+    ]
+  }
+}
