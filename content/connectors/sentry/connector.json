@@ -1,0 +1,12 @@
+{
+  "id": "sentry",
+  "displayName": "Sentry",
+  "description": "Sentry's hosted MCP server for issue and error inspection. Its token path uses a non-standard 'Sentry-Bearer' Authorization scheme (Sentry reserves plain 'Bearer' for its own MCP OAuth tokens), which our header synthesis — standard 'Bearer' only — cannot express. Shown via its OAuth path only; not installable until the OAuth broker lands (Plan 4).",
+  "serverName": "sentry",
+  "transport": "http",
+  "url": "https://mcp.sentry.dev/mcp",
+  "requiresSecret": false,
+  "requiresOAuth": true,
+  "docsUrl": "https://mcp.sentry.dev",
+  "trust": { "tier": "community" }
+}

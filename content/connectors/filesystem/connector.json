@@ -1,0 +1,13 @@
+{
+  "id": "filesystem",
+  "displayName": "Filesystem",
+  "description": "Read and write files within explicitly allowed directories. Official Model Context Protocol reference server (TypeScript). Pass the allowed root path(s) as trailing args; \".\" scopes it to the agent's working directory.",
+  "serverName": "filesystem",
+  "transport": "stdio",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+  "requiresSecret": false,
+  "requiresOAuth": false,
+  "docsUrl": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem",
+  "trust": { "tier": "verified" }
+}

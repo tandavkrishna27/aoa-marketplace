@@ -1,0 +1,13 @@
+{
+  "id": "time",
+  "displayName": "Time",
+  "description": "Current time and timezone conversion utilities. Official Model Context Protocol reference server (Python, run via uvx). No credentials required.",
+  "serverName": "time",
+  "transport": "stdio",
+  "command": "uvx",
+  "args": ["mcp-server-time"],
+  "requiresSecret": false,
+  "requiresOAuth": false,
+  "docsUrl": "https://github.com/modelcontextprotocol/servers/tree/main/src/time",
+  "trust": { "tier": "verified" }
+}

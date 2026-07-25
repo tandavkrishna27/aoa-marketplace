@@ -7,6 +7,11 @@
       "reason": "Hand-curated by AoA team"
     },
     {
+      "adapter": "aoa-connectors",
+      "tier": "verified",
+      "reason": "Hand-curated MCP connector catalog — each entry's config and auth model verified against the vendor's official source. Trust ceiling for content/connectors/*; per-entry tiers are clamped to this."
+    },
+    {
       "adapter": "anthropic-skills",
       "tier": "verified",
       "reason": "Trusted upstream — anthropic/skills public repo"

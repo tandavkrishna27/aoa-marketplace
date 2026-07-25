@@ -1,0 +1,12 @@
+{
+  "id": "notion-hosted",
+  "displayName": "Notion (hosted)",
+  "description": "Notion's hosted MCP server. OAuth 2.0 + PKCE ONLY — it explicitly does not accept a bearer token and requires an interactive browser flow, so it cannot run headlessly under the token model. Shown for visibility; not installable until the OAuth broker lands (Plan 4). Use the self-hosted Notion connector for token-based access today.",
+  "serverName": "notion-hosted",
+  "transport": "http",
+  "url": "https://mcp.notion.com/mcp",
+  "requiresSecret": false,
+  "requiresOAuth": true,
+  "docsUrl": "https://developers.notion.com/docs/mcp",
+  "trust": { "tier": "verified" }
+}

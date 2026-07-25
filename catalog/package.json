@@ -6,7 +6,9 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "aggregate": "tsx src/aggregate.ts",
+    "aggregate-connectors": "tsx src/aggregate-connectors.ts",
     "validate": "tsx src/aggregate.ts --validate-only",
+    "validate-connectors": "tsx src/aggregate-connectors.ts --validate-only",
     "publish-cdn": "tsx src/publish.ts",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -6,7 +6,9 @@
   "engines": { "node": ">=20", "pnpm": ">=9" },
   "scripts": {
     "aggregate": "pnpm --filter @armyofagents/aoa-marketplace-builder aggregate",
+    "aggregate-connectors": "pnpm --filter @armyofagents/aoa-marketplace-builder aggregate-connectors",
     "validate": "pnpm --filter @armyofagents/aoa-marketplace-builder validate",
+    "validate-connectors": "pnpm --filter @armyofagents/aoa-marketplace-builder validate-connectors",
     "publish-cdn": "pnpm --filter @armyofagents/aoa-marketplace-builder publish-cdn",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
