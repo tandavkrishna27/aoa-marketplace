@@ -1,0 +1,13 @@
+{
+  "id": "fetch",
+  "displayName": "Fetch",
+  "description": "Fetch a URL and convert it to markdown for model consumption. Official Model Context Protocol reference server (Python, run via uvx). No credentials required.",
+  "serverName": "fetch",
+  "transport": "stdio",
+  "command": "uvx",
+  "args": ["mcp-server-fetch"],
+  "requiresSecret": false,
+  "requiresOAuth": false,
+  "docsUrl": "https://github.com/modelcontextprotocol/servers/tree/main/src/fetch",
+  "trust": { "tier": "verified" }
+}

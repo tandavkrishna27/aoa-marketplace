@@ -1,0 +1,13 @@
+{
+  "id": "git",
+  "displayName": "Git",
+  "description": "Read, search, and manipulate Git repositories. Official Model Context Protocol reference server (Python, run via uvx). Repository path is supplied per tool call.",
+  "serverName": "git",
+  "transport": "stdio",
+  "command": "uvx",
+  "args": ["mcp-server-git"],
+  "requiresSecret": false,
+  "requiresOAuth": false,
+  "docsUrl": "https://github.com/modelcontextprotocol/servers/tree/main/src/git",
+  "trust": { "tier": "verified" }
+}

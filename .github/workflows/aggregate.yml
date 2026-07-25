@@ -44,11 +44,23 @@ jobs:
         env:
           RUN_NETWORK_TESTS: "1"
 
+      # Connectors are a PARALLEL, separate artifact (own schema + own file).
+      # Never touches catalog.json — see catalog/src/types/connector.ts.
+      - name: Aggregate connectors
+        run: pnpm aggregate-connectors
+
       - name: Upload catalog artifact
         uses: actions/upload-artifact@v4
         with:
           name: catalog
           path: dist/catalog.json
+          retention-days: 30
+
+      - name: Upload connectors artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: connectors
+          path: dist/connectors.json
           retention-days: 30
 
       - name: Publish catalog.json to public CDN repo
@@ -63,19 +75,21 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           export GIT_SSH_COMMAND="ssh -i ~/.ssh/cdn_deploy_key -o IdentitiesOnly=yes"
 
-          # Clone CDN repo, copy catalog.json, commit if changed, push
+          # Clone CDN repo, copy catalog.json + connectors.json, commit if changed, push.
+          # connectors.json is a SEPARATE CDN artifact published alongside catalog.json.
           git clone git@github.com:MeteoriteLabs/aoa-marketplace-cdn.git /tmp/cdn
           cp dist/catalog.json /tmp/cdn/catalog.json
+          cp dist/connectors.json /tmp/cdn/connectors.json
           cd /tmp/cdn
           git config user.email "ci@armyofagents.org"
           git config user.name "AoA Marketplace CI"
-          git add catalog.json
+          git add catalog.json connectors.json
           if git diff --cached --quiet; then
-            echo "No catalog changes; skipping publish"
+            echo "No catalog/connectors changes; skipping publish"
           else
-            git commit -m "chore: publish catalog @ $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git commit -m "chore: publish catalog + connectors @ $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git push origin main
-            echo "Published catalog.json to CDN"
+            echo "Published catalog.json + connectors.json to CDN"
           fi
 
           # Cleanup

@@ -1,0 +1,13 @@
+{
+  "id": "memory",
+  "displayName": "Memory (Knowledge Graph)",
+  "description": "A local knowledge-graph memory the agent can read and write across a session. Official Model Context Protocol reference server (TypeScript). No credentials required.",
+  "serverName": "memory",
+  "transport": "stdio",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-memory"],
+  "requiresSecret": false,
+  "requiresOAuth": false,
+  "docsUrl": "https://github.com/modelcontextprotocol/servers/tree/main/src/memory",
+  "trust": { "tier": "verified" }
+}

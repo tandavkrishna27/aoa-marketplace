@@ -1,0 +1,14 @@
+{
+  "id": "linear",
+  "displayName": "Linear",
+  "description": "Read and manage Linear issues, projects, and cycles. Linear's official hosted MCP server. Authenticates headlessly with a Linear personal API key passed as a Bearer token in the Authorization header (Linear supports API-key auth as an alternative to interactive OAuth).",
+  "serverName": "linear",
+  "transport": "http",
+  "url": "https://mcp.linear.app/mcp",
+  "headerTemplateKeys": ["Authorization"],
+  "requiresSecret": true,
+  "requiresOAuth": false,
+  "secretLabel": "Linear personal API key",
+  "docsUrl": "https://linear.app/docs/mcp",
+  "trust": { "tier": "verified" }
+}
