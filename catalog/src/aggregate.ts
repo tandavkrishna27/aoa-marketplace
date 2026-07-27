@@ -7,6 +7,10 @@ import { anthropicSkillsAdapter } from "./sources/anthropic-skills/adapter.js";
 import { githubSkillsAdapter } from "./sources/github-skills/adapter.js";
 import { runAutomatedChecks } from "./validators/automated-checks.js";
 import { collectDependencyInvalidItemIds } from "./validators/dependency-graph.js";
+import {
+  assertDefaultCrewCatalogInvariant,
+  assertDefaultCrewSourceInvariant,
+} from "./validators/default-crew.js";
 import { loadTrustedSources, resolveTrustTier } from "./validators/trust-resolver.js";
 import { loadProviderRegistry, resolveProviderForItem } from "./providers/provider-registry.js";
 import type { CatalogFile, CatalogItem, TrustTier } from "./types/catalog.js";
@@ -35,12 +39,20 @@ function getRepoCommitSha(): string {
 interface AggregateOptions {
   validateOnly: boolean;
   outputPath?: string;
+  /**
+   * Only for an isolated adapter test whose synthetic trusted-sources file
+   * intentionally removes the real default crew's skill dependencies.
+   * The CLI/publish path has no flag that can set this.
+   */
+  skipDefaultCrewCatalogInvariantForIsolatedTest?: boolean;
 }
 
 export async function aggregate(opts: AggregateOptions = { validateOnly: false }): Promise<CatalogFile> {
   const allItems: CatalogItem[] = [];
   const errors: string[] = [];
   const warnings: string[] = [];
+
+  assertDefaultCrewSourceInvariant(REPO_ROOT);
 
   const trustedSources = loadTrustedSources(REPO_ROOT);
   const providerRegistry = loadProviderRegistry(REPO_ROOT);
@@ -110,6 +122,9 @@ export async function aggregate(opts: AggregateOptions = { validateOnly: false }
     console.error(`[dependency-graph] REJECT ${itemId}: ${failures.join(", ")}`);
   }
   const dependencyChecked = deduped.filter((item) => !dependencyResult.invalidIds.has(item.id));
+  if (!opts.skipDefaultCrewCatalogInvariantForIsolatedTest) {
+    assertDefaultCrewCatalogInvariant(dependencyChecked);
+  }
 
   const catalog: CatalogFile = {
     schemaVersion: "1.0.0",

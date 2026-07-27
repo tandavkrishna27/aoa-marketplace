@@ -11,6 +11,12 @@ on:
       - "plugins/**"
       - "content/**"
       - "trusted-sources.json"
+  pull_request:
+    paths:
+      - "catalog/**"
+      - "plugins/**"
+      - "content/**"
+      - "trusted-sources.json"
 
 jobs:
   aggregate:

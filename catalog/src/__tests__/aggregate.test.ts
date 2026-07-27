@@ -11,7 +11,13 @@ describe("aggregate", () => {
   // - Without network: anthropic-skills fails inside aggregate's try/catch, returns 0 items.
   // Either way, validateOnly: true skips writing dist/catalog.json.
   it("runs end-to-end without crashing", async () => {
-    const catalog = await aggregate({ validateOnly: true });
+    const catalog = await aggregate({
+      validateOnly: true,
+      // This test verifies that optional network adapters may fail without
+      // crashing aggregation. Publication/CLI aggregation never sets this
+      // isolated-test bypass, so the protected default crew remains mandatory.
+      skipDefaultCrewCatalogInvariantForIsolatedTest: true,
+    });
     const skillItems = catalog.items.filter((item) => item.type === "skill");
 
     if (skillItems.length > 0) {
@@ -165,6 +171,10 @@ This is a test skill.`,
         const catalog = await aggregate({
           validateOnly: false,
           outputPath,
+          // This fixture replaces the real trusted-sources registry with one
+          // local skill, so the real crew's declared skill dependencies are
+          // intentionally absent. Production/CLI aggregation never sets this.
+          skipDefaultCrewCatalogInvariantForIsolatedTest: true,
         });
 
         // Verify catalog contains github-skills items
