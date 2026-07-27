@@ -165,6 +165,10 @@ This is a test skill.`,
         const catalog = await aggregate({
           validateOnly: false,
           outputPath,
+          // This fixture replaces the real trusted-sources registry with one
+          // local skill, so the real crew's declared skill dependencies are
+          // intentionally absent. Production/CLI aggregation never sets this.
+          skipDefaultCrewCatalogInvariantForIsolatedTest: true,
         });
 
         // Verify catalog contains github-skills items
