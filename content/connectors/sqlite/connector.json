@@ -1,0 +1,13 @@
+{
+  "id": "sqlite",
+  "displayName": "SQLite",
+  "description": "Query and inspect a local SQLite database file. ARCHIVED Model Context Protocol reference server (moved to modelcontextprotocol/servers-archived; unmaintained; Python, run via uvx). Point --db-path at your database file. No credentials required.",
+  "serverName": "sqlite",
+  "transport": "stdio",
+  "command": "uvx",
+  "args": ["mcp-server-sqlite@2025.4.25", "--db-path", "./data/mcp.db"],
+  "requiresSecret": false,
+  "requiresOAuth": false,
+  "docsUrl": "https://github.com/modelcontextprotocol/servers-archived/tree/main/src/sqlite",
+  "trust": { "tier": "community" }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "notion-local",
+  "displayName": "Notion (self-hosted)",
+  "description": "Notion's official MCP server run locally over stdio, authenticated with a Notion internal integration token (NOTION_TOKEN). Works headlessly under the token model — no browser OAuth. Create the integration and share pages with it in Notion settings.",
+  "serverName": "notion-local",
+  "transport": "stdio",
+  "command": "npx",
+  "args": ["-y", "@notionhq/notion-mcp-server@2.5.1"],
+  "envTemplateKeys": ["NOTION_TOKEN"],
+  "requiresSecret": true,
+  "requiresOAuth": false,
+  "secretLabel": "Notion internal integration token",
+  "docsUrl": "https://developers.notion.com/docs/mcp",
+  "trust": { "tier": "verified" }
+}
