@@ -121,9 +121,21 @@ export async function aggregateConnectors(
   }
   const finalEntries = Array.from(byId.values()).sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
+  // Reproducibility: when SOURCE_DATE_EPOCH is set (the guarded publish-connectors
+  // workflow exports it from the source commit time), derive generatedAt from it so
+  // the SAME source SHA always produces byte-identical output. Without this the
+  // publisher's digest pin (artifact_sha256) could never match between a reviewer's
+  // local build and CI's rebuild (a fresh wall-clock stamp differs every run).
+  // Falls back to wall-clock for ordinary local + nightly runs.
+  const sourceDateEpoch = Number(process.env.SOURCE_DATE_EPOCH);
+  const generatedAt =
+    process.env.SOURCE_DATE_EPOCH && Number.isFinite(sourceDateEpoch)
+      ? new Date(sourceDateEpoch * 1000).toISOString()
+      : new Date().toISOString();
+
   const out: ConnectorsFile = {
     schemaVersion: "1.0.0",
-    generatedAt: new Date().toISOString(),
+    generatedAt,
     entryCount: finalEntries.length,
     entries: finalEntries,
   };
