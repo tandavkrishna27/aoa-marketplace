@@ -5,7 +5,7 @@
   "serverName": "postgres",
   "transport": "stdio",
   "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-postgres", "${TOKEN}"],
+  "args": ["-y", "@modelcontextprotocol/server-postgres@0.6.2", "${TOKEN}"],
   "requiresSecret": true,
   "requiresOAuth": false,
   "secretLabel": "PostgreSQL connection string (postgresql://user:password@host:port/db)",

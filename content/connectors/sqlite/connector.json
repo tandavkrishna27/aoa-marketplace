@@ -5,7 +5,7 @@
   "serverName": "sqlite",
   "transport": "stdio",
   "command": "uvx",
-  "args": ["mcp-server-sqlite", "--db-path", "./data/mcp.db"],
+  "args": ["mcp-server-sqlite@2025.4.25", "--db-path", "./data/mcp.db"],
   "requiresSecret": false,
   "requiresOAuth": false,
   "docsUrl": "https://github.com/modelcontextprotocol/servers-archived/tree/main/src/sqlite",
