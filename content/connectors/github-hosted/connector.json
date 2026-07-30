@@ -1,0 +1,14 @@
+{
+  "id": "github-hosted",
+  "displayName": "GitHub (hosted)",
+  "description": "GitHub's official remote MCP server. Authenticates headlessly with a GitHub Personal Access Token passed as a Bearer token in the Authorization header. (GitHub's remote server supports both OAuth and PAT; the PAT path works under our token model, so this ships installable rather than OAuth-gated.)",
+  "serverName": "github-hosted",
+  "transport": "http",
+  "url": "https://api.githubcopilot.com/mcp/",
+  "headerTemplateKeys": ["Authorization"],
+  "requiresSecret": true,
+  "requiresOAuth": false,
+  "secretLabel": "GitHub Personal Access Token",
+  "docsUrl": "https://github.com/github/github-mcp-server",
+  "trust": { "tier": "verified" }
+}

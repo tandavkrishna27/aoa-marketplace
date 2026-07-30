@@ -1,0 +1,14 @@
+{
+  "id": "postgres",
+  "displayName": "PostgreSQL (read-only)",
+  "description": "Read-only SQL access and schema inspection over a PostgreSQL database. ARCHIVED Model Context Protocol reference server (moved to modelcontextprotocol/servers-archived; unmaintained). The connection string — which embeds credentials — is supplied as the bound secret.",
+  "serverName": "postgres",
+  "transport": "stdio",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-postgres@0.6.2", "${TOKEN}"],
+  "requiresSecret": true,
+  "requiresOAuth": false,
+  "secretLabel": "PostgreSQL connection string (postgresql://user:password@host:port/db)",
+  "docsUrl": "https://github.com/modelcontextprotocol/servers-archived/tree/main/src/postgres",
+  "trust": { "tier": "community" }
+}
