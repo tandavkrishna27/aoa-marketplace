@@ -5,7 +5,7 @@
   "serverName": "notion-local",
   "transport": "stdio",
   "command": "npx",
-  "args": ["-y", "@notionhq/notion-mcp-server"],
+  "args": ["-y", "@notionhq/notion-mcp-server@2.5.1"],
   "envTemplateKeys": ["NOTION_TOKEN"],
   "requiresSecret": true,
   "requiresOAuth": false,

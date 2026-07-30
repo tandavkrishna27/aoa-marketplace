@@ -5,7 +5,7 @@
   "serverName": "git",
   "transport": "stdio",
   "command": "uvx",
-  "args": ["mcp-server-git"],
+  "args": ["mcp-server-git@2026.7.10"],
   "requiresSecret": false,
   "requiresOAuth": false,
   "docsUrl": "https://github.com/modelcontextprotocol/servers/tree/main/src/git",

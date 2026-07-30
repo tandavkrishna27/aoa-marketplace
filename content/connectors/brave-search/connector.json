@@ -5,7 +5,7 @@
   "serverName": "brave-search",
   "transport": "stdio",
   "command": "npx",
-  "args": ["-y", "@brave/brave-search-mcp-server", "--transport", "stdio"],
+  "args": ["-y", "@brave/brave-search-mcp-server@2.1.0", "--transport", "stdio"],
   "envTemplateKeys": ["BRAVE_API_KEY"],
   "requiresSecret": true,
   "requiresOAuth": false,

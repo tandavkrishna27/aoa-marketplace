@@ -5,7 +5,7 @@
   "serverName": "memory",
   "transport": "stdio",
   "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-memory"],
+  "args": ["-y", "@modelcontextprotocol/server-memory@2026.7.4"],
   "requiresSecret": false,
   "requiresOAuth": false,
   "docsUrl": "https://github.com/modelcontextprotocol/servers/tree/main/src/memory",
