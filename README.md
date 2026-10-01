@@ -1,4 +1,4 @@
-# AoA Marketplace
+# AoA Marketplace Catalog
 
 This public repository is the open-source source-of-truth monorepo for the AoA marketplace. It contains the catalog builder, curated skills, agents and teams, and the source of AoA plugin packages. See [marketplace documentation](docs/marketplace/README.md) for the catalog format and contribution workflow.
 
