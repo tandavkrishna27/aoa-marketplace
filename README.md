@@ -1,4 +1,4 @@
-# AoA Marketplace Catalog (Private Monorepo)
+# AoA Marketplace Catalog 
 
 Source-of-truth monorepo for the AoA marketplace. Holds catalog infrastructure, all AoA-curated plugin source code, and all AoA-curated content (skills, agents, teams).
 
