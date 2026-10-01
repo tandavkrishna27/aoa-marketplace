@@ -1,25 +1,10 @@
 # @armyofagents/aoa-plugin-telegram
 
-[![npm](https://img.shields.io/npm/v/@armyofagents/aoa-plugin-telegram)](https://www.npmjs.com/package/@armyofagents/aoa-plugin-telegram)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Bidirectional Telegram integration for [AoA](https://github.com/tandavkrishna27/Army-of-Agents). Push agent notifications to Telegram, receive bot commands, approve requests with inline buttons, gather community signals, run multi-agent sessions in threads, process media attachments, register custom commands, and deploy proactive agent suggestions.
 
-Built on the AoA plugin SDK and the domain event bridge ([PR #909](https://github.com/tandavkrishna27/Army-of-Agents)).
-
-## Why this exists
-
-Multiple AoA users asked for notifications on the same day the plugin system shipped (2026-03-14):
-
-> "is there a way to have codex/claude check AoA to see when tasks are done without me prompting it?" - @Choose Liberty, Discord #dev
-
-> "basically to have it 'let me know when its done'" - @Choose Liberty, Discord #dev
-
-> "can claude code check AoA to see when tasks are done" - @Nascozz, Discord #dev
-
-@dotta (maintainer) responded: "we're also adding issue-changed hooks for plugins so when that lands someone could [make notifications]." The event bridge ([PR #909](https://github.com/tandavkrishna27/Army-of-Agents)) shipped that same day. @Ryze said "Really excited by the plugins. I had developed a custom plugin bridge that I will now deprecate and migrate over to the new supported plugin system."
-
-This is that plugin.
+Built on the AoA plugin SDK.
 
 ## What it does
 
@@ -53,7 +38,7 @@ This is that plugin.
 - `/agents` - List agents with status indicators
 - `/approve <id>` - Approve a pending approval
 - `/help` - Display all available commands
-- `/connect <company>` - Link this chat to a AoA company
+- `/connect <company>` - Link this chat to an AoA company
 - `/connect_topic <project-name> [topic-id]` - Map a forum topic to an existing AoA project
 - `/topics list` - Show forum topic mappings for this chat
 - `/topics remove <project-name>` - Remove one forum topic mapping
@@ -141,16 +126,10 @@ This is that plugin.
 
 ## Install
 
-```bash
-npm install @armyofagents/aoa-plugin-telegram
-```
-
-Or register with your AoA instance directly:
+The package name in `package.json` is `@armyofagents/aoa-plugin-telegram`. It is not currently listed in the public npm registry. An AoA host needs an available build of the package for installation. To build this package from the monorepo after installing dependencies and making the AoA plugin SDK available:
 
 ```bash
-curl -X POST http://127.0.0.1:3100/api/plugins/install \
-  -H "Content-Type: application/json" \
-  -d '{"packageName":"@armyofagents/aoa-plugin-telegram"}'
+pnpm --filter @armyofagents/aoa-plugin-telegram build
 ```
 
 ## Setup
@@ -161,7 +140,7 @@ curl -X POST http://127.0.0.1:3100/api/plugins/install \
 4. Send a message to your bot, then run `curl "https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates"` and find the `chat.id` field
 5. In AoA, go to **Settings -> Secrets -> Create new secret**, paste your bot token as the secret value, and copy the resulting UUID
 6. Configure the plugin with the secret UUID in `telegramBotTokenRef` and your chat ID in `defaultChatId`
-7. If your AoA deployment requires authenticated board mutations, open the plugin settings page from a company context and complete **Board Access Connection**. This stores a AoA board API token as a company secret and lets Telegram approval actions authenticate without pasting raw tokens into the plugin config.
+7. If your AoA deployment requires authenticated board mutations, open the plugin settings page from a company context and complete **Board Access Connection**. This stores an AoA board API token as a company secret and lets Telegram approval actions authenticate without pasting raw tokens into the plugin config.
 
 ## Configuration
 
@@ -177,7 +156,7 @@ curl -X POST http://127.0.0.1:3100/api/plugins/install \
 | `digestTopicId` | No | Forum topic ID for digests inside the selected digest/company/default chat |
 | `escalationChatId` | No | Dedicated chat for agent escalations |
 | `aoaBaseUrl` | No | Internal AoA API URL (default: http://localhost:3100) |
-| `aoaBoardApiTokenRef` | No | Advanced/manual secret reference to a AoA board API token used by Telegram approval buttons and `/approve` commands. Prefer the Board Access Connection settings UI when available |
+| `aoaBoardApiTokenRef` | No | Advanced/manual secret reference to an AoA board API token used by Telegram approval buttons and `/approve` commands. Prefer the Board Access Connection settings UI when available |
 | `aoaPublicUrl` | No | Public URL for issue links in messages |
 | `enableCommands` | No | Enable bot commands (default: true) |
 | `enableInbound` | No | Route Telegram replies to issues (default: true) |
@@ -227,7 +206,7 @@ Use **Board Access Connection** on the plugin settings page to connect board acc
 2. Click **Connect board access**.
 3. Approve the AoA board-access request in the opened window.
 
-The plugin stores the resulting board API token as a AoA company secret and keeps only the secret reference in plugin state. The advanced `aoaBoardApiTokenRef` config field is still supported for manual setups.
+The plugin stores the resulting board API token as an AoA company secret and keeps only the secret reference in plugin state. The `aoaBoardApiTokenRef` config field also accepts a manually created AoA secret reference.
 
 ## Agent tools
 
@@ -238,29 +217,13 @@ The plugin stores the resulting board API token as a AoA company secret and keep
 | `discuss_with_agent` | 2 | Start a back-and-forth conversation with another agent |
 | `register_watch` | 5 | Register a proactive watch that monitors entities and sends suggestions |
 
-## Comparison with PR #407
-
-| Feature | PR #407 | This plugin |
-|---------|---------|-------------|
-| Push notifications | Yes | Yes |
-| Receive messages | No | Yes |
-| Bot commands | No | /status, /issues, /agents, /approve, /topics, /acp, /commands |
-| Inline buttons | No | Approve/reject on approvals + escalations + handoffs |
-| Reply routing | No | Replies become issue comments |
-| Topic routing | No | Forum topic = project |
-| Daily digest | No | Yes |
-| HITL escalation | No | Dedicated channel with suggested replies + timeout |
-| Multi-agent threads | No | Up to 5 agents per thread, @mention routing, handoff, discuss |
-| Media pipeline | No | Voice transcription, Brief Agent intake |
-| Custom commands | No | Importable multi-step workflows |
-| Proactive suggestions | No | Watch conditions with built-in sales templates |
-| Architecture | Monorepo example | Standalone npm package |
-
 ## Migration
 
-### v0.2.1
+Existing installations that saved settings under previously branded keys must re-enter the host API URL, board token reference, and public URL using `aoaBaseUrl`, `aoaBoardApiTokenRef`, and `aoaPublicUrl`.
 
-The `telegramBotTokenRef` and `transcriptionApiKeyRef` fields now require a AoA secret reference (a UUID), not the raw token value. If you previously entered your raw bot token in the field, follow these steps to migrate:
+### Secret references
+
+The `telegramBotTokenRef` and `transcriptionApiKeyRef` fields now require an AoA secret reference (a UUID), not the raw token value. If you previously entered your raw bot token in the field, follow these steps to migrate:
 
 1. Go to **Settings -> Secrets -> Create new secret**
 2. Paste your Telegram bot token as the secret value and save
@@ -272,6 +235,8 @@ The plugin will fail to activate if a raw token (non-UUID) is entered in the fie
 
 ## Development
 
+The plugin SDK local link declared in `package.json` must resolve before installing dependencies.
+
 ```bash
 pnpm install
 pnpm typecheck
@@ -279,13 +244,13 @@ pnpm test
 pnpm build
 ```
 
-~80 tests covering notifications, approvals, escalation, session registry, media pipeline, custom commands, proactive suggestions, MarkdownV2 formatting, and bot commands.
+The test suite covers notifications, approvals, escalation, session registry, media pipeline, custom commands, proactive suggestions, formatting, and bot commands.
 
 ## Contributing
 
-Issues and PRs welcome at [github.com/tandavkrishna27/aoa-marketplace](https://github.com/tandavkrishna27/aoa-marketplace).
+Issues and PRs belong in the [AoA Marketplace repository](https://github.com/tandavkrishna27/aoa-marketplace).
 
-Auto-publishes to npm on push to `main` via OIDC trusted publishing.
+The plugin manifest retains `mvanhorn` as author.
 
 ## Credits
 
@@ -293,8 +258,6 @@ Auto-publishes to npm on push to `main` via OIDC trusted publishing.
 
 [@leeknowsai](https://github.com/leeknowsai) - Worker bootstrap patterns adapted from the Discord plugin.
 
-Inspired by [OpenClaw's Telegram integration](https://github.com/openclaw/openclaw) (grammY, bidirectional messaging, inline buttons) and adapted for the AoA plugin SDK.
-
 ## License
 
-MIT
+MIT. See the [root license](../../LICENSE).

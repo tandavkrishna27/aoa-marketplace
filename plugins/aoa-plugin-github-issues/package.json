@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MeteoriteLabs/aoa-marketplace",
+    "url": "https://github.com/tandavkrishna27/aoa-marketplace",
     "directory": "plugins/aoa-plugin-github-issues"
   },
   "license": "MIT",
@@ -25,7 +25,7 @@
     "@armyofagents/plugin-sdk": "*"
   },
   "devDependencies": {
-    "@armyofagents/plugin-sdk": "link:../../../AoA-2.5/packages/plugins/sdk",
+    "@armyofagents/plugin-sdk": "link:../../../Army-of-Agents/packages/plugins/sdk",
     "@types/node": "^25.5.2",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"

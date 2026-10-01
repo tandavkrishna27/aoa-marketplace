@@ -2,4 +2,4 @@
 "@armyofagents/aoa-plugin-discord": minor
 ---
 
-Initial AoA adaptation of @armyofagents/aoa-plugin-discord — Discord notifications and bidirectional integration
+Initial AoA plugin package — Discord notifications and bidirectional integration

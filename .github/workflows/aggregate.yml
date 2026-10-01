@@ -89,7 +89,7 @@ jobs:
           # exact-SHA + digest pin, protected environment) — never as a side effect of
           # a content push. `aggregate-connectors` still runs above to VALIDATE the
           # connector content on every PR/push.
-          git clone git@github.com:MeteoriteLabs/aoa-marketplace-cdn.git /tmp/cdn
+          git clone git@github.com:tandavkrishna27/aoa-marketplace-cdn.git /tmp/cdn
           cp dist/catalog.json /tmp/cdn/catalog.json
           cd /tmp/cdn
           git config user.email "ci@armyofagents.org"

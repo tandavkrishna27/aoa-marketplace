@@ -2,7 +2,7 @@ import type { PluginContext, PluginEvent, Agent, Issue, Project } from "@armyofa
 import { sendMessage, escapeMarkdownV2, sendChatAction } from "./telegram-api.js";
 import { METRIC_NAMES } from "./constants.js";
 import { handleAcpCommand } from "./acp-bridge.js";
-import { buildAoAAuthHeaders, fetchAoAApi } from "./AoA-api.js";
+import { buildAoaAuthHeaders, fetchAoaApi } from "./aoa-api.js";
 
 type BotCommand = {
   command: string;
@@ -249,14 +249,14 @@ async function handleApprove(
   }
 
   try {
-    await fetchAoAApi(
+    await fetchAoaApi(
       ctx,
       `${baseUrl}/api/approvals/${approvalId.trim()}/approve`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...buildAoAAuthHeaders(boardApiToken),
+          ...buildAoaAuthHeaders(boardApiToken),
         },
         body: JSON.stringify({ decidedByUserId: `telegram:${chatId}` }),
       },

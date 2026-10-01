@@ -32,9 +32,6 @@ export async function fetchAoaApi(
   return response;
 }
 
-// Legacy alias
-export const fetchAoAApi = fetchAoaApi;
-
 export function buildAoaAuthHeaders(
   boardApiToken?: string,
 ): Record<string, string> {
@@ -44,6 +41,3 @@ export function buildAoaAuthHeaders(
       }
     : {};
 }
-
-// Legacy alias
-export const buildAoAAuthHeaders = buildAoaAuthHeaders;

@@ -238,7 +238,7 @@ Create these files:
   "version": "1.0.0",
   "category": "engineering",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "runtime": { "entry": "agent.json" },
   "requires": [
     { "type": "skill", "id": "skill:github-skills/openai/skills/openai-docs" },
@@ -470,7 +470,7 @@ Create:
   "version": "1.0.0",
   "category": "engineering",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "runtime": { "entry": "agent.json" }
 }
 ```
@@ -485,7 +485,7 @@ Create:
   "version": "1.0.0",
   "category": "engineering",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "runtime": { "entry": "agent.json" }
 }
 ```
@@ -512,7 +512,7 @@ Create:
   "version": "1.0.0",
   "category": "engineering",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "runtime": { "entry": "agent.json" }
 }
 ```
@@ -539,7 +539,7 @@ Create:
   "version": "1.0.0",
   "category": "engineering",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "runtime": { "entry": "agent.json" },
   "requires": []
 }

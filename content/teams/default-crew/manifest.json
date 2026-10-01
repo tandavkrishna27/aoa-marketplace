@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "category": "workflows",
   "tags": ["official", "featured"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "runtime": { "entry": "team.json" },
   "requires": [
     { "type": "agent", "id": "agent:aoa-curated/aoa-adjutant" },

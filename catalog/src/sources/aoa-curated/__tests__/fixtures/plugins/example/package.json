@@ -4,7 +4,7 @@
   "description": "Example plugin for testing",
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/MeteoriteLabs/aoa-marketplace",
+    "url": "https://github.com/tandavkrishna27/aoa-marketplace",
     "directory": "plugins/aoa-plugin-example"
   }
 }
