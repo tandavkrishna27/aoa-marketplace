@@ -176,7 +176,7 @@ async function resolveAgentByName(
 // agents — freeform prompts passed via sessions.sendMessage({ prompt }) are
 // silently dropped. To work around this, we create a lightweight issue whose
 // title IS the prompt and assign it to the agent. The agent wakes with
-// PAPERCLIP_TASK_ID pointing to that issue and can read the prompt from the
+// the task context pointing to that issue and can read the prompt from the
 // issue title + description.
 
 export async function wakeAgentWithIssue(

@@ -2,4 +2,4 @@
 "@armyofagents/aoa-plugin-slack": minor
 ---
 
-Initial AoA adaptation of paperclip-plugin-slack — Slack notifications and bidirectional sync
+Initial AoA plugin package — Slack notifications and bidirectional sync

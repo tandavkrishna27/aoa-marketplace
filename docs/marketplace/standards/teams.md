@@ -31,7 +31,7 @@ A future team composition file should describe members, roles, dependencies, and
   "version": "1.0.0",
   "category": "workflows",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "members": [
     {
       "role": "triage",

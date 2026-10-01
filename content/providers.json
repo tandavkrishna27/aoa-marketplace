@@ -4,10 +4,10 @@
     {
       "id": "aoa",
       "name": "Army of Agents",
-      "homepageUrl": "https://armyofagents.com",
-      "logoUrl": "https://github.com/MeteoriteLabs.png",
+      "homepageUrl": "https://armyofagents.org",
+      "logoUrl": "https://github.com/tandavkrishna27.png",
       "fallbackInitials": "AOA",
-      "repos": ["MeteoriteLabs/aoa-marketplace"]
+      "repos": ["tandavkrishna27/aoa-marketplace"]
     },
     {
       "id": "anthropic",

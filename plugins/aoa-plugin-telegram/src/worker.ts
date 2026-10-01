@@ -44,7 +44,7 @@ import { EscalationManager } from "./escalation.js";
 import type { EscalationEvent } from "./escalation.js";
 import { isTelegramUpdateAllowed, validateTelegramAllowlists } from "./allowlist.js";
 import { shouldNotifyApproval } from "./approval-routing.js";
-import { buildPaperclipAuthHeaders, fetchPaperclipApi } from "./paperclip-api.js";
+import { buildAoaAuthHeaders, fetchAoaApi } from "./aoa-api.js";
 
 type TelegramConfig = {
   telegramBotTokenRef: string;
@@ -1170,14 +1170,14 @@ async function handleCallbackQuery(
     ctx.logger.info("Approval button clicked", { approvalId, actor });
 
     try {
-      await fetchPaperclipApi(
+      await fetchAoaApi(
         ctx,
         `${baseUrl}/api/approvals/${approvalId}/approve`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...buildPaperclipAuthHeaders(boardApiToken),
+            ...buildAoaAuthHeaders(boardApiToken),
           },
           body: JSON.stringify({ decidedByUserId: `telegram:${actor}` }),
         },
@@ -1225,14 +1225,14 @@ async function handleCallbackQuery(
     ctx.logger.info("Rejection button clicked", { approvalId, actor });
 
     try {
-      await fetchPaperclipApi(
+      await fetchAoaApi(
         ctx,
         `${baseUrl}/api/approvals/${approvalId}/reject`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...buildPaperclipAuthHeaders(boardApiToken),
+            ...buildAoaAuthHeaders(boardApiToken),
           },
           body: JSON.stringify({ decidedByUserId: `telegram:${actor}` }),
         },

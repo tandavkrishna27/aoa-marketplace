@@ -1,40 +1,58 @@
-# AoA Marketplace Catalog (Private Monorepo)
+# AoA Marketplace
 
-Source-of-truth monorepo for the AoA marketplace. Holds catalog infrastructure, all AoA-curated plugin source code, and all AoA-curated content (skills, agents, teams).
+This public repository is the open-source source-of-truth monorepo for the AoA marketplace. It contains the catalog builder, curated skills, agents and teams, and the source of AoA plugin packages. See [marketplace documentation](docs/marketplace/README.md) for the catalog format and contribution workflow.
 
-Canonical marketplace documentation starts at [`docs/marketplace/README.md`](docs/marketplace/README.md).
+## Connected repositories
 
-**Public CDN URL:** `https://meteoritelabs.github.io/aoa-marketplace-cdn/catalog.json`
+- [Army-of-Agents](https://github.com/tandavkrishna27/Army-of-Agents) — the main AoA application and plugin SDK.
+- [aoa-marketplace](https://github.com/tandavkrishna27/aoa-marketplace) — this source monorepo.
+- [aoa-marketplace-cdn](https://github.com/tandavkrishna27/aoa-marketplace-cdn) — published catalog and asset delivery. This is an output repository, not the place to edit marketplace source.
+- [AoA-Skills](https://github.com/tandavkrishna27/AoA-Skills) — connected skills repository.
+- [aoa-community](https://github.com/tandavkrishna27/aoa-community) — community repository.
 
-## Layout
+Website: [armyofagents.org](https://armyofagents.org).
 
-- `catalog/` - catalog infrastructure (adapters, validation, aggregation)
-- `plugins/aoa-plugin-X/` - each plugin = its own pnpm workspace package, publishes to npm as `@armyofagents/aoa-plugin-X`
-- `content/{skills,agents,teams}/{slug}/` - non-plugin AoA-curated content
-- `trusted-sources.json` - trust tier source list
-- `.changeset/` - Changesets (per-package versioning + npm publish)
-- `.github/workflows/` - CI (aggregate -> CDN; publish-plugins -> npm)
+## Repository layout
+
+- `catalog/` — adapters, validation and aggregation for the published catalog.
+- `plugins/aoa-plugin-*/` — plugin source packages named under the `@armyofagents` npm scope.
+- `content/{skills,agents,teams}/` — curated marketplace content.
+- `trusted-sources.json` — source trust configuration.
+- `.changeset/` and `.github/workflows/` — package release and catalog delivery configuration.
+
+Edit marketplace source here. The aggregation and publishing workflows deliver catalog output to the CDN repository.
 
 ## Development
 
-```bash
-pnpm install                                   # install all workspace packages
-pnpm aggregate                                 # build catalog.json
-pnpm validate                                  # validation only
-pnpm test                                      # all tests across all packages
-pnpm --filter @armyofagents/aoa-plugin-X build # build a specific plugin
+The plugin packages use a local link to the AoA plugin SDK in a sibling application checkout. Clone both repositories under the same parent directory before installing dependencies or running plugin checks:
+
+```text
+<parent>/aoa-marketplace/
+<parent>/Army-of-Agents/packages/plugins/sdk/
 ```
 
-## Adding a new plugin
+For example:
 
-Use the plugin standard at [`docs/marketplace/standards/plugins.md`](docs/marketplace/standards/plugins.md), then follow the runbook in [`docs/marketplace/agent-workflows.md`](docs/marketplace/agent-workflows.md).
+```bash
+git clone https://github.com/tandavkrishna27/Army-of-Agents.git Army-of-Agents
+git clone https://github.com/tandavkrishna27/aoa-marketplace.git aoa-marketplace
+cd aoa-marketplace
+pnpm install
+```
 
-## Adding a source adapter
+Then run the commands below. The SDK link is for development; published plugin packages should depend on a released SDK version.
 
-See `catalog/src/sources/aoa-curated/adapter.ts` for the pattern. Each adapter exports a `SourceAdapter` object.
+```bash
+pnpm install
+pnpm aggregate
+pnpm validate
+pnpm test
+pnpm typecheck
+pnpm build
+```
 
-## See also
+To add a plugin, see the [plugin standard](docs/marketplace/standards/plugins.md) and [workflow guide](docs/marketplace/agent-workflows.md).
 
-- AoA repo: `https://github.com/MeteoriteLabs/aoa`
-- Public CDN mirror: `https://github.com/MeteoriteLabs/aoa-marketplace-cdn` (auto-populated by CI from this repo)
-- Community list: `https://github.com/MeteoriteLabs/aoa-community` (rebranded awesome-paperclip)
+## License
+
+MIT. See [LICENSE](LICENSE). Existing plugin authorship and package-level license declarations are retained.

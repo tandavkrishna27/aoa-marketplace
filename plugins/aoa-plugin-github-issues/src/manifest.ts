@@ -1,6 +1,4 @@
-// NOTE: The AoA SDK still exports this type under its legacy name PaperclipPluginManifestV1.
-// An alias will be added when the SDK is next published. See M.1.H tracking notes.
-import type { PaperclipPluginManifestV1 } from "@armyofagents/plugin-sdk";
+import type { AoAPluginManifestV1 } from "@armyofagents/plugin-sdk";
 import {
   DEFAULT_CONFIG,
   EXPORT_NAMES,
@@ -12,7 +10,7 @@ import {
   WEBHOOK_KEYS,
 } from "./constants.js";
 
-const manifest: PaperclipPluginManifestV1 = {
+const manifest: AoAPluginManifestV1 = {
   id: PLUGIN_ID,
   apiVersion: 1,
   version: PLUGIN_VERSION,

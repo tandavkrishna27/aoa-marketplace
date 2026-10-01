@@ -127,10 +127,10 @@ describe("aoaCuratedAdapter — M.2.0 catalog field additions", () => {
     const items = await aoaCuratedAdapter.normalize(fetched, ctx);
     const plugin = items.find((i) => i.item.type === "plugin");
     expect(plugin).toBeDefined();
-    // tarballUrl must be set and reference MeteoriteLabs releases
+    // tarballUrl must be set and reference tandavkrishna27 releases
     expect(plugin!.item.npm!.tarballUrl).toBeDefined();
     expect(plugin!.item.npm!.tarballUrl).toContain(
-      "https://github.com/MeteoriteLabs/aoa-marketplace/releases/download/v",
+      "https://github.com/tandavkrishna27/aoa-marketplace/releases/download/v",
     );
     // URL must include the plugin version
     expect(plugin!.item.npm!.tarballUrl).toContain(plugin!.item.version);

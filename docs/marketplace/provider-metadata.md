@@ -34,7 +34,7 @@ Keep `content/providers.json` in sync with new entries in `trusted-sources.json`
 
 ## Logos
 
-Current logos use external URLs, usually GitHub avatars such as `https://github.com/openai.png` or `https://github.com/MeteoriteLabs.png`.
+Current logos use external URLs, usually GitHub avatars such as `https://github.com/openai.png` or `https://github.com/tandavkrishna27.png`.
 
 Binary logo assets are not required in this repo yet. Do not add image files only to satisfy provider metadata unless the marketplace implementation changes to require local assets.
 

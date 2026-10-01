@@ -1,7 +1,7 @@
-import type { PaperclipPluginManifestV1 } from "@armyofagents/plugin-sdk";
+import type { AoAPluginManifestV1 } from "@armyofagents/plugin-sdk";
 import { DEFAULT_CONFIG, PLUGIN_ID, PLUGIN_VERSION, MAX_AGENTS_PER_THREAD } from "./constants.js";
 
-const manifest: PaperclipPluginManifestV1 = {
+const manifest: AoAPluginManifestV1 = {
   id: PLUGIN_ID,
   apiVersion: 1,
   version: PLUGIN_VERSION,

@@ -3,11 +3,11 @@ import {
   usePluginAction,
   usePluginData,
   type PluginSettingsPageProps,
-} from "@paperclipai/plugin-sdk/ui";
+} from "@armyofagents/plugin-sdk/ui";
 
 type BoardAccessRegistration = {
   configured: boolean;
-  paperclipBoardApiTokenRef: string | null;
+  aoaBoardApiTokenRef: string | null;
   identity: string | null;
   companyId: string | null;
   updatedAt: string | null;
@@ -74,7 +74,7 @@ async function fetchHostJson<T>(input: string, init: RequestInit = {}): Promise<
     normalizedBody.startsWith("<!DOCTYPE html") ||
     normalizedBody.startsWith("<html")
   ) {
-    throw new Error("Paperclip returned HTML instead of JSON.");
+    throw new Error("AoA returned HTML instead of JSON.");
   }
 
   let payload: unknown = null;
@@ -82,7 +82,7 @@ async function fetchHostJson<T>(input: string, init: RequestInit = {}): Promise<
     try {
       payload = JSON.parse(normalizedBody);
     } catch {
-      throw new Error("Paperclip returned an unexpected response.");
+      throw new Error("AoA returned an unexpected response.");
     }
   }
 
@@ -121,7 +121,7 @@ function resolveBrowserOrigin(): string | null {
   }
 }
 
-function buildPaperclipUrl(input: string): string | null {
+function buildAoaUrl(input: string): string | null {
   const origin = resolveBrowserOrigin();
   if (!origin || !input.trim() || input.trim().startsWith("//")) {
     return null;
@@ -137,14 +137,14 @@ function buildPaperclipUrl(input: string): string | null {
 
 function resolveCliAuthUrl(url?: string, path?: string): string | null {
   if (typeof url === "string" && url.trim()) {
-    return buildPaperclipUrl(url.trim());
+    return buildAoaUrl(url.trim());
   }
 
   if (typeof path !== "string" || !path.trim()) {
     return null;
   }
 
-  return buildPaperclipUrl(path.trim());
+  return buildAoaUrl(path.trim());
 }
 
 function resolveCliAuthPollUrl(urlOrPath?: string): string | null {
@@ -154,14 +154,14 @@ function resolveCliAuthPollUrl(urlOrPath?: string): string | null {
 
   const trimmed = urlOrPath.trim();
   if (/^[a-z][a-z0-9+.-]*:\/\//iu.test(trimmed)) {
-    return buildPaperclipUrl(trimmed);
+    return buildAoaUrl(trimmed);
   }
 
   const normalizedPath = trimmed.startsWith("/api/")
     ? trimmed
     : `/api${trimmed.startsWith("/") ? "" : "/"}${trimmed}`;
 
-  return buildPaperclipUrl(normalizedPath);
+  return buildAoaUrl(normalizedPath);
 }
 
 function normalizePollIntervalMs(value: unknown): number {
@@ -182,7 +182,7 @@ async function requestBoardAccessChallenge(companyId: string): Promise<CliAuthCh
   return fetchHostJson<CliAuthChallengeResponse>("/api/cli-auth/challenges", {
     method: "POST",
     body: JSON.stringify({
-      command: "paperclip plugin telegram settings",
+      command: "aoa plugin telegram settings",
       clientName: "Telegram plugin",
       requestedAccess: "board",
       requestedCompanyId: companyId,
@@ -194,7 +194,7 @@ async function waitForBoardAccessApproval(challenge: CliAuthChallengeResponse): 
   const challengeToken = typeof challenge.token === "string" ? challenge.token.trim() : "";
   const pollUrl = resolveCliAuthPollUrl(challenge.pollUrl ?? challenge.pollPath);
   if (!challengeToken || !pollUrl) {
-    throw new Error("Paperclip did not return a trusted board access challenge.");
+    throw new Error("AoA did not return a trusted board access challenge.");
   }
 
   const expiresAtTimeMs =
@@ -218,7 +218,7 @@ async function waitForBoardAccessApproval(challenge: CliAuthChallengeResponse): 
             ? challenge.boardApiToken.trim()
             : "";
       if (!boardApiToken) {
-        throw new Error("Paperclip approved board access but did not return a usable API token.");
+        throw new Error("AoA approved board access but did not return a usable API token.");
       }
 
       return boardApiToken;
@@ -334,7 +334,7 @@ export function TelegramSettingsPage({ context }: PluginSettingsPageProps): Reac
       const challenge = await requestBoardAccessChallenge(companyId);
       const approvalUrl = resolveCliAuthUrl(challenge.approvalUrl, challenge.approvalPath);
       if (!approvalUrl) {
-        throw new Error("Paperclip did not return a trusted board approval URL.");
+        throw new Error("AoA did not return a trusted board approval URL.");
       }
 
       if (!approvalWindow && typeof window !== "undefined") {
@@ -344,7 +344,7 @@ export function TelegramSettingsPage({ context }: PluginSettingsPageProps): Reac
       }
 
       if (!approvalWindow) {
-        throw new Error("Allow pop-ups for Paperclip, then try connecting board access again.");
+        throw new Error("Allow pop-ups for AoA, then try connecting board access again.");
       }
 
       const boardApiToken = await waitForBoardAccessApproval(challenge);
@@ -354,7 +354,7 @@ export function TelegramSettingsPage({ context }: PluginSettingsPageProps): Reac
 
       await updateBoardAccess({
         companyId,
-        paperclipBoardApiTokenRef: secret.id,
+        aoaBoardApiTokenRef: secret.id,
         identity: nextIdentity,
       });
       await boardAccess.refresh();
@@ -362,7 +362,7 @@ export function TelegramSettingsPage({ context }: PluginSettingsPageProps): Reac
       setNotice({
         tone: "success",
         title: nextIdentity ? `Connected as ${nextIdentity}` : "Board access connected",
-        text: "Telegram approval actions can now authenticate with Paperclip.",
+        text: "Telegram approval actions can now authenticate with AoA.",
       });
     } catch (error) {
       setNotice({
@@ -417,7 +417,7 @@ export function TelegramSettingsPage({ context }: PluginSettingsPageProps): Reac
           <div style={{ display: "grid", gap: 4 }}>
             <h2 style={{ fontSize: 18, lineHeight: "28px", margin: 0 }}>Board Access Connection</h2>
             <p style={{ color: "#6b7280", margin: 0 }}>
-              Telegram approval buttons need board access when Paperclip requires authenticated approval mutations.
+              Telegram approval buttons need board access when AoA requires authenticated approval mutations.
             </p>
           </div>
           <span
@@ -459,8 +459,8 @@ export function TelegramSettingsPage({ context }: PluginSettingsPageProps): Reac
             </strong>
             <span style={{ color: "#6b7280" }}>
               {configured
-                ? "The board token is stored as a Paperclip secret; the plugin keeps only the secret reference."
-                : "This opens a Paperclip approval page, then saves the resulting board token as a company secret."}
+                ? "The board token is stored as an AoA secret; the plugin keeps only the secret reference."
+                : "This opens an AoA approval page, then saves the resulting board token as a company secret."}
             </span>
           </div>
           <button

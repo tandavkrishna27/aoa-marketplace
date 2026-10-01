@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "category": "design",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "contentInline": true,
   "runtime": { "entry": "SKILL.md" }
 }

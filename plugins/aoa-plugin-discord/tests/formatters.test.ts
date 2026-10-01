@@ -309,10 +309,10 @@ describe("approval View button URL uses configured base URL", () => {
   it("uses provided baseUrl in the View button URL", () => {
     const msg = formatApprovalCreated(
       makeEvent({ payload: { approvalId: "apr-99" } }),
-      "https://app.paperclip.ing",
+      "https://aoa.example.com",
     );
     const viewBtn = msg.components?.[0]?.components?.[2];
-    expect(viewBtn?.url).toBe("https://app.paperclip.ing/approvals/apr-99");
+    expect(viewBtn?.url).toBe("https://aoa.example.com/approvals/apr-99");
   });
 
   it("omits View button when baseUrl is undefined", () => {
@@ -335,28 +335,28 @@ describe("approval View button URL uses configured base URL", () => {
   it("strips trailing slash from baseUrl to avoid double-slash", () => {
     const msg = formatApprovalCreated(
       makeEvent({ payload: { approvalId: "apr-99" } }),
-      "https://app.paperclip.ing/",
+      "https://aoa.example.com/",
     );
     const viewBtn = msg.components?.[0]?.components?.[2];
-    expect(viewBtn?.url).toBe("https://app.paperclip.ing/approvals/apr-99");
+    expect(viewBtn?.url).toBe("https://aoa.example.com/approvals/apr-99");
   });
 
   it("uses entityId when approvalId not in payload", () => {
     const msg = formatApprovalCreated(
       makeEvent({ entityId: "entity-abc" }),
-      "https://app.paperclip.ing",
+      "https://aoa.example.com",
     );
     const viewBtn = msg.components?.[0]?.components?.[2];
-    expect(viewBtn?.url).toBe("https://app.paperclip.ing/approvals/entity-abc");
+    expect(viewBtn?.url).toBe("https://aoa.example.com/approvals/entity-abc");
   });
 
   it("View button URL for issue.created also uses configured baseUrl", () => {
     const msg = formatIssueCreated(
       makeEvent({ entityId: "issue-42" }),
-      "https://app.paperclip.ing",
+      "https://aoa.example.com",
     );
     const viewBtn = msg.components?.[0]?.components?.find((c) => c.label === "View Issue");
-    expect(viewBtn?.url).toBe("https://app.paperclip.ing/issues/issue-42");
+    expect(viewBtn?.url).toBe("https://aoa.example.com/issues/issue-42");
   });
 });
 

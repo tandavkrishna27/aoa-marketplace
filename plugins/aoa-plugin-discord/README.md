@@ -1,25 +1,10 @@
-# aoa-plugin-discord
+# @armyofagents/aoa-plugin-discord
 
-[![npm](https://img.shields.io/npm/v/@armyofagents/aoa-plugin-discord)](https://www.npmjs.com/package/@armyofagents/aoa-plugin-discord)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Bidirectional Discord integration for [AoA (Army of Agents)](https://github.com/MeteoriteLabs/AoA-2.5). Push agent notifications to Discord, receive slash commands, approve requests with interactive buttons, gather community intelligence, run multi-agent sessions in threads, process media attachments, register custom commands, and deploy proactive agent suggestions.
+Bidirectional Discord integration for [AoA (Army of Agents)](https://github.com/tandavkrishna27/Army-of-Agents). Push agent notifications to Discord, receive slash commands, approve requests with interactive buttons, gather community intelligence, run multi-agent sessions in threads, process media attachments, register custom commands, and deploy proactive agent suggestions.
 
-Built on the AoA plugin SDK and the domain event bridge ([PR #909](https://github.com/paperclipai/paperclip/pull/909)).
-
-## Why this exists
-
-Multiple AoA users asked for notifications on the same day the plugin system shipped (2026-03-14):
-
-> "is there a way to have codex/claude check paperclip to see when tasks are done without me prompting it?" - @Choose Liberty, Discord #dev
-
-> "basically to have it 'let me know when its done'" - @Choose Liberty, Discord #dev
-
-> "can claude code check paperclip to see when tasks are done" - @Nascozz, Discord #dev
-
-@dotta (maintainer) responded: "we're also adding issue-changed hooks for plugins so when that lands someone could [make notifications]." @Ryze said "Really excited by the plugins. I had developed a custom plugin bridge that I will now deprecate and migrate over to the new supported plugin system."
-
-This is that plugin.
+Built on the AoA plugin SDK.
 
 ## What it does
 
@@ -33,7 +18,7 @@ This is that plugin.
 ### Interactive approvals
 - Approve/reject buttons on every approval notification
 - Works via Discord Gateway (WebSocket) so buttons work in local deployments without a public URL
-- Clicking a button calls the Paperclip API and updates the Discord message inline
+- Clicking a button calls the AoA API and updates the Discord message inline
 - Identifies which Discord user acted (logged as `discord:{username}`)
 
 ### Per-type channel routing
@@ -50,7 +35,7 @@ This is that plugin.
 - `/clip issues [project]` - List open issues with optional project filter
 - `/clip agents` - Show all agents with status indicators
 - `/clip help` - Display all available commands
-- `/clip connect [company]` - Link a Discord channel to a Paperclip company
+- `/clip connect [company]` - Link a Discord channel to an AoA company
 - `/clip connect-channel <project>` - Map a Discord channel to a project for notification routing
 - `/clip digest <on|off|status> [mode]` - Configure daily digest (daily/bidaily/tridaily)
 - `/clip commands import <json>` - Import a workflow command from JSON
@@ -90,7 +75,7 @@ This is that plugin.
   - Configurable max turns (2-50) and human checkpoint intervals
   - "Continue Discussion" / "End Discussion" buttons at each checkpoint
   - Automatic stale detection (5 min inactivity)
-- **Dual transport** - native Paperclip sessions with ACP (Agent Client Protocol) fallback
+- **Dual transport** - native AoA sessions with ACP (Agent Client Protocol) fallback
 - **Output sequencing** - queued output with 500ms flush delay to prevent interleaving in multi-agent threads
 - Per-agent join/leave/complete/fail embeds in-thread
 
@@ -104,7 +89,7 @@ This is that plugin.
 - Enable with `enableMediaPipeline: true`
 
 ### Reply routing
-- Reply to any bot notification to route your message back to Paperclip
+- Reply to any bot notification to route your message back to AoA
 - Replies to issue notifications create issue comments automatically
 - Replies to escalation notifications resolve the escalation as a human reply
 - Message mappings stored per-channel/message for accurate routing
@@ -154,16 +139,10 @@ This is that plugin.
 
 ## Install
 
-```bash
-npm install aoa-plugin-discord
-```
-
-Or register with your Paperclip instance directly:
+The package name in `package.json` is `@armyofagents/aoa-plugin-discord`. It is not currently listed in the public npm registry. An AoA host needs an available build of the package for installation. To build this package from the monorepo after installing dependencies and making the AoA plugin SDK available:
 
 ```bash
-curl -X POST http://127.0.0.1:3100/api/plugins/install \
-  -H "Content-Type: application/json" \
-  -d '{"packageName":"aoa-plugin-discord"}'
+pnpm --filter @armyofagents/aoa-plugin-discord build
 ```
 
 ## Setup
@@ -172,7 +151,7 @@ curl -X POST http://127.0.0.1:3100/api/plugins/install \
 2. Add a bot to the application and copy the bot token
 3. Enable the MESSAGE CONTENT privileged intent (for intelligence scanning)
 4. Invite the bot to your server with `applications.commands` and `bot` scopes
-5. In Paperclip, go to **Settings -> Secrets -> Create new secret**, paste your bot token as the secret value, and copy the resulting UUID
+5. In AoA, go to **Settings -> Secrets -> Create new secret**, paste your bot token as the secret value, and copy the resulting UUID
 6. Configure the plugin with the secret UUID in `discordBotTokenRef`, your guild ID, and channel ID
 
 ## Configuration
@@ -198,7 +177,7 @@ curl -X POST http://127.0.0.1:3100/api/plugins/install \
 | `intelligenceRetentionDays` | No | Days to retain intelligence signals (default: 30, max: 365) |
 | `maxAgentsPerThread` | No | Max concurrent agents per Discord thread (default: 5, max: 10) |
 | `enableCommands` | No | Enable slash command handling (default: true) |
-| `enableInbound` | No | Enable reply routing to Paperclip (default: true) |
+| `enableInbound` | No | Enable reply routing to AoA (default: true) |
 | `topicRouting` | No | Route notifications by project-to-channel mappings (default: false) |
 | `digestMode` | No | Digest frequency: off, daily, bidaily, tridaily (default: off) |
 | `dailyDigestTime` | No | UTC time for daily digest, HH:MM (default: 09:00) |
@@ -209,7 +188,8 @@ curl -X POST http://127.0.0.1:3100/api/plugins/install \
 | `enableCustomCommands` | No | Allow agents to register !commands (default: false) |
 | `enableProactiveSuggestions` | No | Allow agents to register watch conditions (default: false) |
 | `proactiveScanIntervalMinutes` | No | How often to check watches (default: 15, min: 5, max: 60) |
-| `paperclipBaseUrl` | No | Base URL for Paperclip API calls (default: http://localhost:3100) |
+| `aoaBaseUrl` | No | Base URL for AoA API calls (default: http://localhost:3100) |
+| `aoaBoardApiKeyRef` | No | AoA board API key secret reference for approval actions |
 
 ## Agent tools
 
@@ -226,19 +206,15 @@ curl -X POST http://127.0.0.1:3100/api/plugins/install \
 
 [@MatB57](https://github.com/MatB57) - Escalation channel concept, "Chat OS" vision for turning chat plugins into bidirectional agent command centers, and the HITL suggested-reply flow.
 
-[@leeknowsai](https://github.com/leeknowsai) - Worker bootstrap and packaging fix ([#1](https://github.com/mvanhorn/aoa-plugin-discord/pull/1)), rich notification embeds, approval button UX, and per-type channel routing ([#4](https://github.com/mvanhorn/aoa-plugin-discord/pull/4)). Most of the notification formatting and interactive approval flow is their work.
+[@leeknowsai](https://github.com/leeknowsai) - Worker bootstrap and packaging, rich notification embeds, approval button UX, and per-type channel routing. Most notification formatting and interactive approval flow is their work.
 
-Notification event handler patterns adapted from PR [#398](https://github.com/paperclipai/paperclip/pull/398) by [@StartupBros](https://github.com/StartupBros).
+Notification event handler patterns credited to [@StartupBros](https://github.com/StartupBros).
 
-## Changelog
-
-### v0.3.0 - Telegram Feature Parity
-
-Brings the Discord plugin to full parity with the Telegram plugin across 14 feature gaps.
+## Implementation notes
 
 **New slash commands:** `/clip issues`, `/clip agents`, `/clip help`, `/clip connect`, `/clip connect-channel`, `/clip digest`, `/clip commands import/list/run/delete`
 
-**Reply routing:** Replying to bot notifications now routes messages back to Paperclip as issue comments or escalation responses. Controlled by the `enableInbound` toggle.
+**Reply routing:** Replying to bot notifications now routes messages back to AoA as issue comments or escalation responses. Controlled by the `enableInbound` toggle.
 
 **Daily digest:** Configurable summary digests (daily/bidaily/tridaily) with tasks completed, active agents, and blocked issues. Configure via `/clip digest on <mode>` or the `digestMode` config.
 
@@ -248,9 +224,11 @@ Brings the Discord plugin to full parity with the Telegram plugin across 14 feat
 
 ## Migration
 
-### v0.2.1
+Existing installations that saved the host API URL under a previously branded key must re-enter it as `aoaBaseUrl`.
 
-The `discordBotTokenRef` field now requires a Paperclip secret reference (a UUID), not the raw token value. If you previously entered your raw bot token in the field, follow these steps to migrate:
+### Secret references
+
+The `discordBotTokenRef` field requires an AoA secret reference (a UUID), not the raw token value. If you previously entered your raw bot token in the field, follow these steps to migrate:
 
 1. Go to **Settings -> Secrets -> Create new secret**
 2. Paste your Discord bot token as the secret value and save
@@ -262,6 +240,8 @@ The plugin will fail to activate if a raw token (non-UUID) is entered in the fie
 
 ## Development
 
+The plugin SDK local link declared in `package.json` must resolve before installing dependencies.
+
 ```bash
 pnpm install
 pnpm typecheck
@@ -269,14 +249,14 @@ pnpm test
 pnpm build
 ```
 
-323 tests covering formatters, commands, intelligence, session registry, media pipeline, custom commands, proactive suggestions, retry logic, workflow engine, and Telegram-parity features.
+The test suite covers formatters, commands, intelligence, session registry, media pipeline, custom commands, proactive suggestions, retry logic, and the workflow engine.
 
 ## Contributing
 
-Issues and PRs welcome at [github.com/mvanhorn/aoa-plugin-discord](https://github.com/mvanhorn/aoa-plugin-discord).
+Issues and PRs belong in the [AoA Marketplace repository](https://github.com/tandavkrishna27/aoa-marketplace).
 
-Auto-publishes to npm on push to `main` via OIDC trusted publishing.
+The plugin manifest retains `mvanhorn` as author. See the credits above for additional contributors.
 
 ## License
 
-MIT
+MIT. See the [root license](../../LICENSE).

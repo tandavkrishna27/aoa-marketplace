@@ -41,7 +41,7 @@ Agent content separates four concepts:
   "version": "1.0.0",
   "category": "productivity",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "runtime": { "entry": "agent.json" },
   "requires": [
     { "type": "skill", "id": "skill:github-skills/owner/repo/path" },
