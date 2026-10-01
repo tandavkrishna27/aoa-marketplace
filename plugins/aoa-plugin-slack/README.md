@@ -1,25 +1,10 @@
-# aoa-plugin-slack
+# @armyofagents/aoa-plugin-slack
 
-[![npm](https://img.shields.io/npm/v/aoa-plugin-slack)](https://www.npmjs.com/package/aoa-plugin-slack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Slack Chat OS plugin for [AoA (Army of Agents)](https://github.com/meteoritelabs/aoa). Turns Slack into a bidirectional agent command center - notifications, approvals, multi-agent threads, voice-to-task pipelines, custom workflow commands, and proactive agent suggestions.
+Slack Chat OS plugin for [AoA (Army of Agents)](https://github.com/tandavkrishna27/Army-of-Agents). Turns Slack into a bidirectional agent command center - notifications, approvals, multi-agent threads, voice-to-task pipelines, custom workflow commands, and proactive agent suggestions.
 
-Built on the AoA plugin SDK and the domain event bridge ([PR #909](https://github.com/meteoritelabs/aoa/pull/909)).
-
-## Why this exists
-
-Multiple AoA users asked for notifications on the same day the plugin system shipped (2026-03-14):
-
-> "is there a way to have codex/claude check AoA to see when tasks are done without me prompting it?" - @Choose Liberty, Discord #dev
-
-> "basically to have it 'let me know when its done'" - @Choose Liberty, Discord #dev
-
-> "can claude code check AoA to see when tasks are done" - @Nascozz, Discord #dev
-
-@dotta (maintainer) responded: "we're also adding issue-changed hooks for plugins so when that lands someone could [make notifications]." The event bridge ([PR #909](https://github.com/meteoritelabs/aoa/pull/909)) shipped that same day. @dotta also asked for "someone to make a plugin that's a totally separate package" to validate the DX. @Ryze said "Really excited by the plugins. I had developed a custom plugin bridge that I will now deprecate and migrate over to the new supported plugin system."
-
-This is that plugin.
+Built on the AoA plugin SDK.
 
 ## What it does
 
@@ -44,7 +29,7 @@ This is that plugin.
 - Rich Block Kit formatting with conversation history, agent reasoning, and confidence score
 - "Use Suggested Reply" button when the agent has a best-guess response
 - "Reply to Customer", "Override Agent", and "Dismiss" buttons
-- Configurable timeout (default 15 min) with automatic default action (defer, close, retry)
+- Configurable timeout (default 15 min) with automatic default action (`defer`, `dismiss`, or `auto_reply`)
 - Customer messages queued during escalation and delivered with the human's response
 - Exposes `escalate_to_human` tool for agents
 
@@ -116,32 +101,30 @@ This is that plugin.
 
 ## Install
 
-```bash
-npm install aoa-plugin-slack
-```
-
-Or register with your AoA instance directly:
+The package name in `package.json` is `@armyofagents/aoa-plugin-slack`. It is not currently listed in the public npm registry. An AoA host needs an available build of the package for installation. To build this package from the monorepo after installing dependencies and making the AoA plugin SDK available:
 
 ```bash
-curl -X POST http://127.0.0.1:3100/api/plugins/install \
-  -H "Content-Type: application/json" \
-  -d '{"packageName":"aoa-plugin-slack"}'
+pnpm --filter @armyofagents/aoa-plugin-slack build
 ```
 
 ## Setup
 
-1. Create a Slack app at https://api.slack.com/apps
-2. Add the `chat:write` bot scope
-3. Enable **Interactivity** and point the Request URL to your AoA host's `slack-interactivity` webhook endpoint
-4. Install the app to your workspace and copy the Bot OAuth Token
-5. In AoA, go to **Settings -> Secrets** and create a new secret with your Bot OAuth Token. Copy the secret UUID.
-6. Install the plugin and configure the secret UUID in the `slackTokenRef` field + your default channel ID
+1. Create a Slack app at https://api.slack.com/apps and add the `chat:write` bot scope. Add the additional scopes required by the Slack API methods/features you enable (for example, posting in public channels the bot has not joined may require `chat:write.public`).
+2. Install the app to your workspace and copy the Bot OAuth Token. In AoA, go to **Settings → Secrets**, create a secret for that token, and copy its UUID.
+3. Save the app's Signing Secret as a second AoA secret and copy its UUID.
+4. Configure `slackTokenRef`, `slackSigningSecretRef`, and `defaultChannelId` with those values.
+5. In Slack app settings, enable **Interactivity & Shortcuts** and set the Request URL to the AoA webhook endpoint for `slack-interactivity`.
+6. Under **Slash Commands**, create the `/clip` command and set its Request URL to the AoA webhook endpoint for `slash-command`.
+7. Under **Event Subscriptions**, set the Request URL to the AoA webhook endpoint for `slack-events`. This handler currently processes Slack URL-verification and `file_shared` callbacks; it does not subscribe to or route general channel-message events. The media flow also requires the Slack event subscription and token access needed to retrieve shared files.
+
+The full webhook URLs are provided by the AoA host for the installed plugin instance. Subscribe only to the Slack events needed for the features you use and grant the corresponding bot scopes.
 
 ## Configuration
 
 | Setting | Description |
 |---------|-------------|
 | `slackTokenRef` | Secret reference for the Slack Bot OAuth token |
+| `slackSigningSecretRef` | Secret reference for the Slack signing secret |
 | `defaultChannelId` | Default Slack channel ID (e.g. `C01ABC2DEF3`) |
 | `approvalsChannelId` | Dedicated channel for approvals (optional) |
 | `errorsChannelId` | Dedicated channel for agent errors (optional) |
@@ -177,13 +160,15 @@ The plugin registers these tools that agents can call:
 
 ## Migration
 
-### v2.0.1
+### Secret references
 
-The `slackTokenRef` field now declares `format: "secret-ref"`, which is required for AoA to collect and resolve secret references at activation time. Previously, the field was a plain `string` with no format annotation, causing plugin activation to fail with `Invalid secret reference`.
+The `slackTokenRef` field declares `format: "secret-ref"`, which AoA uses to resolve the stored bot token during activation. `slackSigningSecretRef` also requires a secret reference.
 
-**If you installed v2.0.0:** you must re-configure the plugin. Go to **Settings -> Secrets**, create a secret with your Slack Bot OAuth Token, and paste the resulting secret UUID into the `slackTokenRef` field in the plugin configuration. Raw token strings are no longer accepted in this field.
+If an existing configuration contains raw Slack credentials, create AoA secrets and enter their UUIDs in `slackTokenRef` and `slackSigningSecretRef`. Raw token strings are not accepted in these fields.
 
 ## Development
+
+The plugin SDK local link declared in `package.json` must resolve before installing dependencies.
 
 ```bash
 pnpm install
@@ -192,13 +177,13 @@ pnpm test
 pnpm build
 ```
 
-97 tests covering notifications, approvals, escalation, session registry, media pipeline, custom commands, proactive suggestions, Block Kit formatting, and slash commands.
+The test suite covers notifications, approvals, escalation, session registry, media pipeline, custom commands, proactive suggestions, formatting, and slash commands.
 
 ## Contributing
 
-Issues and PRs welcome at [github.com/mvanhorn/aoa-plugin-slack](https://github.com/mvanhorn/aoa-plugin-slack).
+Issues and PRs belong in the [AoA Marketplace repository](https://github.com/tandavkrishna27/aoa-marketplace).
 
-Auto-publishes to npm on push to `main` via OIDC trusted publishing.
+The plugin manifest retains `mvanhorn` as author.
 
 ## Credits
 
@@ -206,4 +191,4 @@ Auto-publishes to npm on push to `main` via OIDC trusted publishing.
 
 ## License
 
-MIT
+MIT. See the [root license](../../LICENSE).

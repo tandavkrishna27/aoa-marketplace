@@ -46,8 +46,8 @@ importers:
   plugins/aoa-plugin-discord:
     devDependencies:
       '@armyofagents/plugin-sdk':
-        specifier: link:../../../AoA-2.5/packages/plugins/sdk
-        version: link:../../../AoA-2.5/packages/plugins/sdk
+        specifier: link:../../../Army-of-Agents/packages/plugins/sdk
+        version: link:../../../Army-of-Agents/packages/plugins/sdk
       '@types/node':
         specifier: ^25.5.2
         version: 25.6.0
@@ -61,8 +61,8 @@ importers:
   plugins/aoa-plugin-github-issues:
     devDependencies:
       '@armyofagents/plugin-sdk':
-        specifier: link:../../../AoA-2.5/packages/plugins/sdk
-        version: link:../../../AoA-2.5/packages/plugins/sdk
+        specifier: link:../../../Army-of-Agents/packages/plugins/sdk
+        version: link:../../../Army-of-Agents/packages/plugins/sdk
       '@types/node':
         specifier: ^25.5.2
         version: 25.6.0
@@ -76,8 +76,8 @@ importers:
   plugins/aoa-plugin-slack:
     devDependencies:
       '@armyofagents/plugin-sdk':
-        specifier: link:../../../AoA-2.5/packages/plugins/sdk
-        version: link:../../../AoA-2.5/packages/plugins/sdk
+        specifier: link:../../../Army-of-Agents/packages/plugins/sdk
+        version: link:../../../Army-of-Agents/packages/plugins/sdk
       '@types/node':
         specifier: ^25.5.2
         version: 25.6.0
@@ -91,8 +91,8 @@ importers:
   plugins/aoa-plugin-telegram:
     devDependencies:
       '@armyofagents/plugin-sdk':
-        specifier: link:../../../AoA-2.5/packages/plugins/sdk
-        version: link:../../../AoA-2.5/packages/plugins/sdk
+        specifier: link:../../../Army-of-Agents/packages/plugins/sdk
+        version: link:../../../Army-of-Agents/packages/plugins/sdk
       '@types/node':
         specifier: ^25.5.2
         version: 25.6.0

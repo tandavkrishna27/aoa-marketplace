@@ -1,5 +1,3 @@
-// NOTE: The AoA SDK still exports this type under its legacy name AoAPluginManifestV1.
-// An alias will be added when the SDK is next published. See M.1.H tracking notes.
 import type { AoAPluginManifestV1 } from "@armyofagents/plugin-sdk";
 import {
   DEFAULT_CONFIG,

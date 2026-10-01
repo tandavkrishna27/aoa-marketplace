@@ -69,7 +69,7 @@ Example:
   "version": "1.0.0",
   "category": "engineering",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "runtime": {
     "entry": "agent.json"
   },

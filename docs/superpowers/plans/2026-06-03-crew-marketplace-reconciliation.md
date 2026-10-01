@@ -8,9 +8,9 @@
 
 **Tech Stack:** JSON agent manifests + Markdown personas in `aoa-marketplace`; the catalog builder is TypeScript (`catalog/`, validated with `pnpm validate` / `vitest`). The codebase Reviewer support is TypeScript in `AoA-crew-hardening/server`.
 
-**Two repos / paths:**
-- `MP = C:\Users\TK\OneDrive\Desktop\Claude Data\AoA\aoa-marketplace` (branch `feat/crew-codebase-reconciliation`)
-- `CB = C:\Users\TK\OneDrive\Desktop\Claude Data\AoA\AoA-crew-hardening` (branch `feat/thread-chat-experience`) — SOURCE OF TRUTH, read-only here.
+**Two repositories:**
+- `MP` denotes the marketplace source repository used for this historical implementation plan.
+- `CB` denotes the AoA application source repository referenced by this historical plan. Its runtime behavior was the source of truth for the reconciliation.
 
 **Spec:** `MP/docs/superpowers/specs/2026-06-03-crew-marketplace-reconciliation-design.md`.
 

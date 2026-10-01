@@ -99,10 +99,10 @@ describe("resolveProviderForItem", () => {
           {
             id: "aoa",
             name: "Army of Agents",
-            homepageUrl: "https://armyofagents.com",
-            logoUrl: "https://github.com/MeteoriteLabs.png",
+            homepageUrl: "https://armyofagents.org",
+            logoUrl: "https://github.com/tandavkrishna27.png",
             fallbackInitials: "AOA",
-            repos: ["MeteoriteLabs/aoa-marketplace"],
+            repos: ["tandavkrishna27/aoa-marketplace"],
           },
         ],
       }),
@@ -111,8 +111,8 @@ describe("resolveProviderForItem", () => {
     expect(resolveProviderForItem(pluginItem(), registry)).toEqual({
       id: "aoa",
       name: "Army of Agents",
-      homepageUrl: "https://armyofagents.com",
-      logoUrl: "https://github.com/MeteoriteLabs.png",
+      homepageUrl: "https://armyofagents.org",
+      logoUrl: "https://github.com/tandavkrishna27.png",
       fallbackInitials: "AOA",
     });
   });
@@ -162,7 +162,7 @@ function pluginItem(): CatalogItem {
     version: "1.0.0",
     source: {
       adapter: "aoa-curated",
-      url: "https://github.com/MeteoriteLabs/aoa-marketplace/tree/abc/plugins/aoa-plugin-discord",
+      url: "https://github.com/tandavkrishna27/aoa-marketplace/tree/abc/plugins/aoa-plugin-discord",
       locator: "plugins/aoa-plugin-discord",
     },
     trust: { tier: "verified", source: "aoa-curated" },

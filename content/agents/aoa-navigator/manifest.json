@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "category": "workflows",
   "tags": ["official"],
-  "sourceUrl": "https://github.com/MeteoriteLabs/aoa-marketplace",
+  "sourceUrl": "https://github.com/tandavkrishna27/aoa-marketplace",
   "runtime": { "entry": "agent.json" },
   "capabilities": [
     { "id": "thread.routing", "description": "Decide whether inbound material attaches to an existing thread, spins off into a new one, or routes to a department." },

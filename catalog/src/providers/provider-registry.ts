@@ -57,7 +57,7 @@ export function resolveProviderForItem(item: CatalogItem, registry: ProviderRegi
     };
   }
 
-  const aoaProvider = registry.byRepo.get("MeteoriteLabs/aoa-marketplace");
+  const aoaProvider = registry.byRepo.get("tandavkrishna27/aoa-marketplace");
   if (item.source.adapter === "aoa-curated" && aoaProvider) {
     return providerRef(aoaProvider);
   }

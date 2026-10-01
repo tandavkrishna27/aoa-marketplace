@@ -140,7 +140,7 @@ jobs:
           DRY: ${{ inputs.dry_run }}
         run: |
           set +e
-          git clone --depth 1 https://github.com/MeteoriteLabs/aoa-marketplace-cdn.git /tmp/cdn-ro 2>/dev/null || mkdir -p /tmp/cdn-ro
+          git clone --depth 1 https://github.com/tandavkrishna27/aoa-marketplace-cdn.git /tmp/cdn-ro 2>/dev/null || mkdir -p /tmp/cdn-ro
           [ -f /tmp/cdn-ro/connectors.json ] || printf '%s' '{"schemaVersion":"","entries":[]}' > /tmp/cdn-ro/connectors.json
           echo "=== connectors.json diff (CDN current -> candidate) ==="
           diff -u /tmp/cdn-ro/connectors.json dist/connectors.json
@@ -173,7 +173,7 @@ jobs:
           chmod 600 ~/.ssh/cdn_deploy_key
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           export GIT_SSH_COMMAND="ssh -i ~/.ssh/cdn_deploy_key -o IdentitiesOnly=yes"
-          git clone git@github.com:MeteoriteLabs/aoa-marketplace-cdn.git /tmp/cdn
+          git clone git@github.com:tandavkrishna27/aoa-marketplace-cdn.git /tmp/cdn
           cp dist/connectors.json /tmp/cdn/connectors.json
           cd /tmp/cdn
           git config user.email "ci@armyofagents.org"

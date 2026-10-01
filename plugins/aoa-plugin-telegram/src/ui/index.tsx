@@ -121,7 +121,7 @@ function resolveBrowserOrigin(): string | null {
   }
 }
 
-function buildAoAUrl(input: string): string | null {
+function buildAoaUrl(input: string): string | null {
   const origin = resolveBrowserOrigin();
   if (!origin || !input.trim() || input.trim().startsWith("//")) {
     return null;
@@ -137,14 +137,14 @@ function buildAoAUrl(input: string): string | null {
 
 function resolveCliAuthUrl(url?: string, path?: string): string | null {
   if (typeof url === "string" && url.trim()) {
-    return buildAoAUrl(url.trim());
+    return buildAoaUrl(url.trim());
   }
 
   if (typeof path !== "string" || !path.trim()) {
     return null;
   }
 
-  return buildAoAUrl(path.trim());
+  return buildAoaUrl(path.trim());
 }
 
 function resolveCliAuthPollUrl(urlOrPath?: string): string | null {
@@ -154,14 +154,14 @@ function resolveCliAuthPollUrl(urlOrPath?: string): string | null {
 
   const trimmed = urlOrPath.trim();
   if (/^[a-z][a-z0-9+.-]*:\/\//iu.test(trimmed)) {
-    return buildAoAUrl(trimmed);
+    return buildAoaUrl(trimmed);
   }
 
   const normalizedPath = trimmed.startsWith("/api/")
     ? trimmed
     : `/api${trimmed.startsWith("/") ? "" : "/"}${trimmed}`;
 
-  return buildAoAUrl(normalizedPath);
+  return buildAoaUrl(normalizedPath);
 }
 
 function normalizePollIntervalMs(value: unknown): number {
@@ -182,7 +182,7 @@ async function requestBoardAccessChallenge(companyId: string): Promise<CliAuthCh
   return fetchHostJson<CliAuthChallengeResponse>("/api/cli-auth/challenges", {
     method: "POST",
     body: JSON.stringify({
-      command: "AoA plugin telegram settings",
+      command: "aoa plugin telegram settings",
       clientName: "Telegram plugin",
       requestedAccess: "board",
       requestedCompanyId: companyId,
@@ -459,8 +459,8 @@ export function TelegramSettingsPage({ context }: PluginSettingsPageProps): Reac
             </strong>
             <span style={{ color: "#6b7280" }}>
               {configured
-                ? "The board token is stored as a AoA secret; the plugin keeps only the secret reference."
-                : "This opens a AoA approval page, then saves the resulting board token as a company secret."}
+                ? "The board token is stored as an AoA secret; the plugin keeps only the secret reference."
+                : "This opens an AoA approval page, then saves the resulting board token as a company secret."}
             </span>
           </div>
           <button

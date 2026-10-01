@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import type { PluginContext } from "@armyofagents/plugin-sdk";
-import { buildAoaAuthHeaders, fetchAoaApi } from "../src/AoA-api.js";
+import { buildAoaAuthHeaders, fetchAoaApi } from "../src/aoa-api.js";
 
 function mockCtx() {
   return {
